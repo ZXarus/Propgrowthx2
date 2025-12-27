@@ -1,17 +1,72 @@
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
-  background: #eaf3ff;
+  background-color: #eaf3ff;
+  min-height: 100vh;
+}
+
+.navbar {
+  background-color: #1e3a8a;
+  padding: 14px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 22px;
+}
+
+.nav-links a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  background-color: #2563eb;
+}
+
+.page-container {
+  padding: 60px;
+  text-align: center;
+}
+
+.page-container h1 {
+  font-size: 32px;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.page-container p {
+  font-size: 16px;
+  color: #4b5563;
+}
+
+.auth-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
 }
 
-.container {
+.auth-container {
   width: 380px;
 }
 
@@ -47,6 +102,7 @@ body {
   border-radius: 6px;
   cursor: pointer;
   background: transparent;
+  font-size: 14px;
 }
 
 .tab.active {
@@ -66,6 +122,7 @@ label {
   font-size: 13px;
   margin-top: 10px;
   display: block;
+  color: #1f2937;
 }
 
 input {
@@ -85,6 +142,11 @@ button[type="submit"] {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+button[type="submit"]:hover {
+  background: #1e40af;
 }
 
 .divider {

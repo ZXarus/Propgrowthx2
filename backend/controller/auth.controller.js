@@ -1,48 +1,40 @@
 import { supabase } from "../config/supabase.js";
 
-// Register new user
+import bcrypt from "bcryptjs";
+import { generateToken } from "../middlewares/jwt.middleware.js";
+
 export const register = async (req, res) => {
   const { email, password, role } = req.body;
-  console.log("Register request received:", { email, role });
+
+  if (!email || !password || !role) {
+    return res
+      .status(400)
+      .json({ error: "Email, password, and role are required" });
+  }
+
   try {
-    // 1️⃣ Create auth user
-    const { data: authData, error: authError } =
-      await supabase.auth.admin.createUser({
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .insert({
         email,
-        password,
-        email_confirm: true,
-      });
+        role,
+        password: hashedPassword,
+      })
+      .select()
+      .single();
 
-    if (authError) {
-      console.log("Error creating auth user:", authError.message);
-      return res.status(400).json({ error: authError.message });
+    if (error) {
+      console.log("Error inserting user:", error.message);
+      return res.status(400).json({ error: error.message });
     }
 
-    console.log("Auth user created:", authData.user.id);
-
-    // 2️⃣ Insert into profiles table
-    const { error: profileError } = await supabase.from("profiles").insert({
-      id: authData.user.id, // link profile with auth user
-      email,
-      role: role || "owner",
-      created_at: new Date(),
-    });
-
-    if (profileError) {
-      console.log("Error inserting profile:", profileError.message);
-      return res.status(400).json({ error: profileError.message });
-    }
-
-    console.log("Profile created for user:", email);
-
-    // 3️⃣ Success response
     res.status(201).json({
-      message: "User registered successfully",
-      email,
-      role: role || "owner",
+      message: "Register successful",
     });
   } catch (err) {
-    console.log("Unexpected error in register:", err.message);
+    console.log("Unexpected error:", err.message);
     res.status(500).json({ error: err.message });
   }
 };
@@ -50,33 +42,31 @@ export const register = async (req, res) => {
 // Login user
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login request received:", { email });
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data: user, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("email", email)
+      .single();
 
-    if (error) {
-      console.log("Login error:", error.message);
-      return res.status(400).json({ error: error.message });
-    }
+    if (error || !user) return res.status(400).json({ error: "Invalid email" });
 
-    console.log("Login successful for user:", data.user.id);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ error: "Invalid password" });
+
+    const token = generateToken(user);
 
     res.json({
       message: "Login successful",
-      user: data.user,
-      session: data.session,
+      token,
     });
   } catch (err) {
-    console.log("Unexpected error in login:", err.message);
     res.status(500).json({ error: err.message });
   }
 };
 
-// Forgot password
+// forgot password (partially completed )
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   console.log("Forgot password request received for:", email);
@@ -93,6 +83,26 @@ export const forgotPassword = async (req, res) => {
     res.json({ message: "Password reset email sent" });
   } catch (err) {
     console.log("Unexpected error in forgotPassword:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getUserProfileWithProperties = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    // Get user profile
+    const { data: user, error: userError } = await supabase
+      .from("profiles")
+      .select("id,role")
+      .eq("id", userId)
+      .single();
+
+    if (userError || !user)
+      return res.status(404).json({ error: "User not found" });
+
+    res.json({ user });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
