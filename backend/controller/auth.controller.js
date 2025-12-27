@@ -31,7 +31,7 @@ export const register = async (req, res) => {
     }
 
     res.status(201).json({
-      user: data,
+      message: "Register successful",
     });
   } catch (err) {
     console.log("Unexpected error:", err.message);
@@ -59,8 +59,7 @@ export const login = async (req, res) => {
 
     res.json({
       message: "Login successful",
-      user,
-      token, // frontend stores this
+      token,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -95,21 +94,14 @@ export const getUserProfileWithProperties = async (req, res) => {
     // Get user profile
     const { data: user, error: userError } = await supabase
       .from("profiles")
-      .select("*")
+      .select("id,role")
       .eq("id", userId)
       .single();
 
     if (userError || !user)
       return res.status(404).json({ error: "User not found" });
 
-    const { data: properties, error: propError } = await supabase
-      .from("properties")
-      .select("*")
-      .eq("owner_id", userId);
-
-    if (propError) return res.status(400).json({ error: propError.message });
-
-    res.json({ user, properties });
+    res.json({ user });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

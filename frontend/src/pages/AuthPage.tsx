@@ -83,6 +83,7 @@ const AuthPage: React.FC = () => {
       if (!res.ok) {
         throw new Error(data.error || "Something went wrong");
       }
+      sessionStorage.setItem("token", data?.token);
 
       if (isLogin) {
         if (role === "owner") {
@@ -133,7 +134,6 @@ const AuthPage: React.FC = () => {
           <option value="owner">Owner</option>
           <option value="tenant">Tenant</option>
         </select>
-
         <button type="submit" disabled={loading} style={styles.button}>
           {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
         </button>

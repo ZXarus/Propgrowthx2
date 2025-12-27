@@ -13,4 +13,6 @@ router.post("/login", login);
 router.post("/register", register);
 router.post("/forgot-password", forgotPassword);
 router.get("/me", verifyToken, getUserProfileWithProperties);
+
+
 export default router;
