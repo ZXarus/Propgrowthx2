@@ -7,60 +7,21 @@ const AuthPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(true);
+  const [showForgot, setShowForgot] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [role, setRole] = useState<Role>("owner");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: "#f4f6f8",
-    },
-    card: {
-      width: "350px",
-      padding: "30px",
-      borderRadius: "10px",
-      background: "#fff",
-      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-    },
-    input: {
-      width: "100%",
-      padding: "10px",
-      marginBottom: "12px",
-      borderRadius: "6px",
-      border: "1px solid #ccc",
-    },
-    button: {
-      width: "100%",
-      padding: "10px",
-      borderRadius: "6px",
-      border: "none",
-      background: "#2563eb",
-      color: "#fff",
-      cursor: "pointer",
-    },
-    error: {
-      color: "red",
-      marginBottom: "10px",
-    },
-    switch: {
-      marginTop: "15px",
-      fontSize: "14px",
-      textAlign: "center",
-    },
-    link: {
-      color: "#2563eb",
-      cursor: "pointer",
-      fontWeight: "bold",
-    },
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  /* ================= LOGIN / REGISTER ================= */
+  const handleLoginRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -72,28 +33,101 @@ const AuthPage: React.FC = () => {
     try {
       const res = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, role }),
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
 
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
-      sessionStorage.setItem("token", data?.token);
+      sessionStorage.setItem("token", data.token);
+      navigate(role === "owner" ? "/dashboard_owner" : "/dashboard_tenant");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      if (isLogin) {
-        if (role === "owner") {
-          navigate("/dashboard_owner");
-        } else {
-          navigate("/dashboard_tenant");
+  /* ================= SEND OTP ================= */
+  const sendOtp = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(
+        "http://localhost:6876/api/auth/forgot-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
         }
-      } else {
-        setIsLogin(true);
-      }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      alert("Your OTP: " + data.otp); // DEV ONLY
+      setShowOtp(true);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ================= VERIFY OTP ================= */
+  const verifyOtpHandler = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("http://localhost:6876/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      alert("OTP Verified Successfully");
+      setShowOtp(false);
+      setShowResetPassword(true);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePasswordHandler = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(
+        "http://localhost:6876/api/auth/update-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            password: newPassword,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      alert("Password updated successfully");
+
+      // reset UI
+      setShowForgot(false);
+      setShowResetPassword(false);
+      setEmail("");
+      setNewPassword("");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -102,47 +136,101 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.card}>
-        <h2>{isLogin ? "Login" : "Register"}</h2>
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <form
+        onSubmit={handleLoginRegister}
+        style={{ width: 350, padding: 30, background: "#fff" }}
+      >
+        <h2>
+          {showForgot ? "Forgot Password" : isLogin ? "Login" : "Register"}
+        </h2>
 
-        {error && <p style={styles.error}>{error}</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
         <input
-          type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={styles.input}
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={styles.input}
-        />
+        {!showForgot && (
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        )}
 
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as Role)}
-          style={styles.input}
-        >
-          <option value="owner">Owner</option>
-          <option value="tenant">Tenant</option>
-        </select>
-        <button type="submit" disabled={loading} style={styles.button}>
-          {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
-        </button>
+        {!showForgot && (
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value as Role)}
+          >
+            <option value="owner">Owner</option>
+            <option value="tenant">Tenant</option>
+          </select>
+        )}
 
-        <p style={styles.switch}>
-          {isLogin ? "New user?" : "Already have an account?"}{" "}
-          <span style={styles.link} onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? "Register" : "Login"}
-          </span>
+        {!showForgot && (
+          <button type="submit">
+            {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
+          </button>
+        )}
+
+        {showForgot && !showOtp && !showResetPassword && (
+          <button type="button" onClick={sendOtp}>
+            Send OTP
+          </button>
+        )}
+
+        {showOtp && (
+          <>
+            <input
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <button type="button" onClick={verifyOtpHandler}>
+              Verify OTP
+            </button>
+          </>
+        )}
+
+        {showResetPassword && (
+          <>
+            <input
+              type="password"
+              placeholder="Enter New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+            <button type="button" onClick={updatePasswordHandler}>
+              Update Password
+            </button>
+          </>
+        )}
+
+        {!showForgot && (
+          <p
+            onClick={() => setShowForgot(true)}
+            style={{ cursor: "pointer", color: "blue" }}
+          >
+            Forgot Password?
+          </p>
+        )}
+
+        <p onClick={() => setIsLogin(!isLogin)} style={{ cursor: "pointer" }}>
+          {isLogin ? "Register" : "Login"}
         </p>
       </form>
     </div>

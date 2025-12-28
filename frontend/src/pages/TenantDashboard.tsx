@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { useNavigate } from "react-router-dom";
+import { Logout } from "../components/Logout";
 
 const TenantDashboard: React.FC = () => {
   const [activePage, setActivePage] = useState("My Property");
@@ -190,16 +190,6 @@ const Payments = () => (
     </ul>
   </div>
 );
-const Logout: React.FC = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    sessionStorage.clear();
-    navigate("/");
-  }, [navigate]);
-
-  return <p>Logging out...</p>;
-};
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: { display: "flex" },
