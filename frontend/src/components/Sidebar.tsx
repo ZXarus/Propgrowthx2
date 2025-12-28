@@ -18,6 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, onSelect }) => {
   );
 };
 
+//
 export default Sidebar;
 
 const styles: { [key: string]: React.CSSProperties } = {
