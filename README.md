@@ -8,6 +8,20 @@
 | role       | TEXT      | owner / tenant         |
 | created_at | TIMESTAMP | Auto generated         |
 
+# properties
+
+| Column              | Purpose          |
+| ------------------- | ---------------- |
+| id                  | Property ID      |
+| owner_id            | Owner user ID    |
+| buyer_id            | Tenant user ID   |
+| property_name       | Name             |
+| address             | Location         |
+| prize               | Price            |
+| monthly_rent        | Rent             |
+| availability_status | Available / Sold |
+| created_at          | Timestamp        |
+
 # verifyOtp
 
 | Column | Type    | Description |
@@ -104,3 +118,30 @@ Verifies user exists
 Hashes new password using bcrypt
 Updates password in profiles table
 Deletes any remaining OTP
+
+# OWNER DASHBOARD FLOW
+
+Sidebar Pages
+Upload Propert
+All Properties
+
+# Owner fills: during upload
+
+property_name
+address
+prize
+property_type
+total_area
+water_available
+electricity_available
+availability_status
+monthly_rent
+
+# GET ALL PROPERTIES BY OWNER
+
+Owner can see only their own properties
+GET /api/properties/get_all_prop_by_owner?owner_id=UUID
+
+# WHEN USER BUY WE USE /get_all_prop_by_buyer
+
+it simply add the tenant id into the properties buyer_id column
