@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, User, Lock, UserCogIcon} from "lucide-react";
+import "../styles/authPage.css";
 
 type Role = "owner" | "tenant";
 
@@ -13,57 +14,18 @@ const AuthPage: React.FC = () => {
   const [role, setRole] = useState<Role>("owner");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [forgot,setForgot] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
 
-  const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: "#f4f6f8",
-    },
-    card: {
-      width: "350px",
-      padding: "30px",
-      borderRadius: "10px",
-      background: "#fff",
-      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-    },
-    input: {
-      width: "100%",
-      padding: "10px",
-      marginBottom: "12px",
-      borderRadius: "6px",
-      border: "1px solid #ccc",
-    },
-    button: {
-      width: "100%",
-      padding: "10px",
-      borderRadius: "6px",
-      border: "none",
-      background: "#2563eb",
-      color: "#fff",
-      cursor: "pointer",
-    },
-    error: {
-      color: "red",
-      marginBottom: "10px",
-    },
-    switch: {
-      marginTop: "15px",
-      fontSize: "14px",
-      textAlign: "center",
-    },
-    link: {
-      color: "#2563eb",
-      cursor: "pointer",
-      fontWeight: "bold",
-    },
-  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setMessage("");
     setLoading(true);
 
     const url = isLogin
@@ -73,27 +35,20 @@ const AuthPage: React.FC = () => {
     try {
       const res = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, role }),
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
 
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
-      sessionStorage.setItem("token", data?.token);
+      sessionStorage.setItem("token", data.token);
 
       if (isLogin) {
-        if (role === "owner") {
-          navigate("/dashboard_owner");
-        } else {
-          navigate("/dashboard_tenant");
-        }
+        navigate(role === "owner" ? "/dashboard_owner" : "/dashboard_tenant");
       } else {
         setIsLogin(true);
+        setMessage("Registration successful. Please login.");
       }
     } catch (err: any) {
       setError(err.message);
@@ -102,65 +57,240 @@ const AuthPage: React.FC = () => {
     }
   };
 
+  /* ===================== SOCIAL LOGIN ===================== */
+
+  const handleGoogleLogin = () => {
+    window.location.href =
+      "http://localhost:6876/api/oauth2/authorize/google";
+  };
+
+  const handleFacebookLogin = () => {
+    window.location.href =
+      "http://localhost:6876/api/oauth2/authorize/facebook";
+  };
+
+  const handleTwitterLogin = () => {
+    window.location.href =
+      "http://localhost:6876/api/oauth2/authorize/twitter";
+  };
+
+  /* ===================== FORGOT PASSWORD ===================== */
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email first");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        "http://localhost:6876/api/auth/forgot-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email ,password}),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setMessage("Password reset link sent to your email");
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const sendOtp = async () => {
+  if (!email) {
+    setError("Please enter email first");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:6876/api/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    setOtpSent(true);
+    setMessage("OTP sent to your email");
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
+
+
+const verifyOtp = async () => {
+  if (!otp) {
+    setError("Please enter OTP");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:6876/api/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    setOtpVerified(true);
+    setMessage("OTP verified successfully");
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
+
+
   return (
-    <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.card}>
-        <div style={{display: "flex",justifyContent: "center",marginBottom: "16px"}}>
-          <Home size={32} color="#2563eb" />
-        </div>
+  <div className="auth-container">
+    <form onSubmit={handleSubmit} className="auth-card">
+      <div className="auth-header">
+        <Home size={32} color="#2563eb" />
+      </div>
 
-        <h2>{isLogin ? "Login" : "Register"}</h2>
-        <h5>Enter your credentials here</h5>
-        {error && <p style={styles.error}>{error}</p>}
+      <h2>{isLogin ? "Login" : "Register"}</h2>
+      <h5>Enter your credentials</h5>
 
-        <div style={{display:"flex",gap:10}}>
-        <User/>
+      {error && <p className="error-text">{error}</p>}
+      {message && <p className="success-text">{message}</p>}
+
+      <div className="input-group">
+        <User />
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={styles.input}
+          className="auth-input"
         />
-        </div>
+      </div>
 
-        <div  style={{display:"flex",gap:10}}>
-          <Lock/>
+      {!forgot && <div className="input-group">
+        <Lock />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          style={styles.input}
+          className="auth-input"
         />
+      </div>}
+
+      {!isLogin && (
+        <div>
+          {!otpSent && (
+          <button style={{marginBottom:10}}
+            type="button"
+            className="auth-btn"
+            onClick={sendOtp}
+          >
+            Send OTP
+          </button>
+        )}
+
+    {otpSent && !otpVerified && (
+      <>
+        <div className="input-group">
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            className="auth-input"
+          />
         </div>
 
-        {!isLogin && <div style={{display:"flex",gap:10}}>
-          <UserCogIcon/>
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as Role)}
-          style={styles.input}
+        {!otpVerified &&  <button
+          type="button" style={{marginBottom:10}}
+          className="auth-btn"
+          onClick={verifyOtp}
         >
-          <option value="owner">Owner</option>
-          <option value="tenant">Tenant</option>
-        </select>
-        </div>}
-        <button type="submit" disabled={loading} style={styles.button}>
-          {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
-        </button>
+          Verify OTP
+        </button>}
+      </>
+    )}
+        <div className="input-group">
+          <UserCogIcon />
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value as Role)}
+            className="auth-input"
+          >
+            <option value="owner">Owner</option>
+            <option value="tenant">Tenant</option>
+          </select>
+        </div>
+      </div>
+      )}
 
-        <p style={styles.switch}>
-          {isLogin ? "New user?" : "Already have an account?"}{" "}
-          <span style={styles.link} onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? "Register" : "Login"}
-          </span>
-        </p>
-      </form>
-    </div>
-  );
+      {isLogin && (
+        <>
+        {!forgot && <div className="forgot-password" onClick={()=>setForgot(true)}>
+          Forgot password?
+        </div>}
+      
+        {forgot && (
+          <div style={{ display: "block" }}>
+          <div className="input-group">
+        <Lock />
+        <input
+          type="password"
+          placeholder="New Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="auth-input"
+        />
+        </div>
+        <button type="button" onClick={handleForgotPassword} className="auth-btn">
+          Reset Password
+        </button>
+        </div>
+        )}
+        </>
+      )}
+
+      {!forgot && <button type="submit" disabled={loading || !otpVerified} className="auth-btn">
+        {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
+      </button>}
+
+      <div className="divider">OR</div>
+
+      <button type="button" className="social-btn" onClick={handleGoogleLogin}>
+        Continue with Google
+      </button>
+
+      <button type="button" className="social-btn" onClick={handleFacebookLogin}>
+        Continue with Facebook
+      </button>
+
+      <button type="button" className="social-btn" onClick={handleTwitterLogin}>
+        Continue with Twitter
+      </button>
+
+      <p className="switch-text">
+        {isLogin ? "New user?" : "Already have an account?"}{" "}
+        <span
+          className="switch-link"
+          onClick={() => setIsLogin(!isLogin)}
+        >
+          {isLogin ? "Register" : "Login"}
+        </span>
+      </p>
+    </form>
+  </div>
+);
+
 };
 
 export default AuthPage;
