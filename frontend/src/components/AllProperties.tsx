@@ -36,7 +36,11 @@ export const AllProperties: React.FC<{ ownerId: string }> = ({ ownerId }) => {
       {prop.map((p) => (
         <div
           key={p.id}
-          style={{ border: "1px solid #ccc", padding: 10, marginBottom: 10 }}
+          style={{
+            border: "1px solid #ccc",
+            padding: 10,
+            marginBottom: 10,
+          }}
         >
           <p>
             <b>Property Name:</b> {p.property_name}
@@ -76,7 +80,21 @@ export const AllProperties: React.FC<{ ownerId: string }> = ({ ownerId }) => {
           <p>
             <b>Created At:</b> {new Date(p.created_at).toLocaleDateString()}
           </p>
-          {p.buyer_id && <p>done</p>}
+
+          {p.images && p.images.length > 0 && (
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              {p.images.map((img: any) => (
+                <img
+                  key={img.id}
+                  src={img.prop_image}
+                  alt="Property"
+                  style={{ width: 150, height: 100, objectFit: "cover" }}
+                />
+              ))}
+            </div>
+          )}
+          <button>edit</button>
+          <button>delete</button>
         </div>
       ))}
     </div>

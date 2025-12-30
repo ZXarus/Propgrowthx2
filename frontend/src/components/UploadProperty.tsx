@@ -1,15 +1,22 @@
 import { useState } from "react";
+import "../styles/uploadProperty.css";
 
-export const UploadProperty: React.FC<{ ownerId: string }> = ({ ownerId }) => {
+type UploadPropertyProps = {
+  ownerId: string;
+};
+
+export const UploadProperty: React.FC<UploadPropertyProps> = ({ ownerId }) => {
   const [property_name, setPropertyName] = useState("");
   const [address, setAddress] = useState("");
   const [prize, setPrize] = useState("");
-  const [property_type, setPropertyType] = useState("");
+  const [property_type, setPropertyType] = useState("Residential");
   const [total_area, setTotalArea] = useState("");
   const [water_available, setWaterAvailable] = useState(false);
   const [electricity_available, setElectricityAvailable] = useState(false);
-  const [availability_status, setAvailabilityStatus] = useState("");
+  const [availability_status, setAvailabilityStatus] = useState("Available");
   const [monthly_rent, setMonthlyRent] = useState("");
+  const [images, setImages] = useState<File[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -18,88 +25,102 @@ export const UploadProperty: React.FC<{ ownerId: string }> = ({ ownerId }) => {
     setMessage("");
 
     try {
+      const formData = new FormData();
+      formData.append("owner_id", ownerId);
+      formData.append("property_name", property_name);
+      formData.append("address", address);
+      formData.append("prize", prize);
+      formData.append("property_type", property_type);
+      formData.append("total_area", total_area);
+      formData.append("water_available", String(water_available));
+      formData.append("electricity_available", String(electricity_available));
+      formData.append("availability_status", availability_status);
+      formData.append("monthly_rent", monthly_rent);
+
+      images.forEach((img) => {
+        formData.append("images", img);
+      });
+
+      const formDataObj = Object.fromEntries(formData.entries());
+      console.log("FormData Object:", formDataObj);
+
       const res = await fetch("http://localhost:6876/api/properties/create", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          owner_id: ownerId,
-          property_name,
-          address,
-          prize: Number(prize),
-          property_type,
-          total_area: Number(total_area),
-          water_available,
-          electricity_available,
-          availability_status,
-          monthly_rent: Number(monthly_rent),
-        }),
+        body: formData,
       });
 
       const data = await res.json();
+      console.log(data);
+
       if (!res.ok) throw new Error(data.error);
 
       setMessage("✅ Property uploaded successfully");
 
-      // reset
+      // reset fields
       setPropertyName("");
       setAddress("");
       setPrize("");
-      setPropertyType("");
+      setPropertyType("Residential");
       setTotalArea("");
       setWaterAvailable(false);
       setElectricityAvailable(false);
-      setAvailabilityStatus("");
+      setAvailabilityStatus("Available");
       setMonthlyRent("");
-    } catch (err: any) {
-      setMessage("❌ " + err.message);
+      setImages([]);
+    } catch (err) {
+      if (err instanceof Error) {
+        setMessage("❌ " + err.message);
+      } else {
+        setMessage("❌ Upload failed");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <h2>Upload Property (Land)</h2>
+    <div className="upload-container">
+      <h2>Upload Property</h2>
 
       <input
-        type="text"
+        className="upload-input"
         placeholder="Property Name"
         value={property_name}
         onChange={(e) => setPropertyName(e.target.value)}
       />
-      <br />
 
       <input
-        type="text"
+        className="upload-input"
         placeholder="Address"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
       />
-      <br />
 
       <input
+        className="upload-input"
         type="number"
         placeholder="Price"
         value={prize}
         onChange={(e) => setPrize(e.target.value)}
       />
-      <br />
 
-      <input
-        type="text"
-        placeholder="Property Type (Residential / Commercial / Agri)"
+      <select
+        className="upload-input"
         value={property_type}
         onChange={(e) => setPropertyType(e.target.value)}
-      />
-      <br />
+      >
+        <option value="Residential">Residential</option>
+        <option value="Commercial">Commercial</option>
+        <option value="Agri">Agricultural</option>
+      </select>
 
       <input
+        className="upload-input"
         type="number"
         placeholder="Total Area"
         value={total_area}
         onChange={(e) => setTotalArea(e.target.value)}
       />
-      <br />
 
       <label>
         <input
@@ -109,7 +130,6 @@ export const UploadProperty: React.FC<{ ownerId: string }> = ({ ownerId }) => {
         />
         Water Available
       </label>
-      <br />
 
       <label>
         <input
@@ -119,32 +139,39 @@ export const UploadProperty: React.FC<{ ownerId: string }> = ({ ownerId }) => {
         />
         Electricity Available
       </label>
-      <br />
 
-      <input
-        type="text"
-        placeholder="Availability Status (Available / Sold)"
+      <select
+        className="upload-input"
         value={availability_status}
         onChange={(e) => setAvailabilityStatus(e.target.value)}
-      />
-      <br />
+      >
+        <option value="Available">Available</option>
+        <option value="Sold">Sold</option>
+      </select>
 
       <input
+        className="upload-input"
         type="number"
         placeholder="Monthly Rent (optional)"
         value={monthly_rent}
         onChange={(e) => setMonthlyRent(e.target.value)}
       />
-      <br />
 
-      <br />
-      <br />
+      <input
+        className="upload-input"
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={(e) => {
+          const files = e.target.files;
+          if (files) setImages(Array.from(files));
+        }}
+      />
 
-      <button onClick={handleUpload} disabled={loading}>
+      <button className="upload-btn" onClick={handleUpload} disabled={loading}>
         {loading ? "Uploading..." : "Upload Property"}
       </button>
 
-      <br />
       {message && <p>{message}</p>}
     </div>
   );

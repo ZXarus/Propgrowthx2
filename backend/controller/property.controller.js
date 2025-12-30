@@ -1,4 +1,6 @@
 import { supabase } from "../config/supabase.js";
+import fs from "fs";
+import path from "path";
 
 export const getPropertyById = async (req, res) => {
   const { id } = req.query;
@@ -25,32 +27,47 @@ export const getPropertyById = async (req, res) => {
 };
 
 export const getAllPropertiesByOwner = async (req, res) => {
-  const { owner_id } = req.query; // or req.query.owner_id
+  const { owner_id } = req.query;
 
   if (!owner_id) {
     return res.status(400).json({ error: "Owner ID is required" });
   }
 
   try {
-    const { data, error } = await supabase
+    // Fetch all properties of the owner
+    const { data: properties, error } = await supabase
       .from("properties")
       .select("*")
       .eq("owner_id", owner_id);
 
-    if (error) {
-      console.log("Error fetching properties:", error.message);
-      return res.status(400).json({ error: error.message });
-    }
+    if (error) throw error;
+
+    const propertiesWithImages = await Promise.all(
+      properties.map(async (prop) => {
+        const { data: images, error: imgError } = await supabase
+          .from("property_images")
+          .select("*")
+          .eq("prop_id", prop.id);
+
+        if (imgError) console.log("Error fetching images:", imgError.message);
+
+        return {
+          ...prop,
+          images: images || [],
+        };
+      })
+    );
 
     res.status(200).json({
       owner_id,
-      properties: data,
+      properties: propertiesWithImages,
     });
   } catch (err) {
-    console.log("Unexpected error:", err.message);
+    console.error("Unexpected error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
 export const getAllPropertiesByBuyer = async (req, res) => {
   const { buyer_id } = req.query;
 
@@ -59,66 +76,87 @@ export const getAllPropertiesByBuyer = async (req, res) => {
   }
 
   try {
-    const { data, error } = await supabase
+    // Fetch all properties of the owner
+    const { data: properties, error } = await supabase
       .from("properties")
       .select("*")
       .eq("buyer_id", buyer_id);
 
-    if (error) {
-      console.log("Error fetching properties:", error.message);
-      return res.status(400).json({ error: error.message });
-    }
+    if (error) throw error;
+
+    const propertiesWithImages = await Promise.all(
+      properties.map(async (prop) => {
+        const { data: images, error: imgError } = await supabase
+          .from("property_images")
+          .select("*")
+          .eq("prop_id", prop.id);
+
+        if (imgError) console.log("Error fetching images:", imgError.message);
+
+        return {
+          ...prop,
+          images: images || [],
+        };
+      })
+    );
 
     res.status(200).json({
       buyer_id,
-      properties: data,
+      properties: propertiesWithImages,
     });
   } catch (err) {
-    console.log("Unexpected error:", err.message);
+    console.error("Unexpected error:", err);
     res.status(500).json({ error: err.message });
   }
 };
 export const getAll = async (req, res) => {
   try {
-    const { data, error } = await supabase.from("properties").select("*");
+    // Fetch all properties
+    const { data: properties, error: propError } = await supabase
+      .from("properties")
+      .select("*");
 
-    if (error) {
-      console.log("Error fetching properties:", error.message);
-      return res.status(400).json({ error: error.message });
-    }
+    if (propError) throw propError;
+
+    // Fetch all images in one go
+    const { data: allImages, error: imgError } = await supabase
+      .from("property_images")
+      .select("*");
+
+    if (imgError) throw imgError;
+
+    // Map images to their respective property
+    const propertiesWithImages = properties.map((prop) => ({
+      ...prop,
+      images: allImages.filter((img) => img.prop_id === prop.id) || [],
+    }));
 
     res.status(200).json({
-      properties: data,
+      properties: propertiesWithImages,
     });
   } catch (err) {
-    console.log("Unexpected error:", err.message);
+    console.error("Unexpected error:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
 export const createProperty = async (req, res) => {
-  const {
-    owner_id,
-    property_name,
-    address,
-    prize,
-    property_type,
-    total_area,
-    water_available,
-    electricity_available,
-    availability_status,
-    monthly_rent,
-  } = req.body;
-
-  // Required validation
-  if (!owner_id || !property_name) {
-    return res.status(400).json({
-      error: "Owner ID and Property Name are required",
-    });
-  }
-
   try {
-    const { data, error } = await supabase
+    const {
+      owner_id,
+      property_name,
+      address,
+      prize,
+      property_type,
+      total_area,
+      water_available,
+      electricity_available,
+      availability_status,
+      monthly_rent,
+    } = req.body;
+    console.log(req.body);
+
+    const { data: property, error } = await supabase
       .from("properties")
       .insert([
         {
@@ -130,22 +168,53 @@ export const createProperty = async (req, res) => {
           total_area,
           water_available,
           electricity_available,
-          availability_status: availability_status || "available",
+          availability_status,
           monthly_rent,
         },
       ])
       .select()
       .single();
+    console.log("property" + property);
 
-    if (error) {
-      return res.status(400).json({ error: error.message });
+    if (error) throw error;
+
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const fileBuffer = fs.readFileSync(file.path);
+        const fileName = `property-${property.id}/${file.filename}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("property-images")
+          .upload(fileName, fileBuffer, {
+            contentType: file.mimetype,
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrl } = supabase.storage
+          .from("property-images")
+          .getPublicUrl(fileName);
+        if (!publicUrl.publicUrl) throw new Error("Failed to get public URL");
+
+        const { error: insertError } = await supabase
+          .from("property_images")
+          .insert([
+            {
+              prop_id: property.id,
+              prop_image: publicUrl.publicUrl,
+            },
+          ]);
+
+        if (insertError) throw insertError;
+      }
     }
 
-    res.status(201).json({
-      message: "Property created successfully",
-      property: data,
+    return res.status(201).json({
+      message: "Property created with images",
+      property,
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -163,53 +232,93 @@ export const updateProperty = async (req, res) => {
     electricity_available,
     availability_status,
     monthly_rent,
+    deleteImageIds, // <-- array of image IDs
   } = req.body;
-  console.log(req.body);
 
   if (!id) {
     return res.status(400).json({ error: "Property ID is required" });
   }
 
   try {
+    /* ================= UPDATE PROPERTY DATA ================= */
     const updateData = {};
 
     if (property_name !== undefined) updateData.property_name = property_name;
-
     if (address !== undefined) updateData.address = address;
-
     if (prize !== undefined) updateData.prize = prize;
-
     if (property_type !== undefined) updateData.property_type = property_type;
-
     if (total_area !== undefined) updateData.total_area = total_area;
-
     if (water_available !== undefined)
       updateData.water_available = water_available;
-
     if (electricity_available !== undefined)
       updateData.electricity_available = electricity_available;
-
     if (availability_status !== undefined)
       updateData.availability_status = availability_status;
-
     if (monthly_rent !== undefined) updateData.monthly_rent = monthly_rent;
 
-    const { data, error } = await supabase
+    const { data: property, error } = await supabase
       .from("properties")
       .update(updateData)
       .eq("id", id)
       .select()
       .single();
 
-    if (error) {
-      return res.status(400).json({ error: error.message });
+    if (error) throw error;
+
+    /* ================= DELETE IMAGES ================= */
+    if (deleteImageIds?.length) {
+      const ids = Array.isArray(deleteImageIds)
+        ? deleteImageIds
+        : [deleteImageIds];
+
+      // get image paths
+      const { data: images } = await supabase
+        .from("property_images")
+        .select("*")
+        .in("id", ids);
+
+      for (const img of images) {
+        const filePath = img.prop_image.split("/property-images/")[1];
+
+        // delete from supabase storage
+        await supabase.storage.from("property-images").remove([filePath]);
+      }
+
+      // delete db records
+      await supabase.from("property_images").delete().in("id", ids);
+    }
+
+    /* ================= ADD NEW IMAGES ================= */
+    if (req.files?.length) {
+      for (const file of req.files) {
+        const buffer = fs.readFileSync(file.path);
+        const fileName = `property-${id}/${file.filename}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("property-images")
+          .upload(fileName, buffer, {
+            contentType: file.mimetype,
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: url } = supabase.storage
+          .from("property-images")
+          .getPublicUrl(fileName);
+
+        await supabase.from("property_images").insert({
+          prop_id: id,
+          prop_image: url.publicUrl,
+        });
+      }
     }
 
     res.status(200).json({
       message: "Property updated successfully",
-      property: data,
+      property,
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };

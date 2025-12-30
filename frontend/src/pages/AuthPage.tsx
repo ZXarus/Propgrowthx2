@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Home, User, Lock, UserCogIcon, Eye, EyeOff } from "lucide-react";
+import "../styles/authPage.css";
 
-type Role = "owner" | "tenant";
-
-const AuthPage: React.FC = () => {
+const AuthPage = () => {
   const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(true);
@@ -15,23 +15,21 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [role, setRole] = useState<Role>("owner");
+  const [role, setRole] = useState("owner");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  /* ================= LOGIN / REGISTER ================= */
-  const handleLoginRegister = async (e: React.FormEvent) => {
+  const handleLogin = async (e: any) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-
-    const url = isLogin
-      ? "http://localhost:6876/api/auth/login"
-      : "http://localhost:6876/api/auth/register";
+    setError("");
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch("http://localhost:6876/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, role }),
@@ -49,7 +47,31 @@ const AuthPage: React.FC = () => {
     }
   };
 
-  /* ================= SEND OTP ================= */
+  const handleRegister = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("http://localhost:6876/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      alert("Registration successful. Please login.");
+      setIsLogin(true);
+      setPassword("");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const sendOtp = async () => {
     setLoading(true);
     setError("");
@@ -67,7 +89,6 @@ const AuthPage: React.FC = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      alert("Your OTP: " + data.otp); // DEV ONLY
       setShowOtp(true);
     } catch (err: any) {
       setError(err.message);
@@ -76,7 +97,6 @@ const AuthPage: React.FC = () => {
     }
   };
 
-  /* ================= VERIFY OTP ================= */
   const verifyOtpHandler = async () => {
     setLoading(true);
     setError("");
@@ -91,7 +111,6 @@ const AuthPage: React.FC = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      alert("OTP Verified Successfully");
       setShowOtp(false);
       setShowResetPassword(true);
     } catch (err: any) {
@@ -111,10 +130,7 @@ const AuthPage: React.FC = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            password: newPassword,
-          }),
+          body: JSON.stringify({ email, password: newPassword }),
         }
       );
 
@@ -123,10 +139,9 @@ const AuthPage: React.FC = () => {
 
       alert("Password updated successfully");
 
-      // reset UI
       setShowForgot(false);
       setShowResetPassword(false);
-      setEmail("");
+      setIsLogin(true);
       setNewPassword("");
     } catch (err: any) {
       setError(err.message);
@@ -136,101 +151,147 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <div className="auth-container">
       <form
-        onSubmit={handleLoginRegister}
-        style={{ width: 350, padding: 30, background: "#fff" }}
+        className="auth-card"
+        onSubmit={isLogin ? handleLogin : handleRegister}
       >
-        <h2>
-          {showForgot ? "Forgot Password" : isLogin ? "Login" : "Register"}
-        </h2>
+        <div className="auth-header">
+          <UserCogIcon size={32} />
+          <h2>
+            {showForgot ? "Forgot Password" : isLogin ? "Login" : "Register"}
+          </h2>
+        </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="error-text">{error}</p>}
 
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        {!showForgot && (
+        {/* EMAIL */}
+        <div className="input-group">
+          <User size={18} />
           <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            className="auth-input"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
+        </div>
+
+        {/* PASSWORD */}
+        {!showForgot && (
+          <div className="input-group">
+            <Lock size={18} />
+            <input
+              type={showPassword ? "text" : "password"}
+              className="auth-input"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {showPassword ? (
+              <EyeOff onClick={() => setShowPassword(false)} cursor="pointer" />
+            ) : (
+              <Eye onClick={() => setShowPassword(true)} cursor="pointer" />
+            )}
+          </div>
         )}
 
+        {/* ROLE */}
         {!showForgot && (
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as Role)}
-          >
-            <option value="owner">Owner</option>
-            <option value="tenant">Tenant</option>
-          </select>
+          <div className="input-group">
+            <Home size={18} />
+            <select
+              className="auth-input"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="owner">Owner</option>
+              <option value="tenant">Tenant</option>
+            </select>
+          </div>
         )}
 
+        {/* LOGIN / REGISTER BUTTON */}
         {!showForgot && (
-          <button type="submit">
+          <button className="auth-btn" disabled={loading}>
             {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
           </button>
         )}
 
+        {/* FORGOT PASSWORD */}
+        {!showForgot && (
+          <p className="forgot-password" onClick={() => setShowForgot(true)}>
+            Forgot Password?
+          </p>
+        )}
+
+        {/* SEND OTP */}
         {showForgot && !showOtp && !showResetPassword && (
-          <button type="button" onClick={sendOtp}>
+          <button className="auth-btn" onClick={sendOtp} type="button">
             Send OTP
           </button>
         )}
 
+        {/* VERIFY OTP */}
         {showOtp && (
           <>
             <input
+              className="auth-input"
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />
-            <button type="button" onClick={verifyOtpHandler}>
+            <button
+              className="auth-btn"
+              onClick={verifyOtpHandler}
+              type="button"
+            >
               Verify OTP
             </button>
           </>
         )}
 
+        {/* RESET PASSWORD */}
         {showResetPassword && (
-          <>
+          <div className="input-group">
+            <Lock size={18} />
             <input
-              type="password"
-              placeholder="Enter New Password"
+              type={showNewPassword ? "text" : "password"}
+              className="auth-input"
+              placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              required
             />
-            <button type="button" onClick={updatePasswordHandler}>
+            {showNewPassword ? (
+              <EyeOff
+                onClick={() => setShowNewPassword(false)}
+                cursor="pointer"
+              />
+            ) : (
+              <Eye onClick={() => setShowNewPassword(true)} cursor="pointer" />
+            )}
+            <button
+              className="auth-btn"
+              onClick={updatePasswordHandler}
+              type="button"
+            >
               Update Password
             </button>
-          </>
+          </div>
         )}
 
-        {!showForgot && (
-          <p
-            onClick={() => setShowForgot(true)}
-            style={{ cursor: "pointer", color: "blue" }}
+        {/* SWITCH LOGIN / REGISTER */}
+        <p className="switch-text">
+          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+          <span
+            className="switch-link"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setShowForgot(false);
+            }}
           >
-            Forgot Password?
-          </p>
-        )}
-
-        <p onClick={() => setIsLogin(!isLogin)} style={{ cursor: "pointer" }}>
-          {isLogin ? "Register" : "Login"}
+            {isLogin ? "Register" : "Login"}
+          </span>
         </p>
       </form>
     </div>

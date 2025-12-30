@@ -1,10 +1,11 @@
 import { supabase } from "../config/supabase.js";
-
+import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../middlewares/jwt.middleware.js";
 
 export const register = async (req, res) => {
   const { email, password, role } = req.body;
+  console.log(email, password, role);
 
   if (!email || !password || !role) {
     return res
@@ -14,6 +15,7 @@ export const register = async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
 
     const { data, error } = await supabase
       .from("profiles")
@@ -24,11 +26,13 @@ export const register = async (req, res) => {
       })
       .select()
       .single();
+    console.log(data);
 
     if (error) {
       console.log("Error inserting user:", error.message);
       return res.status(400).json({ error: error.message });
     }
+    console.log("here");
 
     res.status(201).json({
       message: "Register successful",
@@ -64,6 +68,7 @@ export const login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -82,7 +87,7 @@ export const forgotPassword = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const otp = Math.floor(1000 + Math.random() * 9000);
+    const otp = Math.floor(100000 + Math.random() * 900000);
 
     await supabase.from("verifyOtp").delete().eq("email", email);
 
@@ -91,15 +96,30 @@ export const forgotPassword = async (req, res) => {
       otp,
     });
 
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "debaprasadbehura89@gmail.com",
+        pass: "ueie zsqg qplm twqa",
+      },
+    });
+
+    await transporter.sendMail({
+      from: "debaprasadbehura89@gmail.com",
+      to: email,
+      subject: "Your OTP Verification",
+      text: `Your OTP is ${otp}.`,
+    });
+
     return res.status(200).json({
       message: "OTP sent successfully",
-      otp,
     });
   } catch (err) {
     console.log("Forgot password error:", err.message);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
+
 export const passwordUpdate = async (req, res) => {
   const { email, password } = req.body;
 
@@ -120,10 +140,8 @@ export const passwordUpdate = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // 2️⃣ Hash new password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 3️⃣ Update password
     const { error: updateError } = await supabase
       .from("profiles")
       .update({ password: hashedPassword })
@@ -133,7 +151,6 @@ export const passwordUpdate = async (req, res) => {
       return res.status(500).json({ error: "Password update failed" });
     }
 
-    // 4️⃣ Delete OTP after success (security)
     await supabase.from("verifyOtp").delete().eq("email", email);
 
     return res.status(200).json({

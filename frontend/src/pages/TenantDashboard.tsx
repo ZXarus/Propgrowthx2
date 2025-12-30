@@ -54,6 +54,7 @@ const TenantDashboard: React.FC = () => {
 };
 
 export default TenantDashboard;
+
 const AllProperties: React.FC<{ userId: string }> = ({ userId }) => {
   const [props, setProps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,27 +63,38 @@ const AllProperties: React.FC<{ userId: string }> = ({ userId }) => {
     fetch("http://localhost:6876/api/properties/get_all")
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
+
         setProps(data.properties || []);
+        setLoading(false);
+      })
+
+      .catch((err) => {
+        console.error("Error fetching properties:", err);
         setLoading(false);
       });
   }, []);
 
-  const handleCancel = () => {};
+  const handleCancel = () => {
+    alert("Cancelled action");
+  };
 
-  const handleRent = async (propertyId: String) => {
+  const handleRent = async (propertyId: string) => {
     try {
       const res = await fetch("http://localhost:6876/api/properties/buy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, propId: propertyId }), // userId from auth
+        body: JSON.stringify({ userId, propId: propertyId }),
       });
 
       const data = await res.json();
-      console.log(data.message);
+      alert(data.message);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      alert("Failed to rent property");
     }
   };
+
   const handleBuy = async (propertyId: string) => {
     try {
       const res = await fetch("http://localhost:6876/api/properties/buy", {
@@ -94,15 +106,18 @@ const AllProperties: React.FC<{ userId: string }> = ({ userId }) => {
       const data = await res.json();
       alert(data.message);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      alert("Failed to buy property");
     }
   };
 
   if (loading) return <p>Loading all properties...</p>;
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h2>All Properties</h2>
+
+      {props.length === 0 && <p>No properties available.</p>}
 
       {props.map((p) => (
         <div key={p.id} style={box}>
@@ -125,12 +140,26 @@ const AllProperties: React.FC<{ userId: string }> = ({ userId }) => {
             <b>Status:</b> {p.availability_status}
           </p>
 
-          {p.buyer_id && (
-            <>
+          {/* Images */}
+          {p.images && p.images.length > 0 && (
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+              {p.images.map((img: any) => (
+                <img
+                  key={img.id}
+                  src={img.prop_image} // replace with your image field name
+                  alt="Property"
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Actions */}
+          {p.availability_status !== "sold" && p.buyer_id == null && (
+            <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
               <button onClick={() => handleRent(p.id)}>Rent</button>
               <button onClick={() => handleBuy(p.id)}>Buy</button>
               <button onClick={handleCancel}>Cancel</button>
-            </>
+            </div>
           )}
         </div>
       ))}
@@ -150,6 +179,10 @@ const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
       .then((data) => {
         setProps(data.properties || []);
         setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching properties:", err);
+        setLoading(false);
       });
   }, [userId]);
 
@@ -162,7 +195,7 @@ const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
       <h2>My Properties</h2>
 
       {props.map((p) => (
-        <div key={p.id} style={box}>
+        <div key={p.id}>
           <p>
             <b>Name:</b> {p.property_name}
           </p>
@@ -175,11 +208,27 @@ const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
           <p>
             <b>Status:</b> {p.availability_status}
           </p>
+
+          {/* Images */}
+          {p.images && p.images.length > 0 && (
+            <div>
+              {p.images.map((img: any) => (
+                <img
+                  key={img.id}
+                  src={img.prop_image} // replace with your actual image field name
+                  alt="Property"
+                  width={100}
+                  height={100}
+                />
+              ))}
+            </div>
+          )}
         </div>
       ))}
     </div>
   );
 };
+
 const Payments = () => (
   <div>
     <h2>Payments</h2>
