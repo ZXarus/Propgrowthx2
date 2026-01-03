@@ -49,7 +49,7 @@ const OwnerDashboard: React.FC = () => {
         {activePage === "Upload Property" && (
           <UploadProperty ownerId={owner_id} />
         )}
-        {/* {activePage === "Transactions" && <Transactions ownerId={owner_id} />} */}
+        {activePage === "Transactions" && <Payments ownerId={owner_id} />}
         {activePage === "All Properties" && (
           <AllProperties ownerId={owner_id} />
         )}
@@ -60,18 +60,60 @@ const OwnerDashboard: React.FC = () => {
 };
 export default OwnerDashboard;
 
-// const Transactions: React.FC = () => {
-//   return (
-//     <div>
-//       <h2>Transactions</h2>
-//       <ul>
-//         <li>Tenant A - ₹10,000</li>
-//         <li>Tenant B - ₹18,000 </li>
-//         <li>Tenant C - ₹25,000 </li>
-//       </ul>
-//     </div>
-//   );
-// };
+const Payments: React.FC<{ ownerId: string }> = ({ ownerId }) => {
+  const [payments, setPayments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`http://localhost:6876/api/payment/get/${ownerId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPayments(data.payments || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [ownerId]);
+
+  if (loading) return <p>Loading payments...</p>;
+
+  if (payments.length === 0) return <p>No payments found</p>;
+
+  return (
+    <div>
+      <h2>Payments</h2>
+
+      {payments.map((p) => (
+        <div key={p.id} style={styles.card}>
+          <p>
+            <b>Property:</b> {p.property_name}
+          </p>
+          <p>
+            <b>Amount:</b> ₹{p.amount}
+          </p>
+          <p>
+            <b>Mode:</b> {p.payment_mode}
+          </p>
+          <p>
+            <b>Status:</b>{" "}
+            <span
+              style={{
+                color: p.status === "credited" ? "green" : "red",
+              }}
+            >
+              {p.status}
+            </span>
+          </p>
+          <p>
+            <b>Date:</b> {new Date(p.payment_date).toLocaleDateString()}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
