@@ -4,6 +4,13 @@ import { Logout } from "../components/Logout";
 import { AllProperties } from "../components/AllProperties";
 import { UploadProperty } from "../components/UploadProperty";
 
+const Complaints: React.FC<{ userId: string }> = ({ userId }) => {
+  return <p>complanits {userId}</p>;
+};
+const NotiFy: React.FC<{ userId: string }> = ({ userId }) => {
+  return <p>Notify {userId}</p>;
+};
+
 const OwnerDashboard: React.FC = () => {
   const [owner_id, setOwner_id] = useState<string | null>(null);
   const token = sessionStorage.getItem("token");
@@ -41,7 +48,14 @@ const OwnerDashboard: React.FC = () => {
   return (
     <div style={styles.container}>
       <Sidebar
-        items={["Upload Property", "Transactions", "All Properties", "Logout"]}
+        items={[
+          "Upload Property",
+          "Transactions",
+          "All Properties",
+          "Complaints",
+          "Notification",
+          "Logout",
+        ]}
         onSelect={setActivePage}
       />
 
@@ -54,6 +68,8 @@ const OwnerDashboard: React.FC = () => {
           <AllProperties ownerId={owner_id} />
         )}
         {activePage === "Logout" && <Logout />}
+        {activePage === "Complaints" && <Complaints userId={owner_id} />}
+        {activePage === "Notification" && <NotiFy userId={owner_id} />}
       </div>
     </div>
   );

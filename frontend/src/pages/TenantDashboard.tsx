@@ -34,7 +34,14 @@ const TenantDashboard: React.FC = () => {
   return (
     <div style={styles.container}>
       <Sidebar
-        items={["My Property", "All Property", "Payments", "Logout"]}
+        items={[
+          "My Property",
+          "All Property",
+          "Payments",
+          "Complaints",
+          "Notification",
+          "Logout",
+        ]}
         onSelect={setActivePage}
       />
 
@@ -60,6 +67,8 @@ const TenantDashboard: React.FC = () => {
         {activePage === "My Property" && <MyProperties userId={userId} />}
 
         {activePage === "Payments" && <Payments userId={userId} />}
+        {activePage === "Complaints" && <Complaints userId={userId} />}
+        {activePage === "Notification" && <NotiFy userId={userId} />}
 
         {activePage === "Logout" && <Logout />}
       </div>
@@ -339,6 +348,12 @@ const Payments: React.FC<{ userId: string }> = ({ userId }) => {
       ))}
     </div>
   );
+};
+const Complaints: React.FC<{ userId: string }> = ({ userId }) => {
+  return <p>complanits {userId}</p>;
+};
+const NotiFy: React.FC<{ userId: string }> = ({ userId }) => {
+  return <p>Notify {userId}</p>;
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
