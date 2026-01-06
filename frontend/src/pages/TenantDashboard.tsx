@@ -81,9 +81,14 @@ export default TenantDashboard;
 const AllProperties: React.FC<{
   userId: string;
   onBuy: (property: any) => void;
-}> = ({ onBuy }) => {
+}> = ({ userId, onBuy }) => {
   const [props, setProps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [openReviewProp, setOpenReviewProp] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(5);
 
   useEffect(() => {
     fetch("http://localhost:6876/api/properties/get_all")
@@ -94,6 +99,39 @@ const AllProperties: React.FC<{
       })
       .catch(() => setLoading(false));
   }, []);
+
+  const fetchReviews = async (propertyId: string) => {
+    setOpenReviewProp(propertyId);
+
+    const res = await fetch(
+      `http://localhost:6876/api/properties/reviews/get/${propertyId}`
+    );
+    const data = await res.json();
+
+    setReviews(data.reviews || []);
+  };
+
+  const submitReview = async (propertyId: string) => {
+    if (!reviewText.trim()) {
+      alert("Review cannot be empty");
+      return;
+    }
+
+    await fetch("http://localhost:6876/api/properties/reviews/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        property_id: propertyId,
+        user_id: userId,
+        review: reviewText,
+        rating,
+      }),
+    });
+
+    setReviewText("");
+    setRating(5);
+    fetchReviews(propertyId);
+  };
 
   if (loading) return <p>Loading properties...</p>;
 
@@ -132,10 +170,62 @@ const AllProperties: React.FC<{
             </div>
           )}
 
-          {p.buyer_id == null && (
-            <button onClick={() => onBuy(p)} style={styles.buyBtn}>
-              Buy
+          <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+            {p.buyer_id == null && (
+              <button onClick={() => onBuy(p)} style={styles.buyBtn}>
+                Buy
+              </button>
+            )}
+
+            <button onClick={() => fetchReviews(p.id)} style={styles.reviewBtn}>
+              Reviews
             </button>
+          </div>
+
+          {/* ================= REVIEWS SECTION ================= */}
+          {openReviewProp === p.id && (
+            <div style={styles.reviewBox}>
+              <h4>Reviews</h4>
+
+              {reviews.length === 0 && <p>No reviews yet</p>}
+
+              {reviews.map((r) => (
+                <div key={r.id} style={styles.reviewItem}>
+                  <p>⭐ {r.rating}/5</p>
+                  <p>{r.review}</p>
+                </div>
+              ))}
+
+              <hr />
+
+              <h4>Add Review</h4>
+
+              <select
+                value={rating}
+                onChange={(e) => setRating(Number(e.target.value))}
+                style={styles.input}
+              >
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <option key={n} value={n}>
+                    {n} Star
+                  </option>
+                ))}
+              </select>
+
+              <textarea
+                placeholder="Write your review"
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                style={styles.textarea}
+              />
+
+              <button
+                onClick={() => submitReview(p.id)}
+                style={styles.submitBtn}
+              >
+                Submit Review
+              </button>
+            </div>
           )}
         </div>
       ))}
@@ -250,6 +340,11 @@ const PaymentCard: React.FC<{
 const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
   const [props, setProps] = useState<any[]>([]);
 
+  const [openComplaintProp, setOpenComplaintProp] = useState<string | null>(
+    null
+  );
+  const [complaintText, setComplaintText] = useState("");
+
   useEffect(() => {
     fetch(
       `http://localhost:6876/api/properties/get_all_prop_by_buyer?buyer_id=${userId}`
@@ -258,6 +353,31 @@ const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
       .then((data) => setProps(data.properties || []));
   }, [userId]);
 
+  const submitComplaint = async (propertyId: string) => {
+    if (!complaintText.trim()) {
+      alert("Complaint cannot be empty");
+      return;
+    }
+
+    try {
+      await fetch("http://localhost:6876/api/complaint/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          property_id: propertyId,
+          tenant_id: userId,
+          complaint: complaintText,
+        }),
+      });
+
+      alert("Complaint submitted");
+      setComplaintText("");
+      setOpenComplaintProp(null);
+    } catch {
+      alert("Failed to submit complaint");
+    }
+  };
+
   if (props.length === 0) return <p>No properties assigned</p>;
 
   return (
@@ -265,7 +385,14 @@ const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
       <h2>My Properties</h2>
 
       {props.map((p) => (
-        <div key={p.id}>
+        <div
+          key={p.id}
+          style={{
+            border: "1px solid #ddd",
+            padding: 15,
+            marginBottom: 20,
+          }}
+        >
           <p>
             <b>Name:</b> {p.property_name}
           </p>
@@ -285,8 +412,59 @@ const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
           {p.images?.length > 0 && (
             <div>
               {p.images.map((img: any) => (
-                <img key={img.id} src={img.prop_image} alt="property" />
+                <img
+                  key={img.id}
+                  src={img.prop_image}
+                  alt="property"
+                  style={{ width: 120, marginRight: 10 }}
+                />
               ))}
+            </div>
+          )}
+
+          {/* ================= COMPLAINT ================= */}
+          <button
+            onClick={() =>
+              setOpenComplaintProp(openComplaintProp === p.id ? null : p.id)
+            }
+            style={{
+              marginTop: 10,
+              background: "#ff4d4d",
+              color: "#fff",
+              padding: "6px 12px",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Raise Complaint
+          </button>
+
+          {openComplaintProp === p.id && (
+            <div style={{ marginTop: 10 }}>
+              <textarea
+                placeholder="Write your complaint..."
+                value={complaintText}
+                onChange={(e) => setComplaintText(e.target.value)}
+                style={{
+                  width: "100%",
+                  height: 80,
+                  padding: 8,
+                }}
+              />
+
+              <button
+                onClick={() => submitComplaint(p.id)}
+                style={{
+                  marginTop: 8,
+                  background: "#333",
+                  color: "#fff",
+                  padding: "6px 12px",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Submit Complaint
+              </button>
             </div>
           )}
         </div>
