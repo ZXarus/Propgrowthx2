@@ -99,13 +99,13 @@ export const forgotPassword = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "debaprasadbehura89@gmail.com",
+        user: "user ur email",
         pass: "ueie zsqg qplm twqa",
       },
     });
 
     await transporter.sendMail({
-      from: "debaprasadbehura89@gmail.com",
+      from: "your email",
       to: email,
       subject: "Your OTP Verification",
       text: `Your OTP is ${otp}.`,
@@ -116,7 +116,9 @@ export const forgotPassword = async (req, res) => {
     });
   } catch (err) {
     console.log("Forgot password error:", err.message);
-    return res.status(500).json({ error: err.message });
+    return res
+      .status(500)
+      .json({ error: err.message + "mail is not defined so make it correct" });
   }
 };
 
