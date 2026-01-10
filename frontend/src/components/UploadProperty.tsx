@@ -7,6 +7,8 @@ type UploadPropertyProps = {
 
 export const UploadProperty: React.FC<UploadPropertyProps> = ({ ownerId }) => {
   const [property_name, setPropertyName] = useState("");
+  const [veri_image, setVeriImage] = useState<File | null>(null);
+
   const [address, setAddress] = useState("");
   const [prize, setPrize] = useState("");
   const [property_type, setPropertyType] = useState("Residential");
@@ -36,6 +38,9 @@ export const UploadProperty: React.FC<UploadPropertyProps> = ({ ownerId }) => {
       formData.append("electricity_available", String(electricity_available));
       formData.append("availability_status", availability_status);
       formData.append("monthly_rent", monthly_rent);
+      if (veri_image) {
+        formData.append("veri_image", veri_image);
+      }
 
       images.forEach((img) => {
         formData.append("images", img);
@@ -120,6 +125,15 @@ export const UploadProperty: React.FC<UploadPropertyProps> = ({ ownerId }) => {
         placeholder="Total Area"
         value={total_area}
         onChange={(e) => setTotalArea(e.target.value)}
+      />
+
+      <input
+        className="upload-input"
+        type="file"
+        accept="image/*"
+        onChange={(e) =>
+          setVeriImage(e.target.files ? e.target.files[0] : null)
+        }
       />
 
       <label>

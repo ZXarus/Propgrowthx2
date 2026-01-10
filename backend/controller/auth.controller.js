@@ -211,3 +211,111 @@ export const getUserProfileWithProperties = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const profileDeatils = async (req, res) => {
+  const { profileId } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select(
+        `
+        id,
+        email,
+        role,
+        name,
+        emer_contact,
+        profile_image,
+        s_link1,
+        s_link2,
+        s_link3,
+        created_at
+      `
+      )
+      .eq("id", profileId)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    res.status(200).json({ profile: data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+export const updateProfile = async (req, res) => {
+  const { profileId } = req.params;
+
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required" });
+    }
+
+    const file = req.file;
+    const fileExt = file.originalname.split(".").pop();
+    const fileName = `${profileId}-${Date.now()}.${fileExt}`;
+    const filePath = `profiles/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("profile-images")
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true,
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: publicUrl } = supabase.storage
+      .from("profile-images")
+      .getPublicUrl(filePath);
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ profile_image: publicUrl.publicUrl })
+      .eq("id", profileId);
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      profile_image: publicUrl.publicUrl,
+    });
+  } catch (err) {
+    console.error("Profile image update error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+export const updatedetails = async (req, res) => {
+  const { profileId } = req.params;
+  const { emer_contact, s_link1, s_link2, s_link3, name, email } = req.body;
+
+  if (!emer_contact && !s_link1 && !s_link2 && !s_link3) {
+    return res.status(400).json({ error: "Nothing to update" });
+  }
+
+  try {
+    const updates = {};
+    if (emer_contact) updates.emer_contact = emer_contact;
+    if (s_link1) updates.s_link1 = s_link1;
+    if (s_link2) updates.s_link2 = s_link2;
+    if (s_link3) updates.s_link3 = s_link3;
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .update(updates)
+      .eq("id", profileId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      profile: data,
+    });
+  } catch (err) {
+    console.error("Update profile details error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};

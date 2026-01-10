@@ -338,3 +338,55 @@ export const buyProperty = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const updatePropertyPic = async (req, res) => {
+  const { id } = req.params;
+  const file = req.file;
+
+  try {
+    if (!id) {
+      return res.status(400).json({ error: "Property ID is required" });
+    }
+
+    if (!file) {
+      return res.status(400).json({ error: "Image file is required" });
+    }
+
+    const fileExt = file.originalname.split(".").pop();
+    const fileName = `property_${id}_${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("property-verification")
+      .upload(fileName, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      return res.status(400).json({ error: uploadError.message });
+    }
+
+    const { data: publicData } = supabase.storage
+      .from("property-verification")
+      .getPublicUrl(fileName);
+
+    const veriImageUrl = publicData.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from("properties")
+      .update({ veri_image: veriImageUrl })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(400).json({ error: updateError.message });
+    }
+
+    res.status(200).json({
+      message: "Property verification image uploaded successfully",
+      veri_image: veriImageUrl,
+    });
+  } catch (err) {
+    console.error("updatePropertyPic error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+};

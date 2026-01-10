@@ -7,6 +7,7 @@ import {
   getAll,
   buyProperty,
   getAllPropertiesByBuyer,
+  updatePropertyPic,
 } from "../controller/property.controller.js";
 import { upload } from "../middlewares/upload.middleware.js";
 const router = express.Router();
@@ -17,6 +18,8 @@ router.get("/get_all_prop_by_buyer", getAllPropertiesByBuyer); // get all propti
 router.get("/get_all", getAll); // get all propties
 router.post("/create", upload.array("images", 5), createProperty);
 router.patch("/update/:id", updateProperty);
+router.patch("/updatePic/:id", upload.single("image"), updatePropertyPic);
+
 router.post("/buy", buyProperty);
 
 export default router;
