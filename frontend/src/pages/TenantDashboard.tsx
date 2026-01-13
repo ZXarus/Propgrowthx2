@@ -533,9 +533,7 @@ const Payments: React.FC<{ userId: string }> = ({ userId }) => {
     </div>
   );
 };
-const Complaints: React.FC<{ userId: string }> = ({ userId }) => {
-  return <p>complanits {userId}</p>;
-};
+
 const NotiFy: React.FC<{ userId: string }> = ({ userId }) => {
   return <p>Notify {userId}</p>;
 };
