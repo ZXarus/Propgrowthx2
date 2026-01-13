@@ -150,10 +150,9 @@ export const createProperty = async (req, res) => {
       total_area,
       water_available,
       electricity_available,
-      availability_status,
+      status,
       monthly_rent,
     } = req.body;
-    console.log(req.body);
 
     const { data: property, error } = await supabase
       .from("properties")
@@ -167,49 +166,65 @@ export const createProperty = async (req, res) => {
           total_area,
           water_available,
           electricity_available,
-          availability_status,
+          status,
           monthly_rent,
         },
       ])
       .select()
       .single();
-    console.log("property" + property);
 
     if (error) throw error;
 
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        const fileBuffer = fs.readFileSync(file.path);
+    if (req.files?.veri_image?.[0]) {
+      const file = req.files.veri_image[0];
+      const buffer = fs.readFileSync(file.path);
+
+      const fileName = `property-${property.id}/verification-${file.filename}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from("property-images")
+        .upload(fileName, buffer, {
+          contentType: file.mimetype,
+        });
+
+      if (uploadErr) throw uploadErr;
+
+      const { data } = supabase.storage
+        .from("property-images")
+        .getPublicUrl(fileName);
+
+      await supabase
+        .from("properties")
+        .update({ veri_image: data.publicUrl })
+        .eq("id", property.id);
+    }
+
+    if (req.files?.images?.length > 0) {
+      for (const file of req.files.images) {
+        const buffer = fs.readFileSync(file.path);
         const fileName = `property-${property.id}/${file.filename}`;
 
-        const { error: uploadError } = await supabase.storage
+        await supabase.storage
           .from("property-images")
-          .upload(fileName, fileBuffer, {
+          .upload(fileName, buffer, {
             contentType: file.mimetype,
           });
 
-        if (uploadError) throw uploadError;
-
-        const { data: publicUrl } = supabase.storage
+        const { data } = supabase.storage
           .from("property-images")
           .getPublicUrl(fileName);
-        if (!publicUrl.publicUrl) throw new Error("Failed to get public URL");
 
-        const { error: insertError } = await supabase
-          .from("property_images")
-          .insert([
-            {
-              prop_id: property.id,
-              prop_image: publicUrl.publicUrl,
-            },
-          ]);
-
-        if (insertError) throw insertError;
+        await supabase.from("property_images").insert([
+          {
+            prop_id: property.id,
+            prop_image: data.publicUrl,
+          },
+        ]);
       }
     }
 
     return res.status(201).json({
-      message: "Property created with images",
+      message: "Property created successfully",
       property,
     });
   } catch (err) {

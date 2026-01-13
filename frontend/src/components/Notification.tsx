@@ -5,7 +5,6 @@ const Notification: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ================= FETCH ALL NOTIFICATIONS =================
   const fetchNotifications = async () => {
     try {
       const res = await fetch(
@@ -24,7 +23,6 @@ const Notification: React.FC = () => {
     fetchNotifications();
   }, []);
 
-  // ================= CREATE NOTIFICATION =================
   const createNotification = async () => {
     if (!message.trim()) {
       alert("Notification cannot be empty");
@@ -45,7 +43,6 @@ const Notification: React.FC = () => {
     <div style={styles.container}>
       <h2 style={styles.heading}>🔔 Notifications</h2>
 
-      {/* ================= ADD NOTIFICATION ================= */}
       <div style={styles.addBox}>
         <input
           type="text"
@@ -61,7 +58,6 @@ const Notification: React.FC = () => {
 
       <hr style={{ margin: "30px 0" }} />
 
-      {/* ================= ALL NOTIFICATIONS ================= */}
       <h3>All Notifications</h3>
 
       {loading && <p>Loading...</p>}
@@ -83,8 +79,6 @@ const Notification: React.FC = () => {
 };
 
 export default Notification;
-
-/* ================= STYLES ================= */
 
 const styles: any = {
   container: {

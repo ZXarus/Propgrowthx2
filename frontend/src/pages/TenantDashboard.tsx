@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { Logout } from "../components/Logout";
+import ProfilePage from "./ProfilePage";
+import ComplaintWithIssueSolver from "../components/Complaint";
 const TenantDashboard: React.FC = () => {
   const [activePage, setActivePage] = useState("My Property");
   const [userId, setUserId] = useState<string | null>(null);
@@ -37,6 +39,7 @@ const TenantDashboard: React.FC = () => {
         items={[
           "My Property",
           "All Property",
+          "Profile",
           "Payments",
           "Complaints",
           "Notification",
@@ -67,8 +70,11 @@ const TenantDashboard: React.FC = () => {
         {activePage === "My Property" && <MyProperties userId={userId} />}
 
         {activePage === "Payments" && <Payments userId={userId} />}
-        {activePage === "Complaints" && <Complaints userId={userId} />}
+        {activePage === "Complaints" && (
+          <ComplaintWithIssueSolver userId={userId} role="tenant" />
+        )}
         {activePage === "Notification" && <NotiFy userId={userId} />}
+        {activePage === "Profile" && <ProfilePage />}
 
         {activePage === "Logout" && <Logout />}
       </div>
@@ -360,13 +366,13 @@ const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
     }
 
     try {
-      await fetch("http://localhost:6876/api/complaint/create", {
+      await fetch("http://localhost:6876/api/complain/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           property_id: propertyId,
           tenant_id: userId,
-          complaint: complaintText,
+          message: complaintText,
         }),
       });
 

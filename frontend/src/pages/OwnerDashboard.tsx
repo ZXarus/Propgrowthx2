@@ -3,10 +3,9 @@ import Sidebar from "../components/Sidebar";
 import { Logout } from "../components/Logout";
 import { AllProperties } from "../components/AllProperties";
 import { UploadProperty } from "../components/UploadProperty";
+import ProfilePage from "./ProfilePage";
+import ComplaintWithIssueSolver from "../components/Complaint";
 
-const Complaints: React.FC<{ userId: string }> = ({ userId }) => {
-  return <p>complanits {userId}</p>;
-};
 const NotiFy: React.FC<{ userId: string }> = ({ userId }) => {
   return <p>Notify {userId}</p>;
 };
@@ -50,6 +49,7 @@ const OwnerDashboard: React.FC = () => {
       <Sidebar
         items={[
           "Upload Property",
+          "Profile",
           "Transactions",
           "All Properties",
           "Complaints",
@@ -68,8 +68,11 @@ const OwnerDashboard: React.FC = () => {
           <AllProperties ownerId={owner_id} />
         )}
         {activePage === "Logout" && <Logout />}
-        {activePage === "Complaints" && <Complaints userId={owner_id} />}
+        {activePage === "Complaints" && (
+          <ComplaintWithIssueSolver userId={owner_id} role="owner" />
+        )}
         {activePage === "Notification" && <NotiFy userId={owner_id} />}
+        {activePage === "Profile" && <ProfilePage />}
       </div>
     </div>
   );

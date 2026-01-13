@@ -6,7 +6,7 @@ import {
   verifyOtp,
   getUserProfileWithProperties,
   passwordUpdate,
-  profileDeatils,
+  profileDetails,
   updateProfile,
   updatedetails,
 } from "../controller/auth.controller.js";
@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.post("/login", login);
 
-router.get("/profileDeatils/:profileId", profileDeatils);
+router.get("/profileDetails/:profileId", profileDetails);
 
 router.patch("/update_pic/:profileId", upload.single("image"), updateProfile);
 

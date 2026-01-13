@@ -143,3 +143,30 @@ export const deleteComplaint = async (req, res) => {
       .json({ error: err.message || "Failed to delete complaint" });
   }
 };
+
+export const deleteOldComplaints = async (req, res) => {
+  try {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const { data, error } = await supabase
+      .from("complains")
+      .delete()
+      .lte("created_at", sevenDaysAgo.toISOString())
+      .select();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: "Old complaints deleted successfully",
+      deletedCount: data.length,
+      deletedComplaints: data,
+    });
+  } catch (err) {
+    console.error("Auto delete complaints error:", err);
+    res.status(500).json({
+      error: err.message || "Failed to delete old complaints",
+    });
+  }
+};

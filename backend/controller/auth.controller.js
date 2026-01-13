@@ -212,38 +212,36 @@ export const getUserProfileWithProperties = async (req, res) => {
   }
 };
 
-export const profileDeatils = async (req, res) => {
+export const profileDetails = async (req, res) => {
   const { profileId } = req.params;
 
   try {
     const { data, error } = await supabase
       .from("profiles")
-      .select(
-        `
-        id,
-        email,
-        role,
-        name,
-        emer_contact,
-        profile_image,
-        s_link1,
-        s_link2,
-        s_link3,
-        created_at
-      `
-      )
+      .select("*")
       .eq("id", profileId)
       .single();
 
     if (error || !data) {
-      return res.status(404).json({ error: "Profile not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
     }
 
-    res.status(200).json({ profile: data });
+    return res.status(200).json({
+      success: true,
+      profile: data,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Profile fetch error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
+
 export const updateProfile = async (req, res) => {
   const { profileId } = req.params;
 

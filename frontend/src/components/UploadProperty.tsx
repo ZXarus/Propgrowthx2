@@ -36,7 +36,7 @@ export const UploadProperty: React.FC<UploadPropertyProps> = ({ ownerId }) => {
       formData.append("total_area", total_area);
       formData.append("water_available", String(water_available));
       formData.append("electricity_available", String(electricity_available));
-      formData.append("availability_status", availability_status);
+      formData.append("status", availability_status);
       formData.append("monthly_rent", monthly_rent);
       if (veri_image) {
         formData.append("veri_image", veri_image);

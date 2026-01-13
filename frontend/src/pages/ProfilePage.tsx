@@ -14,40 +14,62 @@ interface Profile {
 }
 
 const ProfilePage: React.FC = () => {
+  const token = sessionStorage.getItem("token");
+
+  const [profileId, setProfileId] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [image, setImage] = useState<File | null>(null);
 
-  const [emerContact, setEmerContact] = useState("");
   const [name, setName] = useState("");
+  const [emerContact, setEmerContact] = useState("");
   const [s1, setS1] = useState("");
   const [s2, setS2] = useState("");
   const [s3, setS3] = useState("");
 
-  const token = sessionStorage.getItem("token");
+  const getAccess = async () => {
+    if (!token) return;
 
-  // fetch profile
-  const fetchProfile = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:XXXX/api/profile/profileDetails",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await fetch("http://localhost:6876/api/auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      setProfile(res.data);
-      setEmerContact(res.data.emer_contact || "");
-      setS1(res.data.s_link1 || "");
-      setS2(res.data.s_link2 || "");
-      setS3(res.data.s_link3 || "");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Unauthorized");
+      }
+
+      console.log(data.user);
+
+      setProfileId(data.user.id);
     } catch (err) {
-      console.error("Fetch profile error", err);
+      console.error("Auth error:", err);
     }
   };
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  const fetchProfile = async (profileId: string) => {
+    if (!profileId) return;
+
+    try {
+      const res = await axios.get(
+        `http://localhost:6876/api/auth/profileDetails/${profileId}`
+      );
+
+      const data = res.data.profile;
+
+      setProfile(data);
+      setName(data?.name ?? "");
+      setEmerContact(data?.emer_contact ?? "");
+      setS1(data?.s_link1 ?? "");
+      setS2(data?.s_link2 ?? "");
+      setS3(data?.s_link3 ?? "");
+    } catch (error) {
+      console.error("Fetch profile error:", error);
+    }
+  };
 
   const updateImage = async () => {
     if (!image || !profile) return;
@@ -57,33 +79,26 @@ const ProfilePage: React.FC = () => {
 
     try {
       await axios.patch(
-        `http://localhost:XXXX/api/profile/update_pic/${profile.id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        `http://localhost:6876/api/auth/update_pic/${profile.id}`,
+        formData
       );
 
       alert("Profile image updated");
-      fetchProfile();
+      fetchProfile(profile.id);
     } catch (err) {
-      console.error("Update image error", err);
+      console.error("Update image error:", err);
     }
   };
 
-  // update details
   const updateDetails = async () => {
     if (!profile) return;
 
     try {
       await axios.patch(
-        `http://localhost:XXXX/api/profile/update_details/${profile.id}`,
+        `http://localhost:6876/api/auth/update_details/${profile.id}`,
         {
+          name,
           emer_contact: emerContact,
-          name: name,
           s_link1: s1,
           s_link2: s2,
           s_link3: s3,
@@ -94,21 +109,38 @@ const ProfilePage: React.FC = () => {
       );
 
       alert("Profile updated");
-      fetchProfile();
+      fetchProfile(profile.id);
     } catch (err) {
-      console.error("Update details error", err);
+      console.error("Update details error:", err);
     }
   };
 
+  useEffect(() => {
+    getAccess();
+  }, [token]);
+
+  useEffect(() => {
+    if (profileId) {
+      fetchProfile(profileId);
+    }
+  }, [profileId]);
+
   if (!profile) return <div>Loading...</div>;
+  console.log(profile);
 
   return (
     <div>
       <h2>Profile Page</h2>
 
-      <p>Role: {profile.name}</p>
-      <p>Email: {profile.email}</p>
-      <p>Role: {profile.role}</p>
+      <p>
+        <b>Name:</b> {profile.name}
+      </p>
+      <p>
+        <b>Email:</b> {profile.email}
+      </p>
+      <p>
+        <b>Role:</b> {profile.role}
+      </p>
 
       {profile.profile_image && (
         <img src={profile.profile_image} alt="profile" width={150} />
@@ -124,49 +156,40 @@ const ProfilePage: React.FC = () => {
 
       <hr />
 
-      <div>
-        <input
-          type="text"
-          placeholder="Emergency Contact"
-          value={emerContact}
-          onChange={(e) => setEmerContact(e.target.value)}
-        />
-      </div>
-      <div>
-        <input
-          type="text"
-          placeholder="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
+      <input
+        type="text"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
-      <div>
-        <input
-          type="text"
-          placeholder="Social Link 1"
-          value={s1}
-          onChange={(e) => setS1(e.target.value)}
-        />
-      </div>
+      <input
+        type="text"
+        placeholder="Emergency Contact"
+        value={emerContact}
+        onChange={(e) => setEmerContact(e.target.value)}
+      />
 
-      <div>
-        <input
-          type="text"
-          placeholder="Social Link 2"
-          value={s2}
-          onChange={(e) => setS2(e.target.value)}
-        />
-      </div>
+      <input
+        type="text"
+        placeholder="Social Link 1"
+        value={s1}
+        onChange={(e) => setS1(e.target.value)}
+      />
 
-      <div>
-        <input
-          type="text"
-          placeholder="Social Link 3"
-          value={s3}
-          onChange={(e) => setS3(e.target.value)}
-        />
-      </div>
+      <input
+        type="text"
+        placeholder="Social Link 2"
+        value={s2}
+        onChange={(e) => setS2(e.target.value)}
+      />
+
+      <input
+        type="text"
+        placeholder="Social Link 3"
+        value={s3}
+        onChange={(e) => setS3(e.target.value)}
+      />
 
       <button onClick={updateDetails}>Update Profile Details</button>
     </div>

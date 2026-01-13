@@ -68,7 +68,7 @@ export const AllProperties: React.FC<{ ownerId: string }> = ({ ownerId }) => {
           </p>
 
           <p>
-            <b>Availability Status:</b> {p.availability_status}
+            <b>Availability Status:</b> {p.status}
           </p>
 
           {p.monthly_rent && (
@@ -80,6 +80,18 @@ export const AllProperties: React.FC<{ ownerId: string }> = ({ ownerId }) => {
           <p>
             <b>Created At:</b> {new Date(p.created_at).toLocaleDateString()}
           </p>
+
+          {p.veri_image && (
+            <div>
+              <b>Verification Image:</b>
+              <br />
+              <img
+                src={p.veri_image}
+                alt="Verification"
+                style={{ width: 150, marginTop: 5 }}
+              />
+            </div>
+          )}
 
           {p.images && p.images.length > 0 && (
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
