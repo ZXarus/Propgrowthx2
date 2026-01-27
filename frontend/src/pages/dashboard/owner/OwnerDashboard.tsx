@@ -1,6 +1,6 @@
-import { useState,useEffect } from 'react';
+import { useState} from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,8 @@ import {
   CheckCircle2,
   ArrowRight,
   FileText,
-  LogOut
+  LogOut,
+  MessageSquare
 } from 'lucide-react';
 import {
   Table,
@@ -33,20 +34,18 @@ import EditPropertyModal, { PropertyData } from '@/components/dashboard/EditProp
 import DeletePropertyDialog from '@/components/dashboard/DeletePropertyDialog';
 import PropertyAnalyticsModal from '@/components/dashboard/PropertyAnalyticsModal';
 import { supabase } from '@/lib/supabase';
+import { useData } from '@/context/dataContext';
 
 const OwnerDashboard = () => {
+  const{properties,setProperties,id} = useData();
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(null);
-  const [properties, setProperties] = useState<PropertyData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
-  const id = sessionStorage.getItem('id');
-
-
+  const ownerProp = properties.filter(prop => prop.owner_id === id);
 
   const stats = [
     { label: 'Total Properties', value: '8', icon: Building2, change: '+2 this month' },
@@ -54,27 +53,6 @@ const OwnerDashboard = () => {
     { label: 'Monthly Views', value: '2,847', icon: Eye, change: '+18% vs last month' },
     { label: 'Active Inquiries', value: '24', icon: TrendingUp, change: '6 new today' },
   ];
-
-  useEffect(() => {
-    fetchProperties();
-  }, []);
-
-  const fetchProperties = async () => {
-    setLoading(true);
-
-    const { data, error } = await supabase
-      .from("properties")
-      .select("*")
-      .eq("owner_id", id)
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      console.log(data)
-      setProperties(data as PropertyData[]);
-    }
-
-    setLoading(false);
-  };
 
 
   const handleEditClick = (property: PropertyData) => {
@@ -102,46 +80,6 @@ const OwnerDashboard = () => {
     setProperties(prev => prev.filter(p => p.id !== propertyId));
   };
 
-  const transactions = [
-    {
-      id: 1,
-      property: 'Beachfront Condo',
-      type: 'Sale', 
-      amount: 650000,
-      date: '2024-12-15',
-      status: 'completed',
-    },
-    {
-      id: 2,
-      property: 'Downtown Studio',
-      type: 'Rental',
-      amount: 2800,
-      date: '2024-12-10',
-      status: 'completed',
-    },
-    {
-      id: 3,
-      property: 'Office Building',
-      type: 'Lease',
-      amount: 12000,
-      date: '2024-12-01',
-      status: 'pending',
-    },
-  ];
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-success text-primary-foreground">Active</Badge>;
-      case 'pending':
-        return <Badge className="bg-warning text-foreground">Pending</Badge>;
-      case 'completed':
-        return <Badge className="bg-secondary text-secondary-foreground">Completed</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
   return (
     <>
       <Helmet>
@@ -165,24 +103,11 @@ const OwnerDashboard = () => {
                   Manage your properties and track performance
                 </p>
               </div>
-
-              <button className='mr-7 bg-destructive rounded p-1'
-                onClick={()=>{ 
-                  sessionStorage.removeItem('token')
-                  sessionStorage.removeItem('id')
-                  sessionStorage.removeItem('role')
-                  navigate("/auth", { replace: true });
-                }
-              }
-              >
-                <LogOut/>
-              </button>
             </div>
 
             <AddPropertyModal 
               open={isAddModalOpen} 
               onOpenChange={setIsAddModalOpen}
-              onPropertyAdded={fetchProperties}
             />
 
             <EditPropertyModal
@@ -241,6 +166,23 @@ const OwnerDashboard = () => {
                   <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors" />
                 </div>
               </Link>
+              <Link
+                to="/dashboard/owner/complaints"
+                className="bg-card border border-border rounded-2xl p-6 hover:border-secondary/50 hover:shadow-lg transition-all group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
+                      <MessageSquare className="w-6 h-6 text-primary group-hover:text-secondary transition-colors" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">Complaints</h3>
+                      <p className="text-sm text-muted-foreground">Manage tenant complaints</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors" />
+                </div>
+              </Link>
             </div>
 
             {/* Stats Grid */}
@@ -278,7 +220,7 @@ const OwnerDashboard = () => {
                 </div>
               </div>
 
-              {properties.length > 0 ? (
+              {ownerProp.length > 0 ? (
                 <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -293,7 +235,7 @@ const OwnerDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {properties.map((property) => (
+                    {ownerProp.map((property) => (
                       <TableRow key={property.id}>
                         <TableCell>
                           <div>
