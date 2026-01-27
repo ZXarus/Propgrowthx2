@@ -38,7 +38,7 @@ export default function Footer() {
                   <circle cx="12" cy="9" r="2.2" stroke="#b71c1c" strokeWidth="1.2" fill="none" />
                 </svg>
                 <div style={{ fontSize: "14px", color: "#e6e6e6", lineHeight: "24px" }}>
-                  8819 Ohio St. South Gate,<br/> CA 90280
+                  India
                 </div>
               </div>
 
@@ -47,14 +47,15 @@ export default function Footer() {
                   <path d="M3 8.5l9 6 9-6" stroke="#b71c1c" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                   <rect x="2" y="4" width="20" height="14" rx="2" stroke="#b71c1c" strokeWidth="1.2" fill="none" />
                 </svg>
-                <div style={{ fontSize: "14px", color: "#e6e6e6" }}>Ourstudio@hello.com</div>
+                <div style={{ fontSize: "14px", color: "#e6e6e6" }}>contact@propgrowthx.com
+                </div>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M22 16.92V21a1 1 0 0 1-1.11 1 19 19 0 0 1-8.63-3.07 19 19 0 0 1-6-6A19 19 0 0 1 2 3.11 1 1 0 0 1 3 2h4.09a1 1 0 0 1 1 .75c.12.62.34 1.6.57 2.22a1 1 0 0 1-.24 1L7.91 8.09a13 13 0 0 0 6 6l1.12-1.12a1 1 0 0 1 1-.24c.62.23 1.6.45 2.22.57a1 1 0 0 1 .75 1V21z" stroke="#b71c1c" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <div style={{ fontSize: "14px", color: "#e6e6e6" }}>+1 386-688-3295</div>
+                <div style={{ fontSize: "14px", color: "#e6e6e6" }}>+91 9876543211</div>
               </div>
             </div>
           </div>

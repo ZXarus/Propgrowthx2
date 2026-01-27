@@ -254,8 +254,15 @@ export default function HowItWorksCards(props: HowItWorksCardsProps) {
     )
 }
 
+interface CardData {
+    number: string;
+    title: string;
+    description: string;
+    icon: (color: string) => JSX.Element;
+}
+
 function Card({ card, accentColor, cardBg, textColor, hexToRgba }: {
-    card: any
+    card: CardData
     accentColor: string
     cardBg: string
     textColor: string

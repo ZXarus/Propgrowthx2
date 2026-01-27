@@ -3,11 +3,14 @@ import { HelmetProvider } from "react-helmet-async";
 import AuthPage from "./pages/AuthPage";
 import Index from "./pages/Index";
 import LandingPage from "./pages/LandingPage";
+import DashboardNavPage from "./pages/DashboardNavPage";
 import OwnerDashboard from "./pages/dashboard/owner/OwnerDashboard";
 import OwnerProperties from "./pages/dashboard/owner/OwnerProperties";
 import OwnerTransactions from "./pages/dashboard/owner/OwnerTransactions";
 import TenantDashboard from "./pages/dashboard/tenant/TenantDashboard";
 import Properties from "./pages/Properties";
+import AllPropertiesPage from "./pages/Property/AllPropertiesPage";
+import PropertiesPage from "./pages/Property/PropertiesPage";
 import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import HowItWorks from "./pages/HowItWorks";
@@ -23,6 +26,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/landing" element={<LandingPage />} />
+        <Route path="/dashboard-nav" element={<DashboardNavPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/dashboard/owner" element={<OwnerDashboard />} />
         <Route path="/dashboard/owner/properties" element={<OwnerProperties />} />
@@ -32,6 +36,8 @@ function App() {
         <Route path="/dashboard/tenant/transactions" element={<TenantTransactions />} />
         <Route path="/profile" element={<Profile />} /> 
         <Route path="/properties" element={<Properties />} />
+        <Route path="/properties-manage" element={<PropertiesPage />} />
+        <Route path="/all-properties" element={<AllPropertiesPage />} />
         <Route path="/services" element={<Services />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
