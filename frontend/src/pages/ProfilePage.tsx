@@ -55,7 +55,7 @@ const ProfilePage: React.FC = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:6876/api/auth/profileDetails/${profileId}`
+        `http://localhost:6876/api/auth/profileDetails/${profileId}`,
       );
 
       const data = res.data.profile;
@@ -80,7 +80,7 @@ const ProfilePage: React.FC = () => {
     try {
       await axios.patch(
         `http://localhost:6876/api/auth/update_pic/${profile.id}`,
-        formData
+        formData,
       );
 
       alert("Profile image updated");
@@ -103,9 +103,6 @@ const ProfilePage: React.FC = () => {
           s_link2: s2,
           s_link3: s3,
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
       );
 
       alert("Profile updated");

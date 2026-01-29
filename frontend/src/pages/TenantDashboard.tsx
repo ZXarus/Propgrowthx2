@@ -101,6 +101,7 @@ const AllProperties: React.FC<{
       .then((res) => res.json())
       .then((data) => {
         setProps(data.properties || []);
+
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -110,7 +111,7 @@ const AllProperties: React.FC<{
     setOpenReviewProp(propertyId);
 
     const res = await fetch(
-      `http://localhost:6876/api/properties/reviews/get/${propertyId}`
+      `http://localhost:6876/api/properties/reviews/get/${propertyId}`,
     );
     const data = await res.json();
 
@@ -147,6 +148,7 @@ const AllProperties: React.FC<{
 
       {props.map((p) => (
         <div key={p.id} style={styles.card}>
+          <a href={`profile_page/${p.owner_id}`}>Owner Profile</a>
           <p>
             <b>Name:</b> {p.property_name}
           </p>
@@ -347,13 +349,13 @@ const MyProperties: React.FC<{ userId: string }> = ({ userId }) => {
   const [props, setProps] = useState<any[]>([]);
 
   const [openComplaintProp, setOpenComplaintProp] = useState<string | null>(
-    null
+    null,
   );
   const [complaintText, setComplaintText] = useState("");
 
   useEffect(() => {
     fetch(
-      `http://localhost:6876/api/properties/get_all_prop_by_buyer?buyer_id=${userId}`
+      `http://localhost:6876/api/properties/get_all_prop_by_buyer?buyer_id=${userId}`,
     )
       .then((res) => res.json())
       .then((data) => setProps(data.properties || []));
