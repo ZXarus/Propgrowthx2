@@ -8,6 +8,7 @@ import {
   buyProperty,
   getAllPropertiesByBuyer,
   updatePropertyPic,
+  requestForInvitation,
 } from "../controller/property.controller.js";
 import { upload } from "../middlewares/upload.middleware.js";
 const router = express.Router();
@@ -22,11 +23,13 @@ router.post(
     { name: "images", maxCount: 5 },
     { name: "veri_image", maxCount: 1 },
   ]),
-  createProperty
+  createProperty,
 );
 router.patch("/update/:id", updateProperty);
 router.patch("/updatePic/:id", upload.single("image"), updatePropertyPic);
 
 router.post("/buy", buyProperty);
+
+router.post("/request_for_invitation", requestForInvitation);
 
 export default router;

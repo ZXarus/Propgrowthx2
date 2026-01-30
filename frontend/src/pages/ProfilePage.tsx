@@ -42,8 +42,6 @@ const ProfilePage: React.FC = () => {
         throw new Error(data.error || "Unauthorized");
       }
 
-      console.log(data.user);
-
       setProfileId(data.user.id);
     } catch (err) {
       console.error("Auth error:", err);
@@ -123,7 +121,6 @@ const ProfilePage: React.FC = () => {
   }, [profileId]);
 
   if (!profile) return <div>Loading...</div>;
-  console.log(profile);
 
   return (
     <div>

@@ -83,7 +83,7 @@ const AuthPage = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
-        }
+        },
       );
 
       const data = await res.json();
@@ -131,7 +131,7 @@ const AuthPage = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password: newPassword }),
-        }
+        },
       );
 
       const data = await res.json();

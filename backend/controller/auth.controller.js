@@ -5,7 +5,6 @@ import { generateToken } from "../middlewares/jwt.middleware.js";
 
 export const register = async (req, res) => {
   const { email, password, role } = req.body;
-  console.log(email, password, role);
 
   if (!email || !password || !role) {
     return res
@@ -15,7 +14,6 @@ export const register = async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
 
     const { data, error } = await supabase
       .from("profiles")
@@ -44,16 +42,17 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   try {
     const { data: user, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("email", email)
+      .eq("role", role)
       .single();
 
-    if (error || !user) return res.status(400).json({ error: "Invalid email" });
+    if (error || !user) return res.status(400).json({ error: "Invalid data" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid password" });
@@ -99,13 +98,13 @@ export const forgotPassword = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "user ur email",
-        pass: "ueie zsqg qplm twqa",
+        user: process.env.COMPANY_EMAIL,
+        pass: process.env.COMPANY_EMAIL_PASS,
       },
     });
 
     await transporter.sendMail({
-      from: "your email",
+      from: process.env.COMPANY_EMAIL,
       to: email,
       subject: "Your OTP Verification",
       text: `Your OTP is ${otp}.`,

@@ -1,5 +1,6 @@
 import { supabase } from "../config/supabase.js";
 import fs from "fs";
+import nodemailer from "nodemailer";
 
 export const getPropertyById = async (req, res) => {
   const { id } = req.query;
@@ -54,7 +55,7 @@ export const getAllPropertiesByOwner = async (req, res) => {
           ...prop,
           images: images || [],
         };
-      })
+      }),
     );
 
     res.status(200).json({
@@ -96,7 +97,7 @@ export const getAllPropertiesByBuyer = async (req, res) => {
           ...prop,
           images: images || [],
         };
-      })
+      }),
     );
 
     res.status(200).json({
@@ -403,5 +404,315 @@ export const updatePropertyPic = async (req, res) => {
   } catch (err) {
     console.error("updatePropertyPic error:", err.message);
     res.status(500).json({ error: err.message });
+  }
+};
+
+export const requestForInvitation = async (req, res) => {
+  try {
+    const {
+      property_name,
+      status,
+      total_area,
+      address,
+      property_type,
+      city,
+      state,
+      tenantId,
+      owner_id,
+    } = req.body;
+
+    const { data: tenant } = await supabase
+      .from("profiles")
+      .select("name, email, emer_contact")
+      .eq("id", tenantId)
+      .single();
+
+    const { data: owner } = await supabase
+      .from("profiles")
+      .select("name, email")
+      .eq("id", owner_id)
+      .single();
+
+    // <a
+    //   href="https://propgrowthx-api.vercel.app/api/invitation/accept?tenantId=${tenantId}&ownerId=${owner_id}&property=${encodeURIComponent(property_name)}"
+    //   class="btn"
+    // >
+    //   ✅ Accept Invitation
+    // </a>;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.COMPANY_EMAIL,
+        pass: process.env.COMPANY_EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"PROPGROWTHX" <${process.env.COMPANY_EMAIL}>`,
+      to: owner.email,
+      subject: "New Tenant Request for Your Property",
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+    .card {
+      max-width: 600px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin: auto;
+    }
+    h2 {
+      color: #2c3e50;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+    }
+    .section {
+      margin-top: 15px;
+    }
+    .label {
+      font-weight: bold;
+      color: #555;
+    }
+    .value {
+      color: #000;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #777;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Tenant Interested in Your Property</h2>
+
+    <div class="section">
+      <h3>🏠 Property Details</h3>
+      <p><span class="label">Name:</span> <span class="value">${property_name}</span></p>
+      <p><span class="label">Type:</span> <span class="value">${property_type}</span></p>
+      <p><span class="label">Area:</span> <span class="value">${total_area} sq.ft</span></p>
+      <p><span class="label">Address:</span> <span class="value">${address}, ${city}, ${state}</span></p>
+      <p><span class="label">Status:</span> <span class="value">${status}</span></p>
+    </div>
+
+    <div class="section">
+      <h3>👤 Tenant Details</h3>
+      <p><span class="label">Name:</span> <span class="value">${tenant.name}</span></p>
+      <p><span class="label">Email:</span> <span class="value">${tenant.email}</span></p>
+      <p><span class="label">Emergency Contact:</span> <span class="value">${tenant.emer_contact}</span></p>
+    </div>
+
+
+    <div class="footer">
+      Please login to your dashboard to approve or reject this request.<br/>
+      © Property Management System
+    </div>
+  </div>
+
+</body>
+</html>
+      `,
+    });
+
+    createInvite(
+      tenantId,
+      owner_id,
+      property_name,
+      total_area,
+      address,
+      property_type,
+      city,
+      state,
+    );
+
+    res.json({ success: true, message: "Invitation request sent to owner" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Email sending failed" });
+  }
+};
+
+export const createInvite = async ({
+  tenantId,
+  owner_id,
+  property_name,
+  total_area,
+  address,
+  property_type,
+  city,
+  state,
+  status = "pending",
+}) => {
+  try {
+    const { data, error } = await supabase
+      .from("invites")
+      .insert([
+        {
+          tenant_id: tenantId,
+          owner_id: owner_id,
+          property_name,
+          status,
+          total_area,
+          address,
+          property_type,
+          city,
+          state,
+        },
+      ])
+      .select();
+
+    if (error) throw error;
+
+    return data[0];
+  } catch (err) {
+    console.error("Error creating invite:", err.message);
+    throw err;
+  }
+};
+
+export const acceptInvitation = async (req, res) => {
+  try {
+    const { inviteId } = req.query;
+
+    const { data: invite, error: inviteErr } = await supabase
+      .from("invites")
+      .select("*")
+      .eq("id", inviteId)
+      .single();
+
+    if (inviteErr || !invite) throw new Error("Invite not found");
+
+    const { data: updatedInvite } = await supabase
+      .from("invites")
+      .update({ status: "accepted" })
+      .eq("id", inviteId)
+      .select()
+      .single();
+
+    const { data: tenant } = await supabase
+      .from("profiles")
+      .select("name, email, emer_contact")
+      .eq("id", invite.tenant_id)
+      .single();
+
+    const { data: owner } = await supabase
+      .from("profiles")
+      .select("name, email")
+      .eq("id", invite.owner_id)
+      .single();
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.COMPANY_EMAIL,
+        pass: process.env.COMPANY_EMAIL_PASS,
+      },
+    });
+
+    const vercelLink = `https://propgrowthx.vercel.app/property/${invite.property_name}`;
+
+    await transporter.sendMail({
+      from: `"PROPGROWTHX" <${process.env.COMPANY_EMAIL}>`,
+      to: tenant.email,
+      subject: `Owner Accepted Your Request for ${invite.property_name}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial; background:#f4f6f8; padding:20px; }
+            .card { max-width:600px; background:#fff; padding:20px; border-radius:8px; margin:auto; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+            h2 { color:#2c3e50; }
+            .btn { display:inline-block; margin-top:20px; padding:12px 18px; background:#2ecc71; color:white; text-decoration:none; border-radius:6px; font-weight:bold; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h2>🎉 Your Request Has Been Accepted!</h2>
+
+            <p><b>Property:</b> ${invite.property_name}</p>
+            <p><b>Owner:</b> ${owner.name} (${owner.email})</p>
+            <p><b>Emergency Contact:</b> ${tenant.emer_contact}</p>
+
+            <a href="${vercelLink}" class="btn">
+              ✅ View Property
+            </a>
+
+            <p style="margin-top:20px;">© PROPGROWTHX – Property Management System</p>
+          </div>
+        </body>
+        </html>
+      `,
+    });
+
+    res.json({ success: true, message: "Tenant notified and invite accepted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// import QRCode from "qrcode";
+
+export const requestForInvitationByQrCode = async (req, res) => {
+  try {
+    const { property_name, tenantId, owner_id, property_id } = req.body;
+
+    const { data: tenant } = await supabase
+      .from("profiles")
+      .select("name, email, emer_contact")
+      .eq("id", tenantId)
+      .single();
+
+    const { data: owner } = await supabase
+      .from("profiles")
+      .select("name, email")
+      .eq("id", owner_id)
+      .single();
+
+    const propertyUrl = `https:// vercel lick should be here/show-property/${property_id}`;
+    const qrCodeDataUrl = await QRCode.toDataURL(propertyUrl);
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.COMPANY_EMAIL,
+        pass: process.env.COMPANY_EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"PROPGROWTHX" <${process.env.COMPANY_EMAIL}>`,
+      to: tenant.email,
+      subject: `You can view property: ${property_name}`,
+      html: `
+        <h2>Hello ${tenant.name}</h2>
+        <p>You are invited to view property: <b>${property_name}</b></p>
+        <p>Scan the QR code below to visit the property page:</p>
+        <img src="${qrCodeDataUrl}" alt="Property QR Code" style="width:200px;height:200px;" />
+        <p>Or click here: <a href="${propertyUrl}">${propertyUrl}</a></p>
+        <p>© PROPGROWTHX – Property Management System</p>
+      `,
+    });
+
+    res.json({
+      success: true,
+      message: "Invitation email with QR code sent to tenant",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to send QR code email" });
   }
 };

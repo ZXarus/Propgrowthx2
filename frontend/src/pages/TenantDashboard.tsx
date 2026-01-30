@@ -49,15 +49,7 @@ const TenantDashboard: React.FC = () => {
       />
 
       <div style={styles.main}>
-        {activePage === "All Property" && (
-          <AllProperties
-            userId={userId}
-            onBuy={(prop) => {
-              setSelectedProperty(prop);
-              setActivePage("Payment");
-            }}
-          />
-        )}
+        {activePage === "All Property" && <AllProperties userId={userId} />}
 
         {activePage === "Payment" && selectedProperty && (
           <PaymentCard
@@ -86,8 +78,7 @@ export default TenantDashboard;
 
 const AllProperties: React.FC<{
   userId: string;
-  onBuy: (property: any) => void;
-}> = ({ userId, onBuy }) => {
+}> = ({ userId }) => {
   const [props, setProps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -139,6 +130,44 @@ const AllProperties: React.FC<{
     setRating(5);
     fetchReviews(propertyId);
   };
+  const handleRequest = async (property: any) => {
+    const rawDetails = {
+      property_name: property?.property_name,
+      status: property?.status,
+      total_area: property?.total_area,
+      address: property?.address,
+      property_type: property?.property_type,
+      city: property?.city,
+      state: property?.state,
+      tenantId: userId,
+      owner_id: property?.owner_id,
+    };
+
+    await fetch("http://localhost:6876/api/properties/request_for_invitation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(rawDetails),
+    })
+      .then((res: any) => {
+        res = res.json();
+        const data = res.data;
+
+        alert(data.message);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+
+    // property_name
+    // status
+    // total_area
+    // address
+    // property_type
+    // city
+    // tenant email and name and phone number if it is there
+    // owner_id use this and get email and see teant inviitation
+    // buyer_id use this and get email and send req to owner
+  };
 
   if (loading) return <p>Loading properties...</p>;
 
@@ -180,14 +209,12 @@ const AllProperties: React.FC<{
 
           <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
             {p.buyer_id == null && (
-              <button onClick={() => onBuy(p)} style={styles.buyBtn}>
-                Buy
+              <button onClick={() => handleRequest(p)} style={styles.buyBtn}>
+                Request For Invitation
               </button>
             )}
 
-            <button onClick={() => fetchReviews(p.id)} style={styles.reviewBtn}>
-              Reviews
-            </button>
+            <button onClick={() => fetchReviews(p.id)}>Reviews</button>
           </div>
 
           {/* ================= REVIEWS SECTION ================= */}
