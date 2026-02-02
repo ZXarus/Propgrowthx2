@@ -92,6 +92,7 @@ const AllProperties: React.FC<{
       .then((res) => res.json())
       .then((data) => {
         setProps(data.properties || []);
+        console.log(data.properties);
 
         setLoading(false);
       })
@@ -141,6 +142,7 @@ const AllProperties: React.FC<{
       state: property?.state,
       tenantId: userId,
       owner_id: property?.owner_id,
+      property_Id: property?.id,
     };
 
     await fetch("http://localhost:6876/api/properties/request_for_invitation", {

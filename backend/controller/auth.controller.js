@@ -43,6 +43,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password, role } = req.body;
+  console.log(req.body);
 
   try {
     const { data: user, error } = await supabase

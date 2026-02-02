@@ -27,6 +27,7 @@ const AuthPage = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    console.log(email, password, role);
 
     try {
       const res = await fetch("http://localhost:6876/api/auth/login", {

@@ -4,6 +4,7 @@ import OwnerDashboard from "./pages/OwnerDashboard";
 import TenantDashboard from "./pages/TenantDashboard";
 
 import Profile from "./pages/Profile";
+import ShowProperty from "./pages/ShowProperty";
 function App() {
   return (
     <Routes>
@@ -11,6 +12,8 @@ function App() {
       <Route path="/dashboard_owner" element={<OwnerDashboard />} />
       <Route path="/dashboard_tenant" element={<TenantDashboard />} />
       <Route path="/profile_page/:profileId" element={<Profile />} />
+
+      <Route path="/show_prop/:property_Id" element={<ShowProperty />} />
     </Routes>
   );
 }

@@ -3,9 +3,9 @@ import fs from "fs";
 import nodemailer from "nodemailer";
 
 export const getPropertyById = async (req, res) => {
-  const { id } = req.query;
+  const { property_Id } = req.params;
 
-  if (!id) {
+  if (!property_Id) {
     return res.status(400).json({ error: "Property ID is required" });
   }
 
@@ -13,16 +13,16 @@ export const getPropertyById = async (req, res) => {
     const { data, error } = await supabase
       .from("properties")
       .select("*")
-      .eq("id", id)
-      .single(); // fetch single property
+      .eq("id", property_Id)
+      .single(); // get exact property
 
     if (error || !data) {
       return res.status(404).json({ error: "Property not found" });
     }
 
-    res.status(200).json({ property: data });
+    return res.status(200).json({ property: data });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -339,11 +339,14 @@ export const updateProperty = async (req, res) => {
 };
 
 export const buyProperty = async (req, res) => {
-  const { userId, propId } = req.body;
+  const userId = req.user.id;
+  console.log(userId);
+  const { property_Id } = req.params;
+  console.log(property_Id);
   const { data, error } = await supabase
     .from("properties")
     .update({ buyer_id: userId })
-    .eq("id", propId);
+    .eq("id", property_Id);
 
   if (error) {
     return res.status(500).json({ error: error.message });
@@ -419,6 +422,7 @@ export const requestForInvitation = async (req, res) => {
       state,
       tenantId,
       owner_id,
+      property_Id,
     } = req.body;
 
     const { data: tenant } = await supabase
@@ -432,13 +436,6 @@ export const requestForInvitation = async (req, res) => {
       .select("name, email")
       .eq("id", owner_id)
       .single();
-
-    // <a
-    //   href="https://propgrowthx-api.vercel.app/api/invitation/accept?tenantId=${tenantId}&ownerId=${owner_id}&property=${encodeURIComponent(property_name)}"
-    //   class="btn"
-    // >
-    //   ✅ Accept Invitation
-    // </a>;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -514,6 +511,13 @@ export const requestForInvitation = async (req, res) => {
       <p><span class="label">Emergency Contact:</span> <span class="value">${tenant.emer_contact}</span></p>
     </div>
 
+      <a
+      href="http://localhost:6876/api/properties/accept_invitation/${property_Id}/${tenantId}/${owner_id}"
+      class="btn"
+      >
+      ✅ Accept Invitation
+    </a>
+
 
     <div class="footer">
       Please login to your dashboard to approve or reject this request.<br/>
@@ -526,17 +530,6 @@ export const requestForInvitation = async (req, res) => {
       `,
     });
 
-    createInvite(
-      tenantId,
-      owner_id,
-      property_name,
-      total_area,
-      address,
-      property_type,
-      city,
-      state,
-    );
-
     res.json({ success: true, message: "Invitation request sent to owner" });
   } catch (err) {
     console.error(err);
@@ -544,73 +537,26 @@ export const requestForInvitation = async (req, res) => {
   }
 };
 
-export const createInvite = async ({
-  tenantId,
-  owner_id,
-  property_name,
-  total_area,
-  address,
-  property_type,
-  city,
-  state,
-  status = "pending",
-}) => {
-  try {
-    const { data, error } = await supabase
-      .from("invites")
-      .insert([
-        {
-          tenant_id: tenantId,
-          owner_id: owner_id,
-          property_name,
-          status,
-          total_area,
-          address,
-          property_type,
-          city,
-          state,
-        },
-      ])
-      .select();
-
-    if (error) throw error;
-
-    return data[0];
-  } catch (err) {
-    console.error("Error creating invite:", err.message);
-    throw err;
-  }
-};
-
 export const acceptInvitation = async (req, res) => {
   try {
-    const { inviteId } = req.query;
-
-    const { data: invite, error: inviteErr } = await supabase
-      .from("invites")
-      .select("*")
-      .eq("id", inviteId)
-      .single();
-
-    if (inviteErr || !invite) throw new Error("Invite not found");
-
-    const { data: updatedInvite } = await supabase
-      .from("invites")
-      .update({ status: "accepted" })
-      .eq("id", inviteId)
-      .select()
-      .single();
+    const { tenantId, owner_id, property_Id } = req.params;
 
     const { data: tenant } = await supabase
       .from("profiles")
       .select("name, email, emer_contact")
-      .eq("id", invite.tenant_id)
+      .eq("id", tenantId)
       .single();
 
     const { data: owner } = await supabase
       .from("profiles")
       .select("name, email")
-      .eq("id", invite.owner_id)
+      .eq("id", owner_id)
+      .single();
+
+    const { data: property } = await supabase
+      .from("properties")
+      .select("*")
+      .eq("id", property_Id)
       .single();
 
     const transporter = nodemailer.createTransport({
@@ -621,19 +567,19 @@ export const acceptInvitation = async (req, res) => {
       },
     });
 
-    const vercelLink = `https://propgrowthx.vercel.app/property/${invite.property_name}`;
+    const localLink = `http://localhost:5173/show_prop/${property_Id}`;
 
     await transporter.sendMail({
       from: `"PROPGROWTHX" <${process.env.COMPANY_EMAIL}>`,
       to: tenant.email,
-      subject: `Owner Accepted Your Request for ${invite.property_name}`,
+      subject: `Owner Accepted Your Request for ${property.property_name}`,
       html: `
         <!DOCTYPE html>
         <html>
         <head>
           <style>
             body { font-family: Arial; background:#f4f6f8; padding:20px; }
-            .card { max-width:600px; background:#fff; padding:20px; border-radius:8px; margin:auto; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+            .card { max-width:600px; background:#fff; padding:20px; border-radius:8px; margin:auto; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
             h2 { color:#2c3e50; }
             .btn { display:inline-block; margin-top:20px; padding:12px 18px; background:#2ecc71; color:white; text-decoration:none; border-radius:6px; font-weight:bold; }
           </style>
@@ -642,11 +588,11 @@ export const acceptInvitation = async (req, res) => {
           <div class="card">
             <h2>🎉 Your Request Has Been Accepted!</h2>
 
-            <p><b>Property:</b> ${invite.property_name}</p>
+            <p><b>Property:</b> ${property.property_name}</p>
             <p><b>Owner:</b> ${owner.name} (${owner.email})</p>
-            <p><b>Emergency Contact:</b> ${tenant.emer_contact}</p>
+            <p><b>Emergency Contact:</b> ${owner.emer_contact}</p>
 
-            <a href="${vercelLink}" class="btn">
+            <a href="${localLink}" class="btn">
               ✅ View Property
             </a>
 
@@ -657,7 +603,13 @@ export const acceptInvitation = async (req, res) => {
       `,
     });
 
-    res.json({ success: true, message: "Tenant notified and invite accepted" });
+    res.send(`
+      <center style="margin-top:50px; font-family:Arial;">
+        <h1 style="color:green;">✔ Request Accepted Successfully</h1>
+        <p>Tenant has been notified by email.</p>
+        <p>You can close this window now.</p>
+      </center>
+    `);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -667,6 +619,8 @@ export const acceptInvitation = async (req, res) => {
 // import QRCode from "qrcode";
 
 export const requestForInvitationByQrCode = async (req, res) => {
+  console.log("here we are");
+
   try {
     const { property_name, tenantId, owner_id, property_id } = req.body;
 
@@ -706,11 +660,13 @@ export const requestForInvitationByQrCode = async (req, res) => {
         <p>© PROPGROWTHX – Property Management System</p>
       `,
     });
-
-    res.json({
-      success: true,
-      message: "Invitation email with QR code sent to tenant",
-    });
+    res.send(`
+      <center style="margin-top:50px; font-family:Arial;">
+        <h1 style="color:green;">✔ Request Accepted Successfully</h1>
+        <p>Tenant has been notified by email.</p>
+        <p>You can close this window now.</p>
+      </center>
+    `);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to send QR code email" });
