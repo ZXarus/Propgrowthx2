@@ -53,17 +53,51 @@ export default function UrgentActionStrip({
 
   return (
     <section className={`w-full ${className}`} role="region" aria-label="Action Queue">
-      <div className="flex items-center justify-between mb-2">
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .urgent-cards-container {
+              height: 360px !important;
+              padding-top: 140px !important;
+            }
+            .urgent-card {
+              width: 280px !important;
+            }
+            .urgent-header {
+              text-align: center !important;
+            }
+            .urgent-title {
+              font-size: 24px !important;
+            }
+            .urgent-subtitle {
+              font-size: 14px !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .urgent-cards-container {
+              height: 320px !important;
+              padding-top: 120px !important;
+            }
+            .urgent-card {
+              width: 260px !important;
+            }
+            .urgent-title {
+              font-size: 20px !important;
+            }
+          }
+        `}
+      </style>
+      <div className="urgent-header flex items-center justify-between mb-2">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">Pending Actions</h3>
-          <p className="text-base text-gray-500 mt-1">What needs your attention now</p>
+          <h3 className="urgent-title text-2xl font-bold text-gray-900">Pending Actions</h3>
+          <p className="urgent-subtitle text-base text-gray-500 mt-1">What needs your attention now</p>
         </div>
         <div className="text-sm text-gray-400">
           {currentIndex + 1} of {items.length}
         </div>
       </div>
 
-      <div className="relative h-[520px] flex items-start justify-center overflow-hidden" style={{paddingTop: '216px'}}>
+      <div className="urgent-cards-container relative h-[520px] flex items-start justify-center overflow-hidden" style={{paddingTop: '216px'}}>
         <div className="flex items-center justify-center w-full relative">
           {items.map((item, index) => {
             const offset = index - currentIndex;
@@ -144,7 +178,7 @@ function ActionCard({
 
   return (
     <div
-      className={`absolute w-80 bg-white rounded-2xl border-0 cursor-pointer transition-all duration-500 ease-out ${shadow}`}
+      className={`urgent-card absolute w-80 bg-white rounded-2xl border-0 cursor-pointer transition-all duration-500 ease-out ${shadow}`}
       style={{
         transform: `translateX(${translateX}px) scale(${scale})`,
         opacity,
@@ -156,7 +190,7 @@ function ActionCard({
       }}
       onClick={() => onAction('open-detail', item)}
     >
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         {/* Navigation buttons - only show on active card */}
         {isActive && (
           <>

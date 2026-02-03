@@ -18,19 +18,70 @@ if (typeof document !== "undefined") {
 export default function Footer() {
   return (
     <footer style={{ width: "100%", backgroundColor: "#050505", fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial" }}>
-      <div style={{ maxWidth: "1320px", margin: "0 auto", padding: "48px 32px 24px 32px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "32px", alignItems: "start" }}>
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .footer-grid {
+              grid-template-columns: 1fr !important;
+              gap: 24px !important;
+              text-align: center !important;
+            }
+            .footer-left {
+              order: 1 !important;
+            }
+            .footer-middle {
+              order: 2 !important;
+              flex-direction: column !important;
+              align-items: center !important;
+              gap: 24px !important;
+            }
+            .footer-right {
+              order: 3 !important;
+            }
+            .footer-container {
+              padding: 32px 20px 16px 20px !important;
+            }
+            .footer-contacts {
+              align-items: center !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .footer-container {
+              padding: 24px 16px 12px 16px !important;
+            }
+            .footer-grid {
+              gap: 20px !important;
+            }
+            .footer-logo {
+              flex-direction: column !important;
+              align-items: center !important;
+              gap: 8px !important;
+              margin-left: 0 !important;
+            }
+            .footer-description {
+              text-align: center !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+            .footer-contacts {
+              gap: 12px !important;
+            }
+          }
+        `}
+      </style>
+      <div className="footer-container" style={{ maxWidth: "1320px", margin: "0 auto", padding: "48px 32px 24px 32px" }}>
+        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "32px", alignItems: "start" }}>
           {/* Left column: Logo + description + contacts */}
-          <div style={{ gridColumn: "span 4" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px", marginLeft: "-8px" }}>
+          <div className="footer-left" style={{ gridColumn: "span 4" }}>
+            <div className="footer-logo" style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px", marginLeft: "-8px" }}>
               <img src="/logo.png" alt="PropgrowthX" style={{ width: "56px", height: "56px", objectFit: "contain" }} />
               <h3 style={{ fontSize: "20px", fontWeight: "600", color: "#ffffff", margin: 0 }}>PropgrowthX</h3>
             </div>
-            <p style={{ fontSize: "14px", lineHeight: "24px", maxWidth: "300px", color: "#dfe3e6", margin: "0 0 32px 0" }}>
+            <p className="footer-description" style={{ fontSize: "14px", lineHeight: "24px", maxWidth: "300px", color: "#dfe3e6", margin: "0 0 32px 0" }}>
               The digital twin platform that lets you operate rental properties remotely.
             </p>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div className="footer-contacts" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ display: "flex", alignItems: "start", gap: "12px" }}>
                 {/* location icon */}
                 <svg width="18" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +112,7 @@ export default function Footer() {
           </div>
 
           {/* Middle columns: Product and Learn More */}
-          <div style={{ gridColumn: "span 4", display: "flex", gap: "48px" }}>
+          <div className="footer-middle" style={{ gridColumn: "span 4", display: "flex", gap: "48px" }}>
             <div>
               <h4 style={{ fontSize: "16px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.1em", color: "#b71c1c", margin: 0 }}>Product</h4>
               <ul style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "8px", fontSize: "15px", color: "#e6e6e6", lineHeight: "20px", listStyle: "none", padding: 0, margin: "24px 0 0 0" }}>
@@ -85,7 +136,7 @@ export default function Footer() {
           </div>
 
           {/* Right column: Socials */}
-          <div style={{ gridColumn: "span 4", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div className="footer-right" style={{ gridColumn: "span 4", display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h4 style={{ fontSize: "16px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.1em", color: "#b71c1c", margin: 0 }}>Connect with us</h4>
             <div style={{ marginTop: "24px", display: "flex", alignItems: "center", gap: "24px" }}>
               {/* facebook */}

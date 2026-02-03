@@ -138,10 +138,11 @@ export default function HowItWorksCards(props: HowItWorksCardsProps) {
 
     return (
         <div
+            className="section-container"
             style={{
                 width: "100%",
                 minHeight: "600px",
-                padding: "100px 20px",
+                padding: "40px 16px",
                 background: backgroundColor,
                 display: "flex",
                 flexDirection: "column",
@@ -152,6 +153,7 @@ export default function HowItWorksCards(props: HowItWorksCardsProps) {
         >
             {/* Section Header */}
             <div
+                className="section-header"
                 style={{
                     textAlign: "center",
                     marginBottom: "70px",
@@ -231,11 +233,52 @@ export default function HowItWorksCards(props: HowItWorksCardsProps) {
                     @media (max-width: 1024px) {
                         .cards-grid {
                             grid-template-columns: repeat(2, 1fr) !important;
+                            gap: 20px !important;
+                        }
+                        .card-inner {
+                            padding: 32px 24px !important;
+                            min-height: 300px !important;
+                        }
+                    }
+                    @media (max-width: 768px) {
+                        .cards-grid {
+                            grid-template-columns: 1fr !important;
+                            gap: 24px !important;
+                        }
+                        .card-inner {
+                            padding: 36px 28px !important;
+                            min-height: 320px !important;
+                        }
+                        .card-title {
+                            font-size: 19px !important;
+                        }
+                        .card-number {
+                            font-size: 48px !important;
+                        }
+                        .card-icon {
+                            width: 48px !important;
+                            height: 48px !important;
                         }
                     }
                     @media (max-width: 640px) {
-                        .cards-grid {
-                            grid-template-columns: 1fr !important;
+                        .section-header {
+                            margin-bottom: 32px !important;
+                            padding: 0 12px !important;
+                        }
+                        .section-container {
+                            padding: 32px 12px !important;
+                        }
+                    }
+                    @media (max-width: 480px) {
+                        .section-container {
+                            padding: 28px 12px !important;
+                        }
+                        .section-header {
+                            margin-bottom: 24px !important;
+                        }
+                        .card-inner {
+                            padding: 20px 14px !important;
+                            min-height: 240px !important;
                         }
                     }
                 `}</style>

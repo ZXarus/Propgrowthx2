@@ -55,7 +55,7 @@ export default function FinalCTA(props: FinalCTAProps) {
         <div
             style={{
                 width: "100%",
-                padding: "100px 40px",
+                padding: "40px 16px",
                 background: backgroundColor,
                 fontFamily: "DM Sans, sans-serif",
                 display: "flex",
@@ -64,6 +64,50 @@ export default function FinalCTA(props: FinalCTAProps) {
                 overflow: "hidden",
             }}
         >
+            <style>
+                {`
+                    @media (max-width: 768px) {
+                        .final-cta-container {
+                            padding: 32px 16px !important;
+                        }
+                        .cta-card {
+                            padding: 32px 16px !important;
+                            border-radius: 16px !important;
+                        }
+                        .cta-buttons {
+                            flex-direction: column !important;
+                            gap: 12px !important;
+                        }
+                        .primary-cta, .secondary-cta {
+                            width: 100% !important;
+                            max-width: none !important;
+                        }
+                        .trust-badges {
+                            flex-direction: column !important;
+                            gap: 12px !important;
+                            align-items: center !important;
+                        }
+                        .avatar-section {
+                            flex-direction: column !important;
+                            gap: 8px !important;
+                        }
+                    }
+                    @media (max-width: 480px) {
+                        .final-cta-container {
+                            padding: 28px 12px !important;
+                        }
+                        .cta-card {
+                            padding: 24px 12px !important;
+                        }
+                        .main-heading {
+                            font-size: 22px !important;
+                        }
+                        .sub-heading {
+                            font-size: 14px !important;
+                        }
+                    }
+                `}
+            </style>
             {/* Subtle background accent */}
             <div
                 style={{
@@ -79,6 +123,7 @@ export default function FinalCTA(props: FinalCTAProps) {
             />
 
             <div
+                className="final-cta-container"
                 style={{
                     maxWidth: "1200px",
                     width: "100%",
@@ -88,6 +133,7 @@ export default function FinalCTA(props: FinalCTAProps) {
             >
                 {/* Main CTA Container */}
                 <div
+                    className="cta-card"
                     style={{
                         background: cardBackground,
                         borderRadius: "24px",
@@ -127,6 +173,7 @@ export default function FinalCTA(props: FinalCTAProps) {
 
                     {/* Main Headline */}
                     <h2
+                        className="main-heading"
                         style={{
                             fontSize: "clamp(28px, 5vw, 42px)",
                             fontWeight: "800",
@@ -141,6 +188,7 @@ export default function FinalCTA(props: FinalCTAProps) {
 
                     {/* Subheading */}
                     <p
+                        className="sub-heading"
                         style={{
                             fontSize: "clamp(16px, 2vw, 18px)",
                             color: subheadingColor,
@@ -157,6 +205,7 @@ export default function FinalCTA(props: FinalCTAProps) {
 
                     {/* CTA Buttons */}
                     <div
+                        className="cta-buttons"
                         style={{
                             display: "flex",
                             flexDirection: "column",
@@ -239,6 +288,7 @@ export default function FinalCTA(props: FinalCTAProps) {
 
                     {/* Trust Badges */}
                     <div
+                        className="trust-badges"
                         style={{
                             display: "flex",
                             flexWrap: "wrap",
@@ -296,6 +346,7 @@ export default function FinalCTA(props: FinalCTAProps) {
 
                     {/* Avatar Strip */}
                     <div
+                        className="avatar-section"
                         style={{
                             display: "flex",
                             justifyContent: "center",

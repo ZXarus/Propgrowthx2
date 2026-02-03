@@ -6,16 +6,18 @@ import Footer from '../landing-page/Footer';
 
 interface LayoutProps {
   children: ReactNode;
+  showNavbar?: boolean;
+  showFooter?: boolean;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, showNavbar = true, showFooter = true }: LayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-1 pt-16 lg:pt-20">
+    <div className="min-h-screen flex flex-col bg-white">
+      {showNavbar && <Navbar />}
+      <main className={`flex-1 bg-white ${showNavbar ? 'pt-16 lg:pt-20' : 'pt-8 lg:pt-12'}`}>
         {children}
       </main>
-      <Footer />
+      {showFooter && <Footer />}
     </div>
   );
 };

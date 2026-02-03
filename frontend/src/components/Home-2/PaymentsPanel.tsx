@@ -101,37 +101,37 @@ export default function PaymentsPanel({
   return (
     <>
       {/* Overview Section */}
-      <section className={`bg-white rounded-2xl border border-gray-100 p-6 shadow-lg ${className}`}>
-        <div className="flex items-center justify-between mb-6">
+      <section className={`bg-white rounded-2xl border border-gray-100 p-3 md:p-6 shadow-lg ${className}`}>
+        <div className="flex items-center justify-between mb-3 md:mb-6">
           <div>
-            <h3 className="text-lg font-bold text-gray-900">Payments Overview</h3>
-            <div className="text-sm text-gray-500 mt-1">Track your rental income performance</div>
+            <h3 className="text-base md:text-lg font-bold text-gray-900">Payments Overview</h3>
+            <div className="text-xs md:text-sm text-gray-500 mt-1">Track your rental income performance</div>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-50">
+          <div className="flex items-center gap-2 px-2 md:px-3 py-1 rounded-full bg-gray-50">
             <div className="w-2 h-2 rounded-full bg-green-500"></div>
             <span className="text-xs font-medium text-gray-600">Live Data</span>
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-3 md:mb-6">
           <SparklineTile data={ledgerMonthly} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+          <div className="p-2 md:p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Collected (12m)</div>
               <i className="fas fa-chart-line text-blue-600"></i>
             </div>
-            <div className="text-xl font-bold text-blue-900">{formatCurrency(sum(ledgerMonthly.map((d) => d.inflow)), currency)}</div>
+            <div className="text-base md:text-xl font-bold text-blue-900">{formatCurrency(sum(ledgerMonthly.map((d) => d.inflow)), currency)}</div>
             <div className="text-xs text-blue-600 mt-1">+12.5% from last year</div>
           </div>
-          <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
+          <div className="p-2 md:p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs font-semibold text-purple-700 uppercase tracking-wide">Expected (12m)</div>
               <i className="fas fa-target text-purple-600"></i>
             </div>
-            <div className="text-xl font-bold text-purple-900">{formatCurrency(sum(ledgerMonthly.map((d) => d.expected)), currency)}</div>
+            <div className="text-base md:text-xl font-bold text-purple-900">{formatCurrency(sum(ledgerMonthly.map((d) => d.expected)), currency)}</div>
             <div className="text-xs text-purple-600 mt-1">Target achievement</div>
           </div>
         </div>

@@ -137,10 +137,45 @@ export default function DashboardNav() {
 
   return (
     <div className="flex min-h-[64px]">
+      <style>
+        {`
+          @media (max-width: 1024px) {
+            .dashboard-sidebar {
+              position: fixed !important;
+              left: ${sidebarOpen ? '0' : '-100%'} !important;
+              width: 280px !important;
+              z-index: 50 !important;
+              transition: left 0.3s ease !important;
+            }
+            .dashboard-main {
+              margin-left: 0 !important;
+              width: 100% !important;
+            }
+          }
+          @media (max-width: 768px) {
+            .dashboard-header {
+              height: 64px !important;
+              padding: 0 16px !important;
+            }
+          }
+          @media (min-width: 1025px) {
+            .mobile-menu-toggle {
+              display: none !important;
+            }
+          }
+        `}
+      </style>
+      {/* Mobile backdrop */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       {/* Sidebar */}
       <aside
-        className={`flex-shrink-0 bg-white border-r border-gray-100 transition-width duration-200 ease-in-out
-          ${sidebarOpen ? "w-64" : "w-20"} h-screen sticky top-0 z-30`}
+        className={`dashboard-sidebar flex-shrink-0 bg-white border-r border-gray-100 transition-width duration-200 ease-in-out
+          ${sidebarOpen ? "w-64" : "w-20"} h-screen sticky top-0 z-40`}
         aria-label="Sidebar"
       >
         <div className="h-full flex flex-col">
@@ -174,10 +209,10 @@ export default function DashboardNav() {
           <nav className="px-2 py-4 flex-1 overflow-y-auto">
             {[
               { id: "properties", label: "Properties", icon: "fa-building", onClick: () => navigate("/properties-manage") },
-              { id: "payments", label: "Payments", icon: "fa-receipt" },
+              { id: "payments", label: "Payments", icon: "fa-receipt", onClick: () => navigate("/payments") },
               { id: "maintenance", label: "Maintenance", icon: "fa-wrench" },
-              { id: "intelligence", label: "Intelligence", icon: "fa-lightbulb" },
-              { id: "docs", label: "Docs", icon: "fa-folder" },
+              { id: "support", label: "Support", icon: "fa-headset", onClick: () => navigate("/contact") },
+              { id: "complaints", label: "Complaints", icon: "fa-folder", onClick: () => navigate("/dashboard/owner/complaints") },
               { id: "team", label: "Team", icon: "fa-users" },
               { id: "settings", label: "Settings", icon: "fa-cog" },
             ].map((item) => (
@@ -203,10 +238,18 @@ export default function DashboardNav() {
       </aside>
 
       {/* Main header + content container */}
-      <div className="flex-1 min-h-screen">
-        <header className="h-16 bg-white border-b border-gray-100 flex items-center px-6 sticky top-0 z-20">
-          {/* left: property selector */}
-          <div className="flex items-center gap-4">
+      <div className="dashboard-main flex-1 min-h-screen">
+        <header className="dashboard-header h-16 bg-white border-b border-gray-100 flex items-center px-6 sticky top-0 z-30">
+          {/* Mobile menu toggle */}
+          <button
+            className="mobile-menu-toggle p-2 rounded-md hover:bg-gray-50 mr-3 xl:hidden"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <i className="fas fa-bars w-4 h-4 text-gray-600"></i>
+          </button>
+
+          {/* Property selector - always visible */}
+          <div className="property-selector flex items-center gap-2 md:gap-4 flex-1 md:flex-initial">
             <div ref={propRef} className="relative">
               <button
                 onClick={() => {
@@ -215,19 +258,18 @@ export default function DashboardNav() {
                 }}
                 aria-haspopup="listbox"
                 aria-expanded={propOpen}
-                className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626]"
+                className="flex items-center gap-2 px-2 md:px-3 py-2 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626]"
               >
-                <i className="fas fa-bars w-5 h-5 text-gray-600"></i>
-                <div className="flex flex-col items-start">
-                  <span className="text-base font-semibold text-black">{selectedProperty.name}</span>
-                  <span className="text-sm text-gray-500">{selectedProperty.region ? `${selectedProperty.region} • ${selectedProperty.portfolio ?? ""}` : "View & manage"}</span>
+                <div className="flex flex-col items-start min-w-0">
+                  <span className="text-sm md:text-base font-semibold text-black truncate">{selectedProperty.name}</span>
+                  <span className="text-xs md:text-sm text-gray-500 truncate">{selectedProperty.region ? `${selectedProperty.region} • ${selectedProperty.portfolio ?? ""}` : "View & manage"}</span>
                 </div>
-                <i className="fas fa-chevron-down ml-2 w-4 h-4 text-gray-400"></i>
+                <i className="fas fa-chevron-down ml-1 w-3 h-3 text-gray-400"></i>
               </button>
 
               {/* Advanced Dropdown */}
               {propOpen && (
-                <div className="absolute left-0 mt-2 w-[520px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+                <div className="property-dropdown absolute left-0 mt-2 w-[520px] bg-white rounded-xl shadow-lg border border-gray-100 z-[60]">
                   {/* Header: search + create group */}
                   <div className="px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center gap-3">
@@ -398,27 +440,27 @@ export default function DashboardNav() {
             </div>
           </div>
 
-          {/* center: search */}
-          <div className="flex-1 px-6">
+          {/* Search - hidden on mobile, visible on tablet+ */}
+          <div className="hidden md:flex flex-1 px-6 max-w-md">
             <label htmlFor="globalSearch" className="sr-only">Search properties</label>
-            <div className="relative max-w-lg mx-auto">
+            <div className="relative w-full">
               <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
               <input
                 id="globalSearch"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full border border-gray-100 rounded-full px-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626]"
-                placeholder="Search properties, tenants or invoices..."
-                aria-label="Search properties, tenants or invoices"
+                placeholder="Search properties..."
+                aria-label="Search properties"
               />
             </div>
           </div>
 
-          {/* right: actions */}
-          <div className="flex items-center gap-3">
-            {/* Upload Excel CTA */}
+          {/* Right actions */}
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* Upload Excel - desktop only */}
             <button
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-white font-medium shadow-sm hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626]"
+              className="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-md text-white font-medium shadow-sm hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626]"
               style={{ background: "#DC2626" }}
               aria-label="Upload Excel"
             >
@@ -434,13 +476,13 @@ export default function DashboardNav() {
                 aria-label="Notifications"
                 className="p-2 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626]"
               >
-                <i className="fas fa-bell w-6 h-6 text-gray-600"></i>
+                <i className="fas fa-bell w-4 h-4 text-gray-600"></i>
                 <span className="sr-only">Open notifications</span>
                 <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-medium leading-none text-white rounded-full bg-[#DC2626]">3</span>
               </button>
 
               {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white border rounded-md shadow-lg z-40 p-3">
+                <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white border rounded-md shadow-lg z-40 p-3">
                   <div className="text-sm font-medium mb-2">Notifications</div>
                   <div className="text-xs text-gray-500">You have 3 unread items</div>
                   <ul className="mt-3 space-y-2">
@@ -463,12 +505,12 @@ export default function DashboardNav() {
                 onClick={() => { setUserOpen((s) => !s); setNotifOpen(false); setPropOpen(false); }}
                 aria-expanded={userOpen}
                 aria-label="User menu"
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626] transition-colors"
+                className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626] transition-colors"
               >
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
                   S
                 </div>
-                <div className="flex flex-col items-start">
+                <div className="hidden lg:flex flex-col items-start">
                   <span className="text-sm font-semibold text-gray-900">Sarah Johnson</span>
                   <span className="text-xs text-gray-500">Owner</span>
                 </div>
@@ -530,16 +572,16 @@ export default function DashboardNav() {
           </div>
         )}
 
-        <main className="p-8 bg-gray-50 min-h-screen">
+        <main className="p-4 md:p-8 bg-gray-50 min-h-screen relative z-10">
           <KpiTiles 
             currency="₹" 
             onAction={(action, payload) => {
               console.log('KPI Action:', action, payload);
             }}
-            className="mb-8"
+            className="mb-6 md:mb-8"
           />
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
             <div>
               <PaymentsPanel 
                 currency="₹"
@@ -562,10 +604,10 @@ export default function DashboardNav() {
             onAction={(action, payload) => {
               console.log('Payment Sections Action:', action, payload);
             }}
-            className="mb-8"
+            className="mb-6 md:mb-8"
           />
           
-          <PropertiesOverview className="mb-8" />
+          <PropertiesOverview className="mb-6 md:mb-8" />
         </main>
       </div>
     </div>

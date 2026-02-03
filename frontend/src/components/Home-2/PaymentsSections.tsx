@@ -79,39 +79,39 @@ export default function PaymentsSections({
 
   return (
     <>
-      <section className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${className}`}>
+      <section className={`grid grid-cols-1 xl:grid-cols-2 gap-3 md:gap-6 ${className}`}>
         {/* Due soon */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-black">Due soon</h3>
-            <div className="flex items-center gap-2 text-sm">
-              <button className={`px-4 py-2 rounded-md font-medium ${tab === "due7" ? "bg-[#FFF1F0] text-[#DC2626]" : "bg-white border border-gray-100"}`} onClick={() => setTab("due7")}>Next 7 days</button>
-              <button className={`px-4 py-2 rounded-md font-medium ${tab === "due30" ? "bg-[#FFF1F0] text-[#DC2626]" : "bg-white border border-gray-100"}`} onClick={() => setTab("due30")}>Next 30 days</button>
+        <div className="bg-white rounded-xl border border-gray-100 p-3 md:p-6 shadow-sm relative z-20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 md:mb-4">
+            <h3 className="text-base md:text-lg font-bold text-black">Due soon</h3>
+            <div className="flex items-center gap-1 md:gap-2 text-sm">
+              <button className={`px-2 md:px-4 py-1 md:py-2 rounded-md font-medium text-xs md:text-sm ${tab === "due7" ? "bg-[#FFF1F0] text-[#DC2626]" : "bg-white border border-gray-100"}`} onClick={() => setTab("due7")}>Next 7 days</button>
+              <button className={`px-2 md:px-4 py-1 md:py-2 rounded-md font-medium text-xs md:text-sm ${tab === "due30" ? "bg-[#FFF1F0] text-[#DC2626]" : "bg-white border border-gray-100"}`} onClick={() => setTab("due30")}>Next 30 days</button>
             </div>
           </div>
 
-          <div className="mt-4 space-y-4 max-h-[420px] overflow-auto pr-2">
+          <div className="mt-3 md:mt-4 space-y-3 md:space-y-4 max-h-[320px] md:max-h-[420px] overflow-auto pr-2 relative z-10">
             {(tab === "due7" ? dueNext7 : dueNext30).map((d) => (
-              <div key={d.id} className="flex items-center gap-3 p-4 rounded-md hover:bg-gray-50 transition-colors">
+              <div key={d.id} className="flex items-center gap-2 md:gap-3 p-2 md:p-4 rounded-md hover:bg-gray-50 transition-colors">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <div className="text-base font-semibold text-black truncate">{d.property} {d.unit ? `• ${d.unit}` : ""}</div>
-                    <div className="text-sm text-gray-500">{daysLeftText(d.dueDateISO)}</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 md:gap-2">
+                    <div className="text-xs md:text-base font-semibold text-black truncate">{d.property} {d.unit ? `• ${d.unit}` : ""}</div>
+                    <div className="text-xs text-gray-500">{daysLeftText(d.dueDateISO)}</div>
                   </div>
 
-                  <div className="mt-2 flex items-center gap-3">
-                    <div className="text-xl font-bold text-black">{formatCurrency(d.amount, currency)}</div>
-                    <div className="text-sm text-gray-600 truncate">{d.tenantName}</div>
+                  <div className="mt-1 md:mt-2 flex flex-col sm:flex-row sm:items-center gap-1 md:gap-3">
+                    <div className="text-sm md:text-xl font-bold text-black">{formatCurrency(d.amount, currency)}</div>
+                    <div className="text-xs md:text-sm text-gray-600 truncate">{d.tenantName}</div>
                   </div>
 
-                  <div className="mt-3 flex items-center gap-2">
+                  <div className="mt-2 md:mt-3 flex flex-wrap items-center gap-1 md:gap-2">
                     <QuickContactButtons
                       tenant={d}
                       onSend={() => setOpenReminder(d)}
                       onSms={() => onAction("send-sms", d)}
                       onEmail={() => onAction("send-email", d)}
                     />
-                    <button onClick={() => setOpenOffline(d)} className="text-sm px-3 py-2 rounded-md border border-gray-100 font-medium">Record payment</button>
+                    <button onClick={() => setOpenOffline(d)} className="text-xs px-2 py-1 md:px-3 md:py-2 rounded-md border border-gray-100 font-medium">Record payment</button>
                   </div>
                 </div>
               </div>
@@ -124,15 +124,15 @@ export default function PaymentsSections({
         </div>
 
         {/* Overdue */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-black">Overdue</h3>
-            <div className="flex items-center gap-2">
-              <div className="text-sm text-gray-500 font-medium">Sort</div>
+        <div className="bg-white rounded-xl border border-gray-100 p-3 md:p-6 shadow-sm relative z-20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 md:mb-4">
+            <h3 className="text-base md:text-lg font-bold text-black">Overdue</h3>
+            <div className="flex items-center gap-1 md:gap-2">
+              <div className="text-xs md:text-sm text-gray-500 font-medium">Sort</div>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="text-sm border border-gray-100 rounded-md px-3 py-2 font-medium"
+                className="text-xs px-2 py-1 md:px-3 md:py-2 border border-gray-100 rounded-md font-medium"
               >
                 <option value="age">Age</option>
                 <option value="amount">Amount</option>
@@ -142,39 +142,39 @@ export default function PaymentsSections({
               <button
                 aria-label="Toggle sort direction"
                 onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-                className="p-2 rounded-md border border-gray-100 text-lg font-bold"
+                className="p-1 md:p-2 rounded-md border border-gray-100 text-sm md:text-lg font-bold"
               >
                 {sortDir === "asc" ? "↑" : "↓"}
               </button>
             </div>
           </div>
 
-          <div className="mt-4 divide-y divide-gray-100 max-h-[520px] overflow-auto">
+          <div className="mt-3 md:mt-4 divide-y divide-gray-100 max-h-[320px] md:max-h-[520px] overflow-auto relative z-10">
             {sortedOverdue.map((o) => (
-              <div key={o.id} className="p-4 flex items-start gap-3">
+              <div key={o.id} className="p-2 md:p-4 flex items-start gap-2 md:gap-3">
                 <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="text-base font-semibold text-black">{o.property} {o.unit ? `• ${o.unit}` : ""}</div>
-                    <div className="text-sm text-gray-500 font-medium">{o.daysOverdue} days</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 md:gap-2">
+                    <div className="text-xs md:text-base font-semibold text-black">{o.property} {o.unit ? `• ${o.unit}` : ""}</div>
+                    <div className="text-xs text-gray-500 font-medium">{o.daysOverdue} days</div>
                   </div>
 
-                  <div className="mt-2 flex items-center gap-3">
-                    <div className="text-xl font-bold text-black">{formatCurrency(o.amount, currency)}</div>
-                    <div className="text-sm text-gray-600">{o.tenantName}</div>
+                  <div className="mt-1 md:mt-2 flex flex-col sm:flex-row sm:items-center gap-1 md:gap-3">
+                    <div className="text-sm md:text-xl font-bold text-black">{formatCurrency(o.amount, currency)}</div>
+                    <div className="text-xs md:text-sm text-gray-600">{o.tenantName}</div>
                   </div>
 
-                  <div className="mt-3 flex items-center gap-2">
-                    <button onClick={() => setOpenReminder(o)} className="px-4 py-2 rounded-md bg-[#FFF1F0] text-[#DC2626] text-sm font-medium">Send reminder</button>
+                  <div className="mt-2 md:mt-3 flex flex-wrap items-center gap-1 md:gap-2">
+                    <button onClick={() => setOpenReminder(o)} className="px-2 md:px-4 py-1 md:py-2 rounded-md bg-[#FFF1F0] text-[#DC2626] text-xs font-medium">Send reminder</button>
                     {o.phone && (
-                      <a href={`tel:${o.phone}`} className="px-4 py-2 rounded-md border border-gray-100 text-sm hover:bg-gray-50 font-medium">
-                        <i className="fas fa-phone text-sm mr-1"></i>{o.phone}
+                      <a href={`tel:${o.phone}`} className="px-2 md:px-4 py-1 md:py-2 rounded-md border border-gray-100 text-xs hover:bg-gray-50 font-medium">
+                        <i className="fas fa-phone text-xs mr-1"></i>{o.phone}
                       </a>
                     )}
-                    <button onClick={() => onAction("create-ticket", o)} className="px-4 py-2 rounded-md border border-gray-100 text-sm font-medium">Create ticket</button>
+                    <button onClick={() => onAction("create-ticket", o)} className="px-2 md:px-4 py-1 md:py-2 rounded-md border border-gray-100 text-xs font-medium">Create ticket</button>
                     <ReceiptBadge receipts={o.receipts} />
                   </div>
 
-                  {o.note && <div className="mt-3 text-sm text-gray-600 font-medium">{o.note}</div>}
+                  {o.note && <div className="mt-2 md:mt-3 text-xs text-gray-600 font-medium">{o.note}</div>}
                 </div>
               </div>
             ))}

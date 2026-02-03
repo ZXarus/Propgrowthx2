@@ -26,8 +26,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { toast } from '@/hooks/use-toast';
-import { Building2, Upload, X } from 'lucide-react';
+import { Building2, Upload, X, Calendar as CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
 import { supabase } from "@/lib/supabase";
 
 const propertySchema = z.object({
@@ -179,37 +186,42 @@ const AddPropertyModal = ({ open, onOpenChange}: AddPropertyModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <Building2 className="w-5 h-5 text-secondary" />
-            Add New Property
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent
+        className="
+          max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto p-4 md:p-8
+          bg-white rounded-3xl shadow-2xl
+          [&_[data-radix-dialog-close]]:hidden
+        "
+      >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                <Building2 className="w-4 h-4 md:w-5 md:h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900">Add New Property</h3>
+                <div className="text-xs md:text-sm text-gray-600">Create a new property listing</div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors self-end sm:self-auto"
+              aria-label="Close dialog"
+            >
+              <X className="w-3 h-3 md:w-4 md:h-4 text-gray-600" />
+            </button>
+          </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Property Basic Info */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-foreground border-b border-border pb-2">
-                Basic Information
-              </h3>
-              
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Property Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Modern Downtown Loft" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Property Basic Info */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-foreground border-b border-border pb-2">
+                  Basic Information
+                </h4>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="listing_type"
@@ -287,7 +299,7 @@ const AddPropertyModal = ({ open, onOpenChange}: AddPropertyModalProps) => {
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="monthly_rent"
@@ -317,18 +329,28 @@ const AddPropertyModal = ({ open, onOpenChange}: AddPropertyModalProps) => {
                   <FormLabel>
                     Due Date
                   </FormLabel>
-                  <FormControl>
-                      <Input type="date" placeholder='Enter a date'
-                      value={
-                        field.value ? new Date(field.value).toISOString().split("T")[0] : ""
-                      }
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value ? new Date(e.target.value) : null
-                        )
-                      }
-                      className="pl-3"/>
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? format(new Date(field.value), 'MMM dd, yyyy') : 'Pick a date'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? new Date(field.value) : undefined}
+                        onSelect={(date) => field.onChange(date)}
+                        disabled={(date) =>
+                          date < new Date(new Date().setHours(0, 0, 0, 0))
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
@@ -356,7 +378,7 @@ const AddPropertyModal = ({ open, onOpenChange}: AddPropertyModalProps) => {
                 )}
               />
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="city"
@@ -407,7 +429,7 @@ const AddPropertyModal = ({ open, onOpenChange}: AddPropertyModalProps) => {
                 Property Details
               </h3>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="bedrooms"
@@ -451,7 +473,7 @@ const AddPropertyModal = ({ open, onOpenChange}: AddPropertyModalProps) => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="otherrooms"
@@ -520,7 +542,7 @@ const AddPropertyModal = ({ open, onOpenChange}: AddPropertyModalProps) => {
                 Property Images
               </h3>
 
-                <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors">
+                <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-red-500 transition-colors">
                   <input
                 type="file"
                 accept="image/*"
@@ -563,25 +585,26 @@ const AddPropertyModal = ({ open, onOpenChange}: AddPropertyModalProps) => {
             </div>
 
             {/* Submit Button */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 bg-secondary hover:bg-secondary/90"
-              >
-                {isSubmitting ? 'Adding Property...' : 'Add Property'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  className="flex-1 py-4 h-12"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 py-4 h-12 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {isSubmitting ? 'Adding Property...' : 'Add Property'}
+                </Button>
+              </div>
+            </form>
+          </Form>
+      
       </DialogContent>
     </Dialog>
   );

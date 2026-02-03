@@ -82,35 +82,35 @@ export default function KpiTiles({ currency = "₹", className = "", onAction }:
           <div className="text-sm text-gray-500">Real-time insights</div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-4">
           {items.map((it) => (
             <button
               key={it.key}
               onClick={() => openPanel(it)}
-              className={`group relative bg-white border rounded-xl p-6 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500 ${
+              className={`group relative bg-white border rounded-xl p-2 md:p-4 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500 ${
                 it.hint ? 'border-red-200 bg-red-50/30' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-2 md:mb-4">
                 <div className="flex-1">
-                  <div className="text-lg font-semibold text-gray-700 mb-3">{it.title}</div>
-                  <div className={`text-3xl font-bold leading-tight mb-2 ${
+                  <div className="text-xs md:text-sm font-semibold text-gray-700 mb-1 md:mb-2">{it.title}</div>
+                  <div className={`text-sm md:text-2xl font-bold leading-tight mb-1 md:mb-2 ${
                     it.hint ? 'text-red-900' : 'text-gray-900'
                   }`}>{it.value}</div>
-                  {it.sub && <div className="text-base font-medium text-gray-600">{it.sub}</div>}
+                  {it.sub && <div className="text-xs md:text-sm font-medium text-gray-600">{it.sub}</div>}
                 </div>
 
-                <div className="flex flex-col items-end gap-3 ml-4">
+                <div className="flex flex-col items-end gap-1 md:gap-2 ml-1 md:ml-4">
                   <KpiIcon type={it.key} accent={it.color ?? (it.hint ? '#DC2626' : '#6B7280')} />
                   {it.hint && (
-                    <div className="text-sm px-3 py-1.5 rounded-lg font-semibold text-red-700 bg-red-100 border border-red-200 whitespace-nowrap">
+                    <div className="text-xs px-1 py-0.5 md:px-2 md:py-1 rounded-md font-semibold text-red-700 bg-red-100 border border-red-200 whitespace-nowrap">
                       {it.hint}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center text-sm text-gray-400 group-hover:text-red-600 transition-colors duration-200 font-medium">
+              <div className="flex items-center text-xs md:text-sm text-gray-400 group-hover:text-red-600 transition-colors duration-200 font-medium">
                 View details
                 <i className="fas fa-chevron-right ml-2 text-sm transform group-hover:translate-x-0.5 transition-transform duration-200"></i>
               </div>
@@ -124,11 +124,11 @@ export default function KpiTiles({ currency = "₹", className = "", onAction }:
         <div className={`absolute inset-0 bg-black/40 transition-opacity ${open ? "opacity-100" : "opacity-0"}`} onClick={closePanel} />
         
         <aside className={`absolute right-0 top-0 h-full w-full sm:w-[520px] bg-white shadow-2xl transform transition-transform ${open ? "translate-x-0" : "translate-x-full"}`}>
-          <div className="p-6 h-full flex flex-col">
-            <div className="flex items-start justify-between gap-4 mb-6">
+          <div className="p-4 md:p-6 h-full flex flex-col">
+            <div className="flex items-start justify-between gap-4 mb-4 md:mb-6">
               <div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">{active?.title}</div>
-                <div className="text-2xl font-bold text-gray-900 mt-2">{active?.value}</div>
+                <div className="text-xl md:text-2xl font-bold text-gray-900 mt-2">{active?.value}</div>
                 {active?.sub && <div className="text-sm text-gray-500 mt-1">{active.sub}</div>}
               </div>
 

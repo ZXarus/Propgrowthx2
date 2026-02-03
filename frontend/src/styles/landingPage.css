@@ -16,6 +16,7 @@
   background: #FFFFFF;
   color: #1F2937;
   width: 100%;
+  overflow-x: hidden;
 }
 
 .landing-page html {
@@ -43,4 +44,44 @@
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-color: #1F2937 !important;
+}
+
+/* Global responsive utilities */
+@media (max-width: 768px) {
+  .landing-page {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-page {
+    font-size: 13px;
+  }
+}
+
+/* Navigation responsive styles */
+.nav-link {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1F2937;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-family: 'DM Sans', sans-serif;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0;
+  display: block;
+}
+
+.nav-link:hover {
+  color: #EF4444;
+}
+
+@media (max-width: 768px) {
+  .nav-link {
+    font-size: 16px;
+    padding: 12px 0;
+    text-align: left;
+  }
 }

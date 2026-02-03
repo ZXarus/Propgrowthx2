@@ -209,11 +209,36 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-6 left-1/2 z-50 w-[calc(100%-32px)] max-w-6xl -translate-x-1/2 rounded-full border border-white/20 bg-white/60 backdrop-blur-xl shadow-lg">
-      <div className="flex items-center justify-between px-6 py-3">
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .navbar-container {
+              top: 16px !important;
+              width: calc(100% - 24px) !important;
+              padding: 12px 20px !important;
+            }
+            .navbar-logo {
+              font-size: 16px !important;
+            }
+            .navbar-logo img {
+              width: 32px !important;
+              height: 32px !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .navbar-container {
+              top: 12px !important;
+              width: calc(100% - 16px) !important;
+              padding: 10px 16px !important;
+            }
+          }
+        `}
+      </style>
+      <div className="navbar-container flex items-center justify-between px-6 py-3">
 
         <div className="flex items-center gap-2">
-          <img src="/logo.png" className="h-9 w-9" />
-          <span className="text-lg font-semibold text-gray-800">
+          <img src="/logo.png" className="navbar-logo h-9 w-9" />
+          <span className="navbar-logo text-lg font-semibold text-gray-800">
             PropGrowthX
           </span>
         </div>
@@ -279,51 +304,67 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className="lg:hidden rounded-2xl bg-white/90 backdrop-blur-xl shadow-xl px-6 py-4 space-y-4">
-          <button onClick={() => {scrollToSection("home");setOpen(false)}}
-        className="nav-link"> Home </button>  
-
-        {token && (
-            <Link to={`/dashboard/${role}`} className="nav-link">
-              Manage Properties
-            </Link>
-          )}
-
-          {!token && (
-          <>
-            <button onClick={() => {scrollToSection("how-it-works");setOpen(false)}}
-              className="nav-link"> How it Works </button>
-
-            <button onClick={() => {scrollToSection("features");setOpen(false)}}
-              className="nav-link">Features</button>
-
-            <button
-              onClick={() => {scrollToSection("pricing");setOpen(false)}}
-              className="nav-link">Pricing</button>
-          </>
-          )}
-
-          <Link to="/contact" className="nav-link">Support</Link>
-
-          {token && <Link to="/profile" className="nav-link">Profile</Link>}
-
-          {token && 
-          <button onClick={() => {
-            sessionStorage.clear();
-            window.location.href = "/"; 
-          }} className="flex items-center gap-2 rounded-md bg-destructive px-3 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2">
-          <LogOut className="h-4 w-4" />
-          <span>Logout</span>
-        </button>
-       }
-
-        {!token && <div className="hidden lg:block">
-          <Link to="/auth">
-            <button className="rounded-full bg-red-500 px-6 py-2 text-sm font-semibold text-white shadow-md hover:bg-red-600 transition">
-              Sign Up
+        <div className="mobile-menu lg:hidden absolute top-full left-0 right-0 mt-2 mx-4 rounded-2xl bg-white/95 backdrop-blur-xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="px-6 py-6 space-y-1">
+            <button onClick={() => {scrollToSection("home");setOpen(false)}}
+              className="w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
+              Home
             </button>
-          </Link>
-        </div>}
+
+            {token && (
+              <Link to={`/dashboard/${role}`} className="block w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
+                Manage Properties
+              </Link>
+            )}
+
+            {!token && (
+              <>
+                <button onClick={() => {scrollToSection("how-it-works");setOpen(false)}}
+                  className="w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
+                  How it Works
+                </button>
+
+                <button onClick={() => {scrollToSection("features");setOpen(false)}}
+                  className="w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
+                  Features
+                </button>
+
+                <button onClick={() => {scrollToSection("pricing");setOpen(false)}}
+                  className="w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
+                  Pricing
+                </button>
+              </>
+            )}
+
+            <Link to="/contact" className="block w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
+              Support
+            </Link>
+
+            {token && (
+              <>
+                <Link to="/profile" className="block w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
+                  Profile
+                </Link>
+                <button onClick={() => {
+                  sessionStorage.clear();
+                  window.location.href = "/"; 
+                }} className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium flex items-center gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </>
+            )}
+
+            {!token && (
+              <div className="pt-4 border-t border-gray-100 mt-4">
+                <Link to="/auth" onClick={() => setOpen(false)}>
+                  <button className="w-full rounded-lg bg-red-500 px-6 py-3 text-white font-semibold hover:bg-red-600 transition-all duration-200">
+                    Sign Up
+                  </button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </nav>

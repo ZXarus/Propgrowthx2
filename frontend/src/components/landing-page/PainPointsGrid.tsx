@@ -69,7 +69,7 @@ export default function PainPointsGrid(props: PainPointsGridProps) {
       style={{
         width: '100%',
         boxSizing: 'border-box',
-        padding: '80px 40px',
+        padding: '40px 16px',
         background: sectionBg,
         fontFamily:
           "DM Sans, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
@@ -189,6 +189,7 @@ export default function PainPointsGrid(props: PainPointsGridProps) {
               position: relative;
               top: 0;
               padding-right: 0;
+              text-align: center;
             }
             .pp-grid { 
               grid-template-columns: repeat(2, 1fr); 
@@ -202,11 +203,30 @@ export default function PainPointsGrid(props: PainPointsGridProps) {
             .pp-container {
               gap: 32px;
             }
+            .pp-card {
+              padding: 20px 16px !important;
+              min-height: 120px !important;
+            }
+            .pp-card-title {
+              font-size: 16px !important;
+            }
+            .pp-desc {
+              font-size: 12px !important;
+            }
           }
           
           @media (max-width: 480px) {
             section {
-              padding: 60px 20px !important;
+              padding: 32px 12px !important;
+            }
+            .pp-container {
+              gap: 16px !important;
+            }
+            .pp-title {
+              font-size: 24px !important;
+            }
+            .pp-sub {
+              font-size: 13px !important;
             }
           }
         `}

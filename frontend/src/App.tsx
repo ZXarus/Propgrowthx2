@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import TenantComplaints from "./pages/dashboard/tenant/TenantComplaints";
 import TenantTransactions from "./pages/dashboard/tenant/TenantTransactions";
 import OwnerComplaints from "./pages/dashboard/owner/OwnerComplaints";
+import PaymentsPage from "./pages/PaymentsPage";
 import { DataProvider } from "./context/dataContext";
 
 function App() {
@@ -31,8 +32,8 @@ function App() {
         <Routes>
 
         <Route path="/" element={<Index />} />
-        <Route path="/landing" element={<LandingPage />} />
         <Route path="/dashboard-nav" element={<DashboardNavPage />} />
+        <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/dashboard/owner" element={<OwnerDashboard />} />
         <Route path="/dashboard/owner/properties" element={<OwnerProperties />} />
