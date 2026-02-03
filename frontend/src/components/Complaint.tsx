@@ -20,7 +20,7 @@ const dummyIssues: Issue[] = [
     id: 1,
     question: "Water supply is not available regularly",
     answer:
-      "This usually happens due to local municipal issues or tank maintenance. Please contact the owner or society manager. If unresolved for 48 hours, raise a formal complaint.",
+      "This usually happens due to local municipal issue or tank maintenance. Please contact the owner or society manager. If unresolved for 48 hours, raise a formal complaint.",
   },
   {
     id: 2,
