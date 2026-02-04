@@ -196,6 +196,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
   const role = sessionStorage.getItem("role");
+  const id = sessionStorage.getItem('id')
   const [open, setOpen] = useState(false);
 
   const scrollToSection = (id: string) => {
@@ -206,6 +207,18 @@ export default function Navbar() {
       el?.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const fromProperty = location.state?.fromProperty;
+
+  const isActive = (path: string) => {
+    if (path === '/profile' && fromProperty) return;
+    else if(location.pathname.startsWith(path)){
+    return "border-b-2 border-red-500 text-red-600"
+    } else {
+      return "border-b-2 border-transparent";
+    }
+  }
+
 
   return (
     <nav className="fixed top-6 left-1/2 z-50 w-[calc(100%-32px)] max-w-6xl -translate-x-1/2 rounded-full border border-white/20 bg-white/60 backdrop-blur-xl shadow-lg">
@@ -236,8 +249,8 @@ export default function Navbar() {
       </style>
       <div className="navbar-container flex items-center justify-between px-6 py-3">
 
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" className="navbar-logo h-9 w-9" />
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection("home")}>
+            <img src="/logo.png" className="navbar-logo h-9 w-9" />
           <span className="navbar-logo text-lg font-semibold text-gray-800">
             PropGrowthX
           </span>
@@ -245,12 +258,12 @@ export default function Navbar() {
 
         <div className="hidden lg:flex items-center gap-6">
 
-        <button onClick={() => scrollToSection("home")}
-        className="nav-link"> Home </button>  
+        {/* <button onClick={() => scrollToSection("home")}
+          className={`nav-link ${isActive("/profile")}`}> Home </button>   */}
 
         {token && (
-            <Link to={`/dashboard/${role}`} className="nav-link">
-              Manage Properties
+            <Link to={`/dashboard/${role}`} className={`nav-link ${isActive(`/dashboard/${role}`)}`}>
+              Home
             </Link>
           )}
 
@@ -258,21 +271,21 @@ export default function Navbar() {
           <>
             <button
               onClick={() => scrollToSection("how-it-works")}
-              className="nav-link"> How it Works </button>
+                className="nav-link"> How it Works </button>
 
             <button
               onClick={() => scrollToSection("features")}
-              className="nav-link">Features</button>
+                className="nav-link">Features</button>
 
             <button
               onClick={() => scrollToSection("pricing")}
-              className="nav-link">Pricing</button>
+                className="nav-link">Pricing</button>
           </>
           )}
 
-          <Link to="/contact" className="nav-link">Support</Link>
+          <Link to="/contact"   className={`nav-link ${isActive("/contact")}`}>Support</Link>
 
-          {token && <Link to="/profile" className="nav-link">Profile</Link>}
+          {token && <Link to={`/profile/${id}`}   className={`nav-link ${isActive("/profile")}`}>Profile</Link>}
 
           {token && 
           <button onClick={() => {
@@ -311,6 +324,11 @@ export default function Navbar() {
               Home
             </button>
 
+        {token && (
+            <Link to={`/dashboard/${role}`} className={`nav-link ${isActive(`/dashboard/${role}`)}`}>
+              Home
+            </Link>
+          )}
             {token && (
               <Link to={`/dashboard/${role}`} className="block w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
                 Manage Properties

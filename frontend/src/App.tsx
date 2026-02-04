@@ -4,6 +4,7 @@ import ScrollToTop from "./hooks/ScrollToTop";
 import PrivateRoute from "./hooks/PrivateRoute";
 import PublicRoute from "./hooks/PublicRoute";
 import AuthPage from "./pages/AuthPage";
+import SetPassword from "./pages/SetPassword";
 import Index from "./pages/Index";
 import DashboardNavPage from "./pages/DashboardNavPage";
 import OwnerDashboard from "./pages/dashboard/owner/OwnerDashboard";
@@ -13,6 +14,7 @@ import TenantDashboard from "./pages/dashboard/tenant/TenantDashboard";
 import Properties from "./pages/Properties";
 import AllPropertiesPage from "./pages/Property/AllPropertiesPage";
 import PropertiesPage from "./pages/Property/PropertiesPage";
+import PropertyDetails from "./pages/PropertyDetails";
 import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import HowItWorks from "./pages/HowItWorks";
@@ -51,6 +53,7 @@ function App() {
 
         <Route element={<PublicRoute />}>
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/setPassword" element={<SetPassword />} />
         </Route>    
 
         <Route element={<PrivateRoute allowedRoles={["owner"]} />}>
@@ -68,7 +71,8 @@ function App() {
 
 
           <Route element={<PrivateRoute />}>
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/property/:id" element={<PropertyDetails />} />
           </Route>
 
         <Route path="*" element={<NotFound />} />  

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -14,15 +14,18 @@ import {
 import { Complaint } from '@/components/tenant/AddComplaintModal';
 import ComplaintList from '@/components/dashboard/ComplaintList';
 import { useData } from '@/context/dataContext';
+import DashboardSkeleton from '@/pages/SkeletonLoading';
 
 const OwnerComplaints = () => {
-  const { complaints, setComplaints, id } = useData();
+  const {complaints,setComplaints,id,loading} = useData();
 
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  
+  if(loading) return <DashboardSkeleton/>
 
   const ownerComp = complaints.filter(c => c.owner_id === id);
 
