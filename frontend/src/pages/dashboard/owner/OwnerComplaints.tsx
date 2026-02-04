@@ -44,7 +44,7 @@ const OwnerComplaints = () => {
       </Helmet>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@500;600;700;800&display=swap');
 
         :root {
           --brand-red: #DC2626;
@@ -103,11 +103,11 @@ const OwnerComplaints = () => {
 
         /* Page title */
         .page-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(28px, 3.6vw, 44px);
+          font-family: 'Inter', 'Geist', system-ui, sans-serif;
+          font-size: clamp(36px, 4.5vw, 56px);
           font-weight: 400;
-          letter-spacing: -1px;
-          line-height: 1.12;
+          letter-spacing: -1.5px;
+          line-height: 1.1;
           color: #0b1220;
           margin: 0;
           animation: slideInLeft 0.7s ease-out 0.1s both;
@@ -122,14 +122,14 @@ const OwnerComplaints = () => {
 
         /* Layout utilities */
         .container-custom {
-          max-width: 1100px;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 18px 20px;
+          padding: 24px 32px;
         }
 
         .header-hero {
           position: relative;
-          padding: 18px 28px 24px;
+          padding: 32px 40px 36px;
           border-radius: 16px;
           background:
             linear-gradient(
@@ -157,12 +157,12 @@ const OwnerComplaints = () => {
         }
 
         .header-subtitle {
-          font-size: 14px;
+          font-size: 16px;
           color: var(--muted);
           font-weight: 400;
           letter-spacing: 0.2px;
           line-height: 1.6;
-          margin-top: 10px;
+          margin-top: 12px;
           animation: fadeInUp 0.8s ease-out 0.25s both;
         }
 

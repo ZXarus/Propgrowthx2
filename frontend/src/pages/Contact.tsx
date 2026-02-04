@@ -82,7 +82,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       </Helmet>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@500;600;700;800&display=swap');
 
         * { font-family: 'Geist', sans-serif; box-sizing: border-box; }
 
@@ -148,7 +148,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         }
 
         .hero-title {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: 'Inter', 'Geist', system-ui, sans-serif;
           letter-spacing: -1px;
           background: linear-gradient(135deg, #000 0%, #404040 100%);
           -webkit-background-clip: text;

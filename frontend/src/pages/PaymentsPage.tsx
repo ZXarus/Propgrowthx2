@@ -113,17 +113,76 @@ export default function PaymentsPage() {
         <meta name="description" content="Manage rental payments, track collections, and monitor tenant transactions." />
       </Helmet>
 
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@500;600;700;800&display=swap');
+
+        * { font-family: 'Geist', sans-serif; box-sizing: border-box; }
+
+        .container-custom {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 24px 32px;
+        }
+
+        .payment-hero {
+          position: relative;
+          padding: 32px 40px 36px;
+          border-radius: 16px;
+          background:
+            linear-gradient(
+              180deg,
+              rgba(220, 38, 38, 0.04),
+              rgba(255, 255, 255, 0.95)
+            );
+          border: 1px solid rgba(16, 24, 40, 0.06);
+          box-shadow: 0 20px 50px rgba(2, 6, 23, 0.05);
+        }
+
+        .page-title {
+          font-family: 'Inter', 'Geist', system-ui, sans-serif;
+          font-size: clamp(28px, 3.5vw, 42px);
+          font-weight: 600;
+          letter-spacing: -1px;
+          line-height: 1.2;
+          color: #0b1220;
+          margin: 0;
+        }
+
+        .back-btn {
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(2,6,23,0.08);
+          border-radius: 8px;
+          padding: 8px 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 14px;
+          font-weight: 500;
+          color: #374151;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          text-decoration: none;
+        }
+        .back-btn:hover {
+          background: rgba(255, 255, 255, 1);
+          border-color: rgba(2,6,23,0.12);
+          color: #111827;
+        }
+      `}</style>
+
       <Layout showNavbar={false}>
         <div className="min-h-screen bg-white">
           {/* Header */}
           <div className="border-b border-gray-100">
-            <div className="container-custom py-8">
-              <a href="/dashboard-nav" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6 transition-colors">
-                <ArrowLeft className="w-4 h-4" />
-                Back
-              </a>
-              <h1 className="text-4xl font-bold text-gray-900 mb-3">Payment Management</h1>
-              <p className="text-gray-600 max-w-2xl">Track rental collections, monitor payment status, and manage your property finances with ease.</p>
+            <div className="container-custom py-12">
+              <div className="payment-hero">
+                <a href="/dashboard-nav" className="back-btn mb-6 inline-flex">
+                  <ArrowLeft className="w-4 h-4" />
+                  Back
+                </a>
+                <h1 className="page-title mb-4">Payment Management</h1>
+                <p className="text-gray-600 max-w-2xl">Track rental collections, monitor payment status, and manage your property finances with ease.</p>
+              </div>
             </div>
           </div>
 
