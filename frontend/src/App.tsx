@@ -25,6 +25,7 @@ import TenantTransactions from "./pages/dashboard/tenant/TenantTransactions";
 import OwnerComplaints from "./pages/dashboard/owner/OwnerComplaints";
 import PaymentsPage from "./pages/PaymentsPage";
 import { DataProvider } from "./context/dataContext";
+import SecuritySettingsPage from '@/pages/SecuritySettingsPage';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/security-settings" element={<SecuritySettingsPage />} />
 
         <Route element={<PublicRoute />}>
             <Route path="/auth" element={<AuthPage />} />

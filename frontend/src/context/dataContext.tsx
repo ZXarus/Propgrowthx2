@@ -41,11 +41,6 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     useEffect(() => {
-      if(!id) {
-        setLoading(false);
-        return;
-      }
-
     const fetchAllData = async () => {
     setLoading(true);
 

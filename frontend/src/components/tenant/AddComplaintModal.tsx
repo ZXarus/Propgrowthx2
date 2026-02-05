@@ -99,7 +99,7 @@ const AddComplaintModal = ({
   });
 
   useEffect(()=>{
-    setMyProperties(properties.filter((p) => p.buyer_id === id););
+    setMyProperties(properties.filter((p) => p.buyer_id === id));
   },[id, properties])
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

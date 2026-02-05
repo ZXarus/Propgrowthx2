@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
+import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -453,26 +454,11 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
       `}</style>
 
-      <div className="min-h-screen bg-white">
-        {/* Decorative background elements */}
-        <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-red-50 rounded-full blur-3xl opacity-20" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-20" />
-        </div>
+      <Layout>
+        <div className="min-h-screen bg-white">
 
-        {/* Back Button */}
-        <div className="fixed top-8 left-8 z-50">
-          <button
-            onClick={() => window.location.href = '/dashboard-nav'}
-            className="back-btn"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
-        </div>
-
-        {/* Enhanced Header */}
-        <section className="contact-hero relative pt-32 pb-20 lg:pt-15 lg:pb-20 px-6">
+          {/* Enhanced Header */}
+          <section className="contact-hero relative pt-20 pb-20 lg:pt-15 lg:pb-20 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="max-w-3xl">
               
@@ -494,10 +480,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         </div>
 
         {/* Main Content */}
-        <section className="py-20 lg:py-20 px-6">
+        <section className="py-8 lg:py-8 px-6">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-1 gap-20">
-              <div className="section-heading mb-6">
+            <div className="grid lg:grid-cols-1 gap-8">
+              <div className="section-heading mb-3">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-2">Get in touch</h2>
                 <p className="text-gray-600 text-sm">We're available across multiple channels</p>
               </div>
@@ -555,7 +541,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                           Send another message
                         </button>
                         <button
-                          onClick={() => window.location.href = '/dashboard-nav'}
+                          onClick={() => window.location.href = '/dashboard/owner'}
                           className="submit-btn-modern"
                         >
                           Back to dashboard
@@ -648,7 +634,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             </div>
           </div>
         </section>
-      </div>
+        </div>
+      </Layout>
     </>
   );
 };
