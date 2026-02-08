@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, User, Lock, UserCogIcon, Eye, EyeOff } from "lucide-react";
-import "../styles/authPage.css";
 
 const AuthPage = () => {
   const navigate = useNavigate();

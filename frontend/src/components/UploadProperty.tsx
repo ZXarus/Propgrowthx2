@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "../styles/uploadProperty.css";
 
 type UploadPropertyProps = {
   ownerId: string;
