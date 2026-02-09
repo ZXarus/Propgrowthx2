@@ -962,23 +962,27 @@ const handleIdProofChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                         </div>
                       </Link>
                     </Button>
-                    <Button variant="outline" className="justify-start h-auto py-5 px-5 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors shadow-sm">
-                      <CreditCard className="w-5 h-5 mr-3 text-gray-700 flex-shrink-0" />
-                      <div className="text-left">
-                        <div className="font-medium text-gray-900 text-sm">Billing & Payments</div>
-                        <div className="text-xs text-gray-600">
-                          Payment methods, invoices
+                    <Button asChild variant="outline" className="justify-start h-auto py-4 border-gray-200 hover:bg-gray-50">
+                      <Link to="/billing">
+                        <CreditCard className="w-5 h-5 mr-3 text-gray-700" />
+                        <div className="text-left">
+                          <div className="font-medium text-gray-900">Billing & Payments</div>
+                          <div className="text-sm text-gray-600">
+                            Payment methods, invoices
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                     </Button>
-                    <Button variant="outline" className="justify-start h-auto py-5 px-5 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors shadow-sm">
-                      <Building2 className="w-5 h-5 mr-3 text-gray-700 flex-shrink-0" />
-                      <div className="text-left">
-                        <div className="font-medium text-gray-900 text-sm">Property Settings</div>
-                        <div className="text-sm text-gray-600">
-                          Default listing preferences
+                    <Button asChild variant="outline" className="justify-start h-auto py-4 border-gray-200 hover:bg-gray-50">
+                      <Link to="/property-settings">
+                        <Building2 className="w-5 h-5 mr-3 text-gray-700" />
+                        <div className="text-left">
+                          <div className="font-medium text-gray-900">Property Settings</div>
+                          <div className="text-sm text-gray-600">
+                            Default listing preferences
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                     </Button>
                   </div>
                 </div>

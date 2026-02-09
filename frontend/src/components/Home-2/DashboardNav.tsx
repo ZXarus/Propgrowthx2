@@ -210,10 +210,10 @@ export default function DashboardNav() {
             {[
               { id: "properties", label: "Properties", icon: "fa-building", onClick: () => navigate("/properties-manage") },
               { id: "payments", label: "Payments", icon: "fa-receipt", onClick: () => navigate("/payments") },
-              { id: "maintenance", label: "Maintenance", icon: "fa-wrench" },
               { id: "support", label: "Support", icon: "fa-headset", onClick: () => navigate("/contact") },
               { id: "complaints", label: "Complaints", icon: "fa-folder", onClick: () => navigate("/dashboard/owner/complaints") },
               { id: "team", label: "Team", icon: "fa-users" },
+              { id: "profile", label: "Profile", icon: "fa-user", onClick: () => navigate("/profile") },
               { id: "settings", label: "Settings", icon: "fa-cog" },
             ].map((item) => (
               <NavItem

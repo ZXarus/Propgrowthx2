@@ -278,12 +278,13 @@ export default function Navbar() {
                 className="nav-link">Features</button>
 
             <button
-              onClick={() => scrollToSection("pricing")}
-                className="nav-link">Pricing</button>
+              onClick={() => scrollToSection("get-started")}
+                className="nav-link">Get Started</button>
           </>
           )}
 
           <Link to="/contact"   className={`nav-link ${isActive("/contact")}`}>Support</Link>
+          <Link to="/about-us" className="nav-link">About Us</Link>
 
           {token && <Link to={`/profile/${id}`}   className={`nav-link ${isActive("/profile")}`}>Profile</Link>}
 
@@ -347,9 +348,9 @@ export default function Navbar() {
                   Features
                 </button>
 
-                <button onClick={() => {scrollToSection("pricing");setOpen(false)}}
+                <button onClick={() => {scrollToSection("get-started");setOpen(false)}}
                   className="w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
-                  Pricing
+                  Get Started
                 </button>
               </>
             )}
@@ -357,6 +358,10 @@ export default function Navbar() {
             <Link to="/contact" className="block w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
               Support
             </Link>
+            <Link to="/about-us" onClick={() => setOpen(false)} className="block w-full text-left px-4 py-3 text-gray-800 hover:bg-red-50 hover:text-red-500 rounded-lg transition-all duration-200 font-medium">
+              About Us
+            </Link>
+            
 
             {token && (
               <>

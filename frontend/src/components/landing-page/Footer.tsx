@@ -1,4 +1,6 @@
 // Load Font Awesome
+import { Link } from "react-router-dom";
+
 if (typeof document !== "undefined") {
     const faHref =
         "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -116,18 +118,16 @@ export default function Footer() {
             <div>
               <h4 style={{ fontSize: "16px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.1em", color: "#b71c1c", margin: 0 }}>Product</h4>
               <ul style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "8px", fontSize: "15px", color: "#e6e6e6", lineHeight: "20px", listStyle: "none", padding: 0, margin: "24px 0 0 0" }}>
-                <li>Features</li>
-                <li>How it Works</li>
-                <li>Pricing</li>
-                <li>Use Cases</li>
-                <li>FAQ</li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How it Works</a></li>
+                <li><a href="#get-started">Get Started</a></li>
               </ul>
             </div>
 
             <div>
               <h4 style={{ fontSize: "16px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.1em", color: "#b71c1c", margin: 0 }}>Learn More</h4>
               <ul style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "8px", fontSize: "15px", color: "#e6e6e6", lineHeight: "20px", listStyle: "none", padding: 0, margin: "24px 0 0 0" }}>
-                <li>About PropGrowthX</li>
+                <li><Link to="/about-us" style={{ color: '#e6e6e6', textDecoration: 'none' }}>About PropGrowthX</Link></li>
                 <li>Blog</li>
                 <li>Privacy Policy</li>
                 <li>Contact Us</li>

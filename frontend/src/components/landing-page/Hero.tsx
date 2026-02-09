@@ -167,7 +167,7 @@ export default function Hero() {
               e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.12)'
             }}
           >
-            JOIN THE WAITING LIST
+            REGISTER YOUR PROPERTY
           </button>
         </div>
       </div>

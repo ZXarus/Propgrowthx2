@@ -47,6 +47,7 @@ export default function DigitalTwinShowcase(props: DigitalTwinShowcaseProps) {
 
     return (
         <div
+            id="features"
             style={{
                 width: "100%",
                 padding: "40px 16px",

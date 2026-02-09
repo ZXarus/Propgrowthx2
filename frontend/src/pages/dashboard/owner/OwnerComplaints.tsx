@@ -184,8 +184,6 @@ const OwnerComplaints = () => {
           position: relative;
         }
 
-
-
         /* Back button (restored glassy look but refined) */
         .back-btn {
           display:inline-flex;
@@ -296,7 +294,41 @@ const OwnerComplaints = () => {
         .stat-card.open::before { background: linear-gradient(180deg, rgba(255,193,7,0.15), rgba(255,193,7,0.06)); }
         .stat-card.progress::before { background: linear-gradient(180deg, rgba(14,165,164,0.12), rgba(14,165,164,0.05)); }
         .stat-card.resolved::before { background: linear-gradient(180deg, rgba(5,150,105,0.12), rgba(5,150,105,0.04)); }
-        .stat-card.urgent::before { background: linear-gradient(180deg, rgba(220,38,38,0.16), rgba(220,38,38,0.06)); }
+        
+        /* URGENT CARD - ENHANCED WITH RED */
+        .stat-card.urgent {
+          background: linear-gradient(180deg, rgba(220,38,38,0.06) 0%, #fff9f9 100%);
+          border: 1.2px solid rgba(220,38,38,0.18);
+          box-shadow: 0 8px 24px rgba(220,38,38,0.09);
+        }
+
+        .stat-card.urgent::before { 
+          background: linear-gradient(180deg, rgba(220,38,38,0.22), rgba(220,38,38,0.08)); 
+        }
+
+        .stat-card.urgent:hover {
+          border-color: rgba(220,38,38,0.28);
+          box-shadow: 0 20px 48px rgba(220,38,38,0.12);
+        }
+
+        .stat-card.urgent .stat-icon {
+          background: rgba(220,38,38,0.1);
+          border-color: rgba(220,38,38,0.15);
+        }
+
+        .stat-card.urgent .stat-icon svg {
+          color: #dc2626;
+          font-weight: 700;
+        }
+
+        .stat-card.urgent .stat-number {
+          color: #991b1b;
+        }
+
+        .stat-card.urgent .stat-label {
+          color: #7f1d1d;
+          font-weight: 800;
+        }
 
         /* Resolution card */
         .resolution-card {

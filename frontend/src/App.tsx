@@ -26,6 +26,9 @@ import OwnerComplaints from "./pages/dashboard/owner/OwnerComplaints";
 import PaymentsPage from "./pages/PaymentsPage";
 import { DataProvider } from "./context/dataContext";
 import SecuritySettingsPage from '@/pages/SecuritySettingsPage';
+import BillingPage from './pages/BillingPage';
+import PropertySettingsPage from '@/pages/PropertySettingsPage';
+import AboutUsPage from '@/pages/AboutUsPage';
 
 function App() {
   return (
@@ -51,7 +54,10 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/security-settings" element={<SecuritySettingsPage />} />
+        <Route path="/billing" element={<BillingPage />} />
+        <Route path="/property-settings" element={<PropertySettingsPage />} />
 
         <Route element={<PublicRoute />}>
             <Route path="/auth" element={<AuthPage />} />

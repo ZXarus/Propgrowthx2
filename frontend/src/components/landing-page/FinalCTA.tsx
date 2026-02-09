@@ -53,6 +53,7 @@ export default function FinalCTA(props: FinalCTAProps) {
 
     return (
         <div
+            id="get-started"
             style={{
                 width: "100%",
                 padding: "40px 16px",
