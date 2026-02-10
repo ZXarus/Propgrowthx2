@@ -24,13 +24,11 @@ export const register = async (req, res) => {
       })
       .select()
       .single();
-    console.log(data);
 
     if (error) {
       console.log("Error inserting user:", error.message);
       return res.status(400).json({ error: error.message });
     }
-    console.log("here");
 
     res.status(201).json({
       message: "Register successful",
@@ -43,7 +41,6 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password, role } = req.body;
-  console.log(req.body);
 
   try {
     const { data: user, error } = await supabase
@@ -63,6 +60,7 @@ export const login = async (req, res) => {
     res.json({
       message: "Login successful",
       token,
+      role: user.role,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

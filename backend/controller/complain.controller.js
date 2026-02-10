@@ -45,27 +45,18 @@ export const createComplaint = async (req, res) => {
 };
 
 export const getUserComplaints = async (req, res) => {
-  const { userId } = req.params;
+  const userId = req.user.id;
+  const { role } = req.params;
 
   try {
-    const { data: user, error: userError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .single();
-
-    if (userError || !user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
     let query = supabase
       .from("complains")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (user.role === "owner") {
+    if (role === "owner") {
       query = query.eq("owner_id", userId);
-    } else if (user.role === "tenant") {
+    } else if (role === "tenant") {
       query = query.eq("tenant_id", userId);
     } else {
       return res.status(400).json({ error: "Invalid user role" });
@@ -75,7 +66,7 @@ export const getUserComplaints = async (req, res) => {
 
     if (error) throw error;
 
-    res.status(200).json({ complaints: data });
+    res.status(200).json(data);
   } catch (err) {
     console.error("Fetch complaints error:", err);
     res

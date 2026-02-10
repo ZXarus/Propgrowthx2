@@ -9,6 +9,7 @@ import {
 } from "../controller/review.controller.js";
 
 router.post("/create", createReview);
+
 router.get("/get/:propertyId", getReviewsByProperty);
 
 router.put("/update/:reviewId", updateReview);

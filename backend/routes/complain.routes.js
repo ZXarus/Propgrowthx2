@@ -8,9 +8,10 @@ import {
   deleteComplaint,
   deleteOldComplaints,
 } from "../controller/complain.controller.js";
+import { verifyToken } from "../middlewares/jwt.middleware.js";
 
 router.post("/create", createComplaint);
-router.get("/get/:userId", getUserComplaints);
+router.get("/getComplainByuserId", verifyToken, getUserComplaints);
 router.put("/update/:complaintId", updateComplaint);
 router.delete("/delete/:complaintId", deleteComplaint);
 

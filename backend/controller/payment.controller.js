@@ -10,7 +10,7 @@ export const getPayments = async (req, res) => {
   res.status(200).json(data);
 };
 export const getPaymentsById = async (req, res) => {
-  const { id } = req.params; // user_id
+  const id = req.user.id;
 
   try {
     const { data, error } = await supabase
@@ -23,7 +23,7 @@ export const getPaymentsById = async (req, res) => {
         payment_date,
         payment_mode,
         status
-      `
+      `,
       )
       .eq("user_id", id)
       .order("payment_date", { ascending: false });
@@ -32,9 +32,7 @@ export const getPaymentsById = async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
-    res.status(200).json({
-      payments: data,
-    });
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch payments" });
   }

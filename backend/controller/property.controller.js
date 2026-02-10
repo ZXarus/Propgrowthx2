@@ -26,15 +26,14 @@ export const getPropertyById = async (req, res) => {
   }
 };
 
-export const getAllPropertiesByOwner = async (req, res) => {
-  const { owner_id } = req.query;
+export const getAllPropertiesByUser = async (req, res) => {
+  const owner_id = req.user.id;
 
   if (!owner_id) {
     return res.status(400).json({ error: "Owner ID is required" });
   }
 
   try {
-    // Fetch all properties of the owner
     const { data: properties, error } = await supabase
       .from("properties")
       .select("*")
@@ -58,57 +57,13 @@ export const getAllPropertiesByOwner = async (req, res) => {
       }),
     );
 
-    res.status(200).json({
-      owner_id,
-      properties: propertiesWithImages,
-    });
+    res.status(200).json(propertiesWithImages);
   } catch (err) {
     console.error("Unexpected error:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
-export const getAllPropertiesByBuyer = async (req, res) => {
-  const { buyer_id } = req.query;
-
-  if (!buyer_id) {
-    return res.status(400).json({ error: "Owner ID is required" });
-  }
-
-  try {
-    // Fetch all properties of the owner
-    const { data: properties, error } = await supabase
-      .from("properties")
-      .select("*")
-      .eq("buyer_id", buyer_id);
-
-    if (error) throw error;
-
-    const propertiesWithImages = await Promise.all(
-      properties.map(async (prop) => {
-        const { data: images, error: imgError } = await supabase
-          .from("property_images")
-          .select("*")
-          .eq("prop_id", prop.id);
-
-        if (imgError) console.log("Error fetching images:", imgError.message);
-
-        return {
-          ...prop,
-          images: images || [],
-        };
-      }),
-    );
-
-    res.status(200).json({
-      buyer_id,
-      properties: propertiesWithImages,
-    });
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    res.status(500).json({ error: err.message });
-  }
-};
 export const getAll = async (req, res) => {
   try {
     // Fetch all properties
@@ -141,9 +96,11 @@ export const getAll = async (req, res) => {
 };
 
 export const createProperty = async (req, res) => {
+  const owner_id = req.user.id;
+  console.log(owner_id);
+
   try {
     const {
-      owner_id,
       property_name,
       address,
       prize,
