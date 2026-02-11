@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 import { 
   Building2, 
   Users, 
@@ -10,16 +12,40 @@ import {
   BarChart3,
   Lock,
   CheckCircle,
-  MapPin,
   Clock,
-  Award
+  Award,
+  Smartphone,
+  Lightbulb,
+  Target,
+  Layers,
+  Rocket,
+  Heart
 } from 'lucide-react';
+import Layout from '@/components/layout/Layout';
 
 const propertyManagementImage = "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=500&fit=crop";
 const tenantCommunicationImage = "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=500&fit=crop";
 
 const AboutUsPage: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
+    const navigate = useNavigate();
+
+    const handleGetStarted = async () => {
+        try {
+            const { data } = await supabase.auth.getUser();
+            const token = sessionStorage.getItem('token');
+            const role = sessionStorage.getItem('role');
+            if ((data && data.user) || token) {
+                if (role === 'owner') navigate('/dashboard/owner');
+                else if (role === 'tenant') navigate('/dashboard/tenant');
+                else navigate('/dashboard/owner');
+            } else {
+                navigate('/auth');
+            }
+        } catch (err) {
+            navigate('/auth');
+        }
+    };
 
     useEffect(() => {
         document.title = 'About PropGrowthX - Remote Property Management Platform';
@@ -48,9 +74,10 @@ const AboutUsPage: React.FC = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-white overflow-hidden">
-            {/* Enhanced Hero Section */}
-            <div className="relative bg-white overflow-hidden border-b border-gray-200">
+        <Layout>
+            <div className="min-h-screen bg-white overflow-hidden">
+                {/* Enhanced Hero Section */}
+                <div className="relative bg-white overflow-hidden border-b border-gray-200">
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0 opacity-5">
                     <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-red-600 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
@@ -101,26 +128,30 @@ const AboutUsPage: React.FC = () => {
                     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-6">The Problem We Solve</h2>
                     <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto mb-12">Property owners today rely on outdated methods that create chaos, uncertainty, and lost control.</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mt-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6 mt-12 max-w-2xl mx-auto">
                         <ProblemCard 
                             icon={Clock}
                             title="Manual Workflows"
-                            description="Excel sheets, WhatsApp messages, and physical visits consume time and resources"
-                        />
-                        <ProblemCard 
-                            icon={AlertCircle}
-                            title="Lost Payments"
-                            description="No automated tracking leads to missed reminders and overdue rent"
-                        />
-                        <ProblemCard 
-                            icon={Eye}
-                            title="No Real-Time Visibility"
-                            description="Owners lack control and certainty about their property status"
+                            description="Excel sheets, WhatsApp messages, and physical visits consume time"
+                            variant="red"
                         />
                         <ProblemCard 
                             icon={TrendingUp}
+                            title="Lost Payments"
+                            description="No automated tracking leads to missed reminders and overdue rent"
+                            variant="red"
+                        />
+                        <ProblemCard 
+                            icon={Eye}
+                            title="No Visibility"
+                            description="Owners lack control and certainty about property status"
+                            variant="red"
+                        />
+                        <ProblemCard 
+                            icon={Lightbulb}
                             title="Missed Opportunities"
-                            description="Without data, owners can't optimize pricing or identify issues early"
+                            description="Without data, owners can't optimize pricing"
+                            variant="red"
                         />
                     </div>
                 </div>
@@ -134,42 +165,54 @@ const AboutUsPage: React.FC = () => {
                     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-6">The Digital Twin Platform</h2>
                     <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto mb-16">Every property gets a digital presence that gives owners complete control and visibility—without ever visiting the property.</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 max-w-5xl mx-auto">
                         <SolutionCard 
                             icon={Building2}
                             title="Property Digital Twin"
-                            description="Complete digital profile of each property with tenant data, lease timelines, payment history, and photo documentation"
+                            description="Complete digital profile with tenant data, lease timelines, and payment history"
                             delay="0"
+                            bgColor="from-red-500"
+                            borderColor="border-red-200"
                         />
                         <SolutionCard 
                             icon={Users}
                             title="Tenant Management"
-                            description="Centralized tenant information, automated communication, lease tracking, and complaint management in one place"
-                            delay="200"
+                            description="Centralized tenant information, automated communication, and complaint management"
+                            delay="100"
+                            bgColor="from-red-500"
+                            borderColor="border-red-200"
                         />
                         <SolutionCard 
                             icon={Zap}
                             title="Automated Workflows"
-                            description="Smart reminders, rent collection tracking, maintenance job tickets, and vendor assignment—all automated"
-                            delay="400"
+                            description="Smart reminders, rent tracking, maintenance tickets, and vendor assignment"
+                            delay="200"
+                            bgColor="from-red-500"
+                            borderColor="border-red-200"
                         />
                         <SolutionCard 
                             icon={BarChart3}
                             title="Financial Intelligence"
-                            description="Real-time rent status, ROI calculations, pricing benchmarks, and financial analytics for smarter decisions"
-                            delay="600"
+                            description="Real-time rent status, ROI calculations, and pricing benchmarks"
+                            delay="300"
+                            bgColor="from-red-500"
+                            borderColor="border-red-200"
                         />
                         <SolutionCard 
                             icon={Lock}
                             title="Secure & Reliable"
-                            description="Bank-level security, encrypted data storage, multi-tenant isolation, and 99.5% uptime guarantee"
-                            delay="800"
+                            description="Bank-level security, encrypted data storage, and 99.5% uptime guarantee"
+                            delay="400"
+                            bgColor="from-red-500"
+                            borderColor="border-red-200"
                         />
                         <SolutionCard 
-                            icon={CheckCircle}
+                            icon={Target}
                             title="Complete Control"
-                            description="Every action reflects on your property's digital twin—full visibility and control without manual visits"
-                            delay="1000"
+                            description="Every action reflects on your digital twin—full visibility without manual visits"
+                            delay="500"
+                            bgColor="from-red-500"
+                            borderColor="border-red-200"
                         />
                     </div>
                 </div>
@@ -213,63 +256,75 @@ const AboutUsPage: React.FC = () => {
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4">Everything Built Into One Platform</h2>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6 max-w-4xl mx-auto">
                         <FeatureModule
                             icon={Building2}
                             title="Property Management"
                             features={['Digital property profiles', 'Photo documentation', 'Lease management', 'File vault']}
+                            variant="vertical"
+                            iconBg="bg-gradient-to-br from-red-500 to-red-600"
                         />
                         <FeatureModule
                             icon={Users}
                             title="Tenant Operations"
                             features={['Tenant database', 'Communication history', 'Complaint tracking', 'Lease timelines']}
+                            variant="vertical"
+                            iconBg="bg-gradient-to-br from-red-500 to-red-600"
                         />
                         <FeatureModule
                             icon={BarChart3}
                             title="Financial Analytics"
                             features={['ROI calculations', 'Pricing benchmarks', 'Payment tracking', 'Vacancy warnings']}
+                            variant="vertical"
+                            iconBg="bg-gradient-to-br from-red-500 to-red-600"
                         />
                         <FeatureModule
                             icon={Clock}
                             title="Automated Reminders"
                             features={['SMS/WhatsApp alerts', 'Payment reminders', 'Maintenance updates', 'Scheduled notifications']}
+                            variant="vertical"
+                            iconBg="bg-gradient-to-br from-red-500 to-red-600"
                         />
                     </div>
                 </div>
 
-                {/* Enhanced Vision Section */}
-                <div className={`mt-20 lg:mt-28 transform transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                    <div className="relative bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 sm:p-10 lg:p-12 text-center border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 group">
+               <div className={`mt-20 lg:mt-28 transform transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+                    <div className="relative overflow-hidden rounded-3xl p-12 text-center bg-black border border-red-500/20 shadow-2xl group">
                         
+                        {/* Animated background */}
+                        <div className="absolute inset-0 opacity-10">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-600 rounded-full blur-3xl animate-pulse"></div>
+                        </div>
+
                         {/* Compact Header */}
-                        <div className="flex flex-col items-center mb-6">
-                            <div className="h-14 w-14 rounded-xl bg-red-600 text-white flex items-center justify-center mb-3 shadow-sm group-hover:shadow-md transition-shadow duration-300">
-                                <Eye className="h-7 w-7" />
+                        <div className="relative z-10 flex flex-col items-center mb-6">
+                            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 text-white flex items-center justify-center mb-4 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                                <Eye className="h-8 w-8" />
                             </div>
-                            <div className="text-lg font-bold text-red-600 uppercase tracking-wide">
+                            <div className="text-lg font-bold text-red-400 uppercase tracking-wide">
                                 Our Vision
                             </div>
                         </div>
 
                         {/* Compact Title */}
-                        <h2 className="text-2xl sm:text-3xl font-bold text-black mb-6 leading-snug">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 leading-snug relative z-10">
                             The Operating System for Property Owners
                         </h2>
 
                         {/* Our Vision */}
-                        <div className="max-w-4xl mx-auto">
-                            <p className="text-base text-gray-700 leading-relaxed">
-                                To become the <span className="font-semibold text-red-600">operating system for property owners</span> worldwide. 
-                                We envision a future where <span className="font-semibold text-black">property management is digital, transparent, and 
-                                automated</span>—where owners feel <span className="font-semibold text-red-600">directly connected to their assets</span> regardless 
-                                of location. By replacing <span className="font-semibold text-black">Excel, WhatsApp, and uncertainty with real-time control</span>, 
+                        <div className="max-w-3xl mx-auto relative z-10">
+                            <p className="text-base text-gray-100 leading-relaxed">
+                                To become the <span className="font-semibold text-red-400">operating system for property owners</span> worldwide. 
+                                We envision a future where <span className="font-semibold text-white">property management is digital, transparent, and 
+                                automated</span>—where owners feel <span className="font-semibold text-red-400">directly connected to their assets</span> regardless 
+                                of location. By replacing <span className="font-semibold text-white">Excel, WhatsApp, and uncertainty with real-time control</span>, 
                                 PropGrowthX empowers property owners to build wealth with confidence.
                             </p>
                         </div>
 
                         {/* Interactive Accent Line */}
-                        <div className="mt-6 flex justify-center">
-                            <div className="w-12 h-0.5 bg-red-600 rounded-full group-hover:w-16 transition-all duration-300"></div>
+                        <div className="mt-8 flex justify-center relative z-10">
+                            <div className="w-12 h-1 bg-gradient-to-r from-red-500 to-red-400 rounded-full group-hover:w-20 transition-all duration-300"></div>
                         </div>
                     </div>
                 </div>
@@ -284,65 +339,77 @@ const AboutUsPage: React.FC = () => {
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4">Why PropGrowthX Is Different</h2>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6 max-w-3xl mx-auto">
                         <PhilosophyCard
                             title="Presence Over Dashboard"
                             description="We're not another dashboard tool. We're a digital presence platform that makes owners feel connected to their property."
                             icon={Eye}
+                            bgGradient="from-red-50 to-rose-50"
+                            borderColor="border-red-200"
+                            iconBg="bg-red-500"
                         />
                         <PhilosophyCard
                             title="Control Over Complexity"
                             description="Simplicity is our core principle. Every feature is designed to increase owner control and certainty, not add confusion."
                             icon={Zap}
+                            bgGradient="from-red-50 to-rose-50"
+                            borderColor="border-red-200"
+                            iconBg="bg-red-500"
                         />
                         <PhilosophyCard
                             title="Workflows Over Analytics"
                             description="We prioritize automated workflows that save time—rent reminders, maintenance tracking, and financial updates happen automatically."
-                            icon={Clock}
+                            icon={Layers}
+                            bgGradient="from-red-50 to-rose-50"
+                            borderColor="border-red-200"
+                            iconBg="bg-red-500"
                         />
                         <PhilosophyCard
                             title="Retention Over Growth Metrics"
-                            description="We measure success by how much owners depend on PropGrowthX—it should become their operating system, not a tool they occasionally use."
-                            icon={TrendingUp}
+                            description="We measure success by how much owners depend on PropGrowthX—it should become their operating system."
+                            icon={Heart}
+                            bgGradient="from-red-50 to-rose-50"
+                            borderColor="border-red-200"
+                            iconBg="bg-red-500"
                         />
                     </div>
                 </div>
 
                 {/* Enhanced Statistics Section */}
                 <div className={`mt-24 lg:mt-32 transform transition-all duration-1000 delay-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                    <div className="bg-white rounded-2xl p-8 sm:p-12 lg:p-16 border-0 shadow-lg">
-                        <div className="text-center mb-12 lg:mb-16">
-                            <div className="inline-block mb-3">
-                                <div className="w-12 h-1 bg-red-600 mx-auto mb-2"></div>
-                                <span className="text-sm font-semibold text-red-600 uppercase tracking-wider">Why Choose Us</span>
-                            </div>
-                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4">Trusted by Property Owners Worldwide</h2>
-                            <p className="text-lg text-gray-700 max-w-3xl mx-auto">Advanced technology delivering real-time insights and control</p>
+                    <div className="text-center mb-12">
+                        <div className="inline-block mb-3">
+                            <div className="w-12 h-1 bg-red-600 mx-auto mb-2"></div>
+                            <span className="text-sm font-semibold text-red-600 uppercase tracking-wider">Why Choose Us</span>
                         </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-1 gap-8 lg:gap-12 md:px-6 text-center">
-                            <StatCard
-                                icon={Users}
-                                number="500+"
-                                label="Properties Managed"
-                                description="Owners across multiple countries managing thousands of rental units with PropGrowthX"
-                                delay="0"
-                            />
-                            <StatCard
-                                icon={TrendingUp}
-                                number="95%"
-                                label="Rent Collection Rate"
-                                description="Automated reminders and tracking significantly improve payment compliance"
-                                delay="200"
-                            />
-                            <StatCard
-                                icon={Award}
-                                number="24/7"
-                                label="Platform Uptime"
-                                description="99.5% guaranteed uptime with secure, encrypted data storage and multi-tenant isolation"
-                                delay="400"
-                            />
-                        </div>
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4">Trusted by Property Owners Worldwide</h2>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 max-w-4xl mx-auto">
+                        <StatCard
+                            icon={Building2}
+                            number="500+"
+                            label="Properties Managed"
+                            description="Thousands of rental units managed globally"
+                            delay="0"
+                            variant="red"
+                        />
+                        <StatCard
+                            icon={TrendingUp}
+                            number="95%"
+                            label="Rent Collection Rate"
+                            description="Automated reminders improve payment compliance"
+                            delay="150"
+                            variant="red"
+                        />
+                        <StatCard
+                            icon={Award}
+                            number="24/7"
+                            label="Platform Uptime"
+                            description="99.5% guaranteed with secure data storage"
+                            delay="300"
+                            variant="red"
+                        />
                     </div>
                 </div>
 
@@ -352,67 +419,66 @@ const AboutUsPage: React.FC = () => {
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-6">Ready to Transform Your Property Management?</h2>
                         <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-8">Join property owners who have replaced chaos with control. Start managing your properties with confidence today.</p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <button className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors duration-300">
+                            <button onClick={handleGetStarted} className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors duration-300 shadow-lg">
                                 Get Started Free
-                            </button>
-                            <button className="px-8 py-3 border-2 border-red-600 text-red-600 font-semibold rounded-lg hover:bg-red-50 transition-colors duration-300">
-                                Schedule Demo
                             </button>
                         </div>
                     </div>
                 </div>
 
             </div>
-        </div>
+            </div>
+        </Layout>
     );
 };
 
 // Reusable Components
 
-const ProblemCard = ({ icon: Icon, title, description }: { 
+const ProblemCard = ({ icon: Icon, title, description, variant }: { 
     icon: React.ElementType, 
     title: string, 
-    description: string 
+    description: string,
+    variant: 'red'
 }) => {
     return (
-        <div className="group relative bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+        <div className="group relative bg-gradient-to-br from-red-50 to-red-50 p-5 rounded-xl border border-red-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
             <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
-                        <Icon className="w-6 h-6" />
+                <div className="flex-shrink-0 mt-1">
+                    <div className="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
+                        <Icon className="w-5 h-5" />
                     </div>
                 </div>
                 <div className="text-left">
-                    <h3 className="text-lg font-bold text-black mb-2">{title}</h3>
-                    <p className="text-sm text-gray-600">{description}</p>
+                    <h3 className="text-base font-bold text-black mb-1">{title}</h3>
+                    <p className="text-xs text-gray-600 leading-snug">{description}</p>
                 </div>
             </div>
         </div>
     );
 };
 
-const SolutionCard = ({ icon: Icon, title, description, delay }: { 
+const SolutionCard = ({ icon: Icon, title, description, delay, bgColor, borderColor }: { 
     icon: React.ElementType, 
     title: string, 
     description: string,
-    delay: string 
+    delay: string,
+    bgColor: string,
+    borderColor: string
 }) => {
     return (
         <div 
-            className="group relative bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden"
+            className={`group relative bg-white p-6 rounded-2xl shadow-md border ${borderColor} hover:shadow-xl hover:-translate-y-2 transition-all duration-500 overflow-hidden h-full flex flex-col`}
             style={{ transitionDelay: `${delay}ms` }}
         >
-            <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${bgColor} to-transparent`}></div>
             
-            <div className="relative z-10">
-                <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-red-600 text-white mb-6 group-hover:bg-black group-hover:scale-110 transition-all duration-300 shadow-lg">
-                    <Icon className="h-7 w-7" />
+            <div className="relative z-10 flex-1">
+                <div className={`inline-flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br ${bgColor} text-white mb-4 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
+                    <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold text-black mb-4 group-hover:text-red-600 transition-colors duration-300">{title}</h3>
-                <p className="text-gray-700 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{description}</p>
+                <h3 className="text-lg font-bold text-black mb-3">{title}</h3>
+                <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
             </div>
-            
-            <div className="absolute bottom-0 left-0 w-0 h-1 bg-red-600 group-hover:w-full transition-all duration-500"></div>
         </div>
     );
 };
@@ -428,52 +494,51 @@ const EnhancedFeatureSection = ({ title, description, imageSrc, imageAlt, revers
     const BadgeIcon = badge.icon;
     
     return (
-        <div className={`flex flex-col ${reversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-8 lg:gap-16`}>
-            <div className="flex-1 lg:max-w-lg">
+        <div className={`flex flex-col ${reversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-8 lg:gap-12`}>
+            <div className="flex-1">
                 <div className="inline-flex items-center mb-4 px-3 py-1 bg-red-50 border border-red-200 rounded-full text-red-700 text-sm font-medium">
                     <BadgeIcon className="w-4 h-4 mr-2" />
                     {badge.text}
                 </div>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black leading-tight mb-6">
+                <h3 className="text-2xl sm:text-3xl font-bold text-black leading-tight mb-6">
                     {title}
                 </h3>
-                <p className="text-lg text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: description }}></p>
+                <p className="text-base text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: description }}></p>
             </div>
-            <div className="flex-1 lg:max-w-lg">
+            <div className="flex-1">
                 <div className="relative overflow-hidden rounded-2xl shadow-2xl group">
                     <img 
                         src={imageSrc} 
                         alt={imageAlt} 
-                        className="w-full h-64 sm:h-80 lg:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="w-full h-64 sm:h-72 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity duration-500"></div>
-                    
-                    <div className="absolute top-4 right-4 w-16 h-16 bg-red-600 rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                    <div className="absolute bottom-4 left-4 w-12 h-12 bg-black rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
                 </div>
             </div>
         </div>
     );
 };
 
-const FeatureModule = ({ icon: Icon, title, features }: { 
+const FeatureModule = ({ icon: Icon, title, features, variant, iconBg }: { 
     icon: React.ElementType, 
     title: string, 
-    features: string[]
+    features: string[],
+    variant: string,
+    iconBg: string
 }) => {
     return (
-        <div className="group bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-red-200 transition-all duration-300">
-            <div className="flex items-center mb-6">
-                <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-red-600 text-white mr-4 group-hover:bg-black transition-colors duration-300">
+        <div className={`group relative bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 h-full flex flex-col`}>
+            <div className="flex items-start gap-4 mb-6">
+                <div className={`inline-flex items-center justify-center h-12 w-12 rounded-xl ${iconBg} text-white flex-shrink-0`}>
                     <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold text-black">{title}</h3>
+                <h3 className="text-lg font-bold text-black leading-tight">{title}</h3>
             </div>
-            <ul className="space-y-3">
+            <ul className="space-y-2 flex-1">
                 {features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">{feature}</span>
+                    <li key={idx} className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-gray-700">{feature}</span>
                     </li>
                 ))}
             </ul>
@@ -481,43 +546,46 @@ const FeatureModule = ({ icon: Icon, title, features }: {
     );
 };
 
-const PhilosophyCard = ({ title, description, icon: Icon }: { 
+const PhilosophyCard = ({ title, description, icon: Icon, bgGradient, borderColor, iconBg }: { 
     title: string, 
     description: string,
-    icon: React.ElementType
+    icon: React.ElementType,
+    bgGradient: string,
+    borderColor: string,
+    iconBg: string
 }) => {
     return (
-        <div className="group bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-red-200 transition-all duration-300 text-left">
-            <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-red-600 text-white mb-4 group-hover:bg-black transition-colors duration-300">
-                <Icon className="h-6 w-6" />
+        <div className={`group relative bg-gradient-to-br ${bgGradient} p-6 rounded-2xl border ${borderColor} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full flex flex-col`}>
+            <div className={`inline-flex items-center justify-center h-11 w-11 rounded-lg ${iconBg} text-white mb-4 group-hover:scale-110 transition-all duration-300`}>
+                <Icon className="h-5 w-5" />
             </div>
-            <h3 className="text-xl font-bold text-black mb-3">{title}</h3>
-            <p className="text-gray-700 leading-relaxed">{description}</p>
-            <div className="w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-500 mt-4"></div>
+            <h3 className="text-lg font-bold text-black mb-3">{title}</h3>
+            <p className="text-sm text-gray-700 leading-relaxed flex-1">{description}</p>
         </div>
     );
 };
 
-const StatCard = ({ icon: Icon, number, label, description, delay }: { 
+const StatCard = ({ icon: Icon, number, label, description, delay, variant }: { 
     icon: React.ElementType, 
     number: string, 
     label: string, 
     description: string,
-    delay: string 
+    delay: string,
+    variant: 'red'
 }) => {
     return (
         <div 
-            className="group bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-red-200 transition-all duration-500"
+            className="group relative bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-500 h-full flex flex-col"
             style={{ transitionDelay: `${delay}ms` }}
         >
-            <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-red-600 text-white mb-6 group-hover:bg-black group-hover:scale-110 transition-all duration-300 shadow-lg">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-600 rounded-t-2xl"></div>
+            
+            <div className="inline-flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br from-red-500 to-red-600 text-white mb-4 group-hover:scale-110 transition-all duration-300 shadow-lg">
                 <Icon className="h-6 w-6" />
             </div>
-            <div className="text-3xl lg:text-4xl font-bold text-black mb-2 group-hover:text-red-600 transition-colors duration-300">{number}</div>
-            <div className="text-lg font-semibold text-black mb-3 group-hover:text-gray-800 transition-colors duration-300">{label}</div>
-            <div className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">{description}</div>
-            
-            <div className="w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-500 mt-4"></div>
+            <div className="text-3xl font-bold text-black mb-1">{number}</div>
+            <div className="text-sm font-semibold text-black mb-2">{label}</div>
+            <div className="text-xs text-gray-600 flex-1">{description}</div>
         </div>
     );
 };

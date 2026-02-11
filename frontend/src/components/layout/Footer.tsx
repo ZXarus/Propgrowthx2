@@ -1,115 +1,109 @@
 import { Link } from 'react-router-dom';
-import { Home, Mail, Phone, MapPin, Linkedin, Twitter, Github } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
-    platform: [
-      { name: 'Explore Properties', href: '/properties' },
-      { name: 'Analytics & Insights', href: '/analytics' },
-      { name: 'Price Prediction', href: '/services' },
-      { name: 'Market Reports', href: '/analytics' },
+    product: [
+      { name: 'Features', href: '#' },
+      { name: 'How it Works', href: '/how-it-works' },
+      { name: 'Get Started', href: '/' },
     ],
-    company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'How It Works', href: '/how-it-works' },
-      { name: 'Services', href: '/services' },
-      { name: 'Contact', href: '/contact' },
-    ],
-    dashboards: [
-      { name: 'Owner Dashboard', href: '/dashboard/owner' },
-      { name: 'Tenant Dashboard', href: '/dashboard/tenant' },
-      { name: 'Investment Tools', href: '/analytics' },
-    ],
-    legal: [
+    learnMore: [
+      { name: 'About PropGrowthX', href: '/about-us' },
+      { name: 'Blog', href: '#' },
       { name: 'Privacy Policy', href: '#' },
-      { name: 'Terms of Service', href: '#' },
-      { name: 'Cookie Policy', href: '#' },
+      { name: 'Contact Us', href: '/contact' },
     ],
   };
 
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="container-custom py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+    <footer className="bg-black text-white">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <span className="text-xl font-bold">
+              <span className="text-2xl font-bold">
                 PropGrowthX
               </span>
             </Link>
-            <p className="text-primary-foreground/70 mb-6 max-w-sm">
-              Smart Decisions. Stronger Property Growth. Data-driven real estate platform powered by machine learning and advanced analytics.
+            <p className="text-gray-300 text-sm leading-relaxed mb-6">
+              The digital twin platform that lets you operate rental properties remotely.
             </p>
-            <div className="flex flex-col gap-3 text-sm text-primary-foreground/70">
-              <a href="mailto:contact@propgrowthx.com" className="flex items-center gap-2 hover:text-primary-foreground transition-colors">
-                <Mail className="w-4 h-4" />
-                contact@propgrowthx.com
-              </a>
-              <a href="tel:+1234567890" className="flex items-center gap-2 hover:text-primary-foreground transition-colors">
-                <Phone className="w-4 h-4" />
-                9876543211
-              </a>
+            <div className="flex flex-col gap-3 text-sm text-gray-300">
               <span className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
+                <MapPin className="w-4 h-4 text-red-600" />
                 India
               </span>
+              <a href="mailto:contact@propgrowthx.com" className="flex items-center gap-2 hover:text-white transition-colors">
+                <Mail className="w-4 h-4 text-red-600" />
+                contact@propgrowthx.com
+              </a>
+              <a href="tel:+919876543211" className="flex items-center gap-2 hover:text-white transition-colors">
+                <Phone className="w-4 h-4 text-red-600" />
+                +91 9876543211
+              </a>
             </div>
           </div>
 
-          {/* Platform Links */}
-          {/* <div>
-            <h4 className="font-semibold mb-4">Platform</h4>
-            <ul className="space-y-3">
-              {footerLinks.platform.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div> */}
-
-          {/* Company Links */}
+          {/* Product Links */}
           <div>
-            <h4 className="font-semibold mb-4">Company</h4>
+            <h4 className="font-bold text-red-600 text-sm uppercase tracking-wider mb-6">Product</h4>
             <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
+              {footerLinks.product.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-sm text-gray-300 hover:text-white transition-colors"
                   >
                     {link.name}
                   </Link>
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Learn More Links */}
+          <div>
+            <h4 className="font-bold text-red-600 text-sm uppercase tracking-wider mb-6">Learn More</h4>
+            <ul className="space-y-3">
+              {footerLinks.learnMore.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    to={link.href}
+                    className="text-sm text-gray-300 hover:text-white transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Connect With Us */}
+          <div>
+            <h4 className="font-bold text-red-600 text-sm uppercase tracking-wider mb-6">Connect With Us</h4>
+            <div className="flex gap-4">
+              <a href="#" className="text-gray-300 hover:text-white hover:text-red-600 transition-colors">
+                <Facebook className="w-6 h-6" />
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white hover:text-red-600 transition-colors">
+                <Instagram className="w-6 h-6" />
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white hover:text-red-600 transition-colors">
+                <Linkedin className="w-6 h-6" />
+              </a>
+            </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-primary-foreground/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-primary-foreground/60">
-            © {currentYear} PropGrowthX. All rights reserved.
+        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-gray-400">
+            © {currentYear} PropGrowthX | All Rights Reserved
           </p>
-          <div className="flex items-center gap-4">
-            <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-              <Twitter className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-              <Linkedin className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-              <Github className="w-5 h-5" />
-            </a>
-          </div>
         </div>
       </div>
     </footer>
