@@ -1,18 +1,26 @@
-import { Helmet } from 'react-helmet-async';
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { Helmet } from "react-helmet-async";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle2, ArrowLeft } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/select";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  Send,
+  CheckCircle2,
+  ArrowLeft,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,47 +35,46 @@ const Contact = () => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  setIsSubmitting(false);
-  setIsSubmitted(true);
-  toast({
-    title: "Message sent successfully!",
-    description: "Our team will get back to you within 24 hours.",
-  });
-};
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+    toast({
+      title: "Message sent successfully!",
+      description: "Our team will get back to you within 24 hours.",
+    });
+  };
 
   const contactInfo = [
     {
       icon: Mail,
-      title: 'Email',
-      value: 'contact@propgrowthx.com',
-      href: 'mailto:contact@propgrowthx.com',
+      title: "Email",
+      value: "contact@propgrowthx.com",
+      href: "mailto:contact@propgrowthx.com",
     },
     {
       icon: Phone,
-      title: 'Phone',
-      value: '+91 9876543218',
-      href: 'tel:+919876543218',
+      title: "Phone",
+      value: "+91 9876543218",
+      href: "tel:+919876543218",
     },
     {
       icon: MapPin,
-      title: 'Address',
-      value: 'Bengaluru, Karnataka, India',
-      href: 'https://www.google.com/maps/place/Bengaluru,+Karnataka,+India/',
+      title: "Address",
+      value: "Bengaluru, Karnataka, India",
+      href: "https://www.google.com/maps/place/Bengaluru,+Karnataka,+India/",
     },
     {
       icon: Clock,
-      title: 'Hours',
-      value: 'Mon – Fri • 9:00 AM – 6:00 PM (IST)',
-      href: '#',
+      title: "Hours",
+      value: "Mon – Fri • 9:00 AM – 6:00 PM (IST)",
+      href: "#",
     },
   ];
 
@@ -454,16 +461,14 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       `}</style>
 
       <div className="min-h-screen bg-white">
-        {/* Decorative background elements */}
         <div className="fixed inset-0 pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-red-50 rounded-full blur-3xl opacity-20" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-20" />
         </div>
 
-        {/* Back Button */}
         <div className="fixed top-8 left-8 z-50">
           <button
-            onClick={() => window.location.href = '/dashboard-nav'}
+            onClick={() => (window.location.href = "/")}
             className="back-btn"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -475,14 +480,18 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         <section className="contact-hero relative pt-32 pb-20 lg:pt-15 lg:pb-20 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="max-w-3xl">
-              
               <h1 className="hero-title text-5xl lg:text-7xl font-light mb-6 leading-tight">
                 Let's create something
-                <span className="gradient-text-accent font-medium"> extraordinary</span>
+                <span className="gradient-text-accent font-medium">
+                  {" "}
+                  extraordinary
+                </span>
               </h1>
-              
+
               <p className="text-lg text-gray-600 leading-relaxed max-w-xl font-light">
-                Have a question about PropGrowthX? We'd love to hear from you. Get in touch with our team and let's discuss how we can help accelerate your property investment journey.
+                Have a question about PropGrowthX? We'd love to hear from you.
+                Get in touch with our team and let's discuss how we can help
+                accelerate your property investment journey.
               </p>
             </div>
           </div>
@@ -498,8 +507,12 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-1 gap-20">
               <div className="section-heading mb-6">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">Get in touch</h2>
-                <p className="text-gray-600 text-sm">We're available across multiple channels</p>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Get in touch
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  We're available across multiple channels
+                </p>
               </div>
 
               <div className="contact-area">
@@ -516,11 +529,14 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                         onMouseLeave={() => setHoveredCard(null)}
                         rel="noreferrer"
                         style={{
-                          animation: `fadeInUp 0.8s ease-out ${0.35 + (index * 0.08)}s both`
+                          animation: `fadeInUp 0.8s ease-out ${0.35 + index * 0.08}s both`,
                         }}
                       >
                         <div className="icon-tile" aria-hidden>
-                          <Icon className="w-5 h-5" style={{ color: 'var(--brand-red)' }} />
+                          <Icon
+                            className="w-5 h-5"
+                            style={{ color: "var(--brand-red)" }}
+                          />
                         </div>
 
                         <div className="contact-meta">
@@ -529,7 +545,13 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                         </div>
 
                         <div className="contact-arrow" aria-hidden>
-                          <ArrowLeft className="w-4 h-4" style={{ transform: 'rotate(180deg)', opacity: 0.6 }} />
+                          <ArrowLeft
+                            className="w-4 h-4"
+                            style={{
+                              transform: "rotate(180deg)",
+                              opacity: 0.6,
+                            }}
+                          />
                         </div>
                       </a>
                     );
@@ -539,15 +561,44 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 {/* Right - Form card */}
                 <main className="form-card" aria-label="Contact form">
                   {isSubmitted ? (
-                    <div className="success-panel" style={{ animation: 'fadeInUp 0.6s ease-out' }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 88, height: 88, borderRadius: 44, background: 'linear-gradient(180deg,#ecfdf5,#eefaf3)' , margin: '0 auto 18px' }}>
-                        <CheckCircle2 className="w-10 h-10" style={{ color: '#059669', animation: 'subtleFloat 2.5s ease-in-out infinite' }} />
+                    <div
+                      className="success-panel"
+                      style={{ animation: "fadeInUp 0.6s ease-out" }}
+                    >
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: 88,
+                          height: 88,
+                          borderRadius: 44,
+                          background: "linear-gradient(180deg,#ecfdf5,#eefaf3)",
+                          margin: "0 auto 18px",
+                        }}
+                      >
+                        <CheckCircle2
+                          className="w-10 h-10"
+                          style={{
+                            color: "#059669",
+                            animation: "subtleFloat 2.5s ease-in-out infinite",
+                          }}
+                        />
                       </div>
-                      <h3 className="text-[22px] font-semibold tracking-tight text-gray-900 mb-2">Message received</h3>
+                      <h3 className="text-[22px] font-semibold tracking-tight text-gray-900 mb-2">
+                        Message received
+                      </h3>
                       <p className="text-gray-600 mb-5 max-w-md mx-auto text-sm leading-relaxed">
-                        Thanks for reaching out. Our team will review your message and get back to you within 24 hours.
+                        Thanks for reaching out. Our team will review your
+                        message and get back to you within 24 hours.
                       </p>
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: 10,
+                        }}
+                      >
                         <button
                           onClick={() => setIsSubmitted(false)}
                           className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-12 text-sm font-medium transition-all duration-300"
@@ -555,7 +606,9 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                           Send another message
                         </button>
                         <button
-                          onClick={() => window.location.href = '/dashboard-nav'}
+                          onClick={() =>
+                            (window.location.href = "/dashboard-nav")
+                          }
                           className="submit-btn-modern"
                         >
                           Back to dashboard
@@ -563,65 +616,135 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                       </div>
                     </div>
                   ) : (
-                    <form onSubmit={handleSubmit} aria-label="Contact form body">
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <form
+                      onSubmit={handleSubmit}
+                      aria-label="Contact form body"
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 12,
+                        }}
+                      >
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Send us a message</div>
-                          <div className="muted">Our team typically replies within 24 hours</div>
+                          <div
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 700,
+                              color: "#111827",
+                            }}
+                          >
+                            Send us a message
+                          </div>
+                          <div className="muted">
+                            Our team typically replies within 24 hours
+                          </div>
                         </div>
                       </div>
 
                       <div className="form-row sm-2">
                         <div>
-                          <Label htmlFor="firstName" className="field-label">First name</Label>
-                          <Input id="firstName" placeholder="John" required className="modern-input" />
+                          <Label htmlFor="firstName" className="field-label">
+                            First name
+                          </Label>
+                          <Input
+                            id="firstName"
+                            placeholder="John"
+                            required
+                            className="modern-input"
+                          />
                         </div>
                         <div>
-                          <Label htmlFor="lastName" className="field-label">Last name</Label>
-                          <Input id="lastName" placeholder="Doe" required className="modern-input" />
+                          <Label htmlFor="lastName" className="field-label">
+                            Last name
+                          </Label>
+                          <Input
+                            id="lastName"
+                            placeholder="Doe"
+                            required
+                            className="modern-input"
+                          />
                         </div>
                       </div>
 
                       <div className="form-row sm-2" style={{ marginTop: 12 }}>
                         <div>
-                          <Label htmlFor="email" className="field-label">Email address</Label>
-                          <Input id="email" type="email" placeholder="you@example.com" required className="modern-input" />
+                          <Label htmlFor="email" className="field-label">
+                            Email address
+                          </Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            required
+                            className="modern-input"
+                          />
                         </div>
                         <div>
-                          <Label htmlFor="phone" className="field-label">Phone number</Label>
-                          <Input id="phone" type="tel" placeholder="+91 98765 43218" className="modern-input" />
+                          <Label htmlFor="phone" className="field-label">
+                            Phone number
+                          </Label>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="+91 98765 43218"
+                            className="modern-input"
+                          />
                         </div>
                       </div>
 
                       <div style={{ marginTop: 14 }}>
-                        <Label htmlFor="interest" className="field-label">I'm interested in</Label>
+                        <Label htmlFor="interest" className="field-label">
+                          I'm interested in
+                        </Label>
                         <div>
                           <Select>
-                            <SelectTrigger className="modern-select" aria-label="Interest select">
+                            <SelectTrigger
+                              className="modern-select"
+                              aria-label="Interest select"
+                            >
                               <SelectValue placeholder="Select an option" />
                             </SelectTrigger>
                             <SelectContent className="rounded-16 border-gray-200">
-                              <SelectItem value="buying">Buying a property</SelectItem>
-                              <SelectItem value="selling">Selling a property</SelectItem>
-                              <SelectItem value="renting">Renting a property</SelectItem>
-                              <SelectItem value="investing">Investment advisory</SelectItem>
-                              <SelectItem value="analytics">Analytics & reports</SelectItem>
-                              <SelectItem value="enterprise">Enterprise solutions</SelectItem>
-                              <SelectItem value="other">Other inquiry</SelectItem>
+                              <SelectItem value="buying">
+                                Buying a property
+                              </SelectItem>
+                              <SelectItem value="selling">
+                                Selling a property
+                              </SelectItem>
+                              <SelectItem value="renting">
+                                Renting a property
+                              </SelectItem>
+                              <SelectItem value="investing">
+                                Investment advisory
+                              </SelectItem>
+                              <SelectItem value="analytics">
+                                Analytics & reports
+                              </SelectItem>
+                              <SelectItem value="enterprise">
+                                Enterprise solutions
+                              </SelectItem>
+                              <SelectItem value="other">
+                                Other inquiry
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
 
                       <div style={{ marginTop: 14 }}>
-                        <Label htmlFor="message" className="field-label">Your message</Label>
+                        <Label htmlFor="message" className="field-label">
+                          Your message
+                        </Label>
                         <Textarea
                           id="message"
                           placeholder="Tell us more about your property inquiry, timeline, or specific needs..."
                           rows={6}
                           required
                           className="modern-textarea"
-                          style={{ resize: 'none' }}
+                          style={{ resize: "none" }}
                         />
                       </div>
 
@@ -633,12 +756,24 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                           aria-busy={isSubmitting}
                           aria-label="Send inquiry"
                         >
-                          <Send className="w-4 h-4" style={{ color: '#fff' }} />
-                          {isSubmitting ? 'Sending...' : 'Send inquiry'}
+                          <Send className="w-4 h-4" style={{ color: "#fff" }} />
+                          {isSubmitting ? "Sending..." : "Send inquiry"}
                         </button>
 
-                        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div className="note-small">We respond within <span style={{ fontWeight: 700, color: '#111827' }}>24 hours</span></div>
+                        <div
+                          style={{
+                            marginLeft: "auto",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                          }}
+                        >
+                          <div className="note-small">
+                            We respond within{" "}
+                            <span style={{ fontWeight: 700, color: "#111827" }}>
+                              24 hours
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </form>

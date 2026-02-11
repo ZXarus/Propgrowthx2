@@ -160,7 +160,16 @@ export interface PropertyData {
 
   // Type & listing
   listing_type: "RENT" | "SALE";
-  property_type: "Apartment" | "House" | "Villa";
+  property_type:
+    | "Apartment"
+    | "House"
+    | "Condo"
+    | "Townhouse"
+    | "Studio"
+    | "Commercial"
+    | "Penthouse"
+    | "Cabin"
+    | "Villa";
 
   // Pricing
   monthly_rent?: number; // only if RENT
@@ -180,7 +189,6 @@ export interface PropertyData {
   amenities: string[];
 
   // Images
-  veri_image?: string | null; // verification image
   images: string[]; // gallery images
 
   // Availability

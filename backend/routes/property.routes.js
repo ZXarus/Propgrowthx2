@@ -17,10 +17,7 @@ const router = express.Router();
 router.post(
   "/create",
   verifyToken,
-  upload.fields([
-    { name: "images", maxCount: 5 },
-    { name: "veri_image", maxCount: 1 },
-  ]),
+  upload.fields([{ name: "images", maxCount: 5 }]),
   createProperty,
 );
 router.get("/getById/:property_Id", getPropertyById); // for get one propty on  which he click

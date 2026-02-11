@@ -97,35 +97,92 @@ export const getAll = async (req, res) => {
 
 export const createProperty = async (req, res) => {
   const owner_id = req.user.id;
-  console.log(owner_id);
 
+  console.log(owner_id);
   try {
     const {
       property_name,
+      description,
+
       address,
-      prize,
+      city,
+      state,
+      zip_code,
+
+      listing_type,
       property_type,
+
+      monthly_rent,
+      price,
+
+      due_date,
+      end_date,
+
+      bedrooms,
+      bathrooms,
+      otherrooms,
+      floors,
       total_area,
+
+      amenities,
+
+      status,
+
       water_available,
       electricity_available,
-      status,
-      monthly_rent,
     } = req.body;
+
+    console.log(req.body);
+
+    const isRent = listing_type === "RENT";
+
+    let parsedAmenities = [];
+
+    if (Array.isArray(amenities)) {
+      parsedAmenities = amenities;
+    } else if (typeof amenities === "string") {
+      parsedAmenities = amenities.split(",").map((a) => a.trim());
+    }
 
     const { data: property, error } = await supabase
       .from("properties")
       .insert([
         {
           owner_id,
+
           property_name,
+          description,
+
           address,
-          prize,
+          city,
+          state,
+          zip_code,
+
+          listing_type,
           property_type,
-          total_area,
-          water_available,
-          electricity_available,
+
+          monthly_rent: isRent ? Number(monthly_rent) : null,
+          price: !isRent ? Number(price) : null,
+
+          due_date: due_date || null,
+          end_date: end_date || null,
+
+          bedrooms: Number(bedrooms),
+          bathrooms: Number(bathrooms),
+          otherrooms: Number(otherrooms),
+          floors: Number(floors),
+          total_area: Number(total_area),
+
+          amenities: parsedAmenities,
+
           status,
-          monthly_rent,
+
+          water_available: water_available === "true",
+          electricity_available: electricity_available === "true",
+
+          buyer_id: null,
+
+          inquiries: 0,
         },
       ])
       .select()
@@ -133,31 +190,9 @@ export const createProperty = async (req, res) => {
 
     if (error) throw error;
 
-    if (req.files?.veri_image?.[0]) {
-      const file = req.files.veri_image[0];
-      const buffer = fs.readFileSync(file.path);
-
-      const fileName = `property-${property.id}/verification-${file.filename}`;
-
-      const { error: uploadErr } = await supabase.storage
-        .from("property-images")
-        .upload(fileName, buffer, {
-          contentType: file.mimetype,
-        });
-
-      if (uploadErr) throw uploadErr;
-
-      const { data } = supabase.storage
-        .from("property-images")
-        .getPublicUrl(fileName);
-
-      await supabase
-        .from("properties")
-        .update({ veri_image: data.publicUrl })
-        .eq("id", property.id);
-    }
-
     if (req.files?.images?.length > 0) {
+      const imageUrls = [];
+
       for (const file of req.files.images) {
         const buffer = fs.readFileSync(file.path);
         const fileName = `property-${property.id}/${file.filename}`;
@@ -172,18 +207,14 @@ export const createProperty = async (req, res) => {
           .from("property-images")
           .getPublicUrl(fileName);
 
-        await supabase.from("property_images").insert([
-          {
-            prop_id: property.id,
-            prop_image: data.publicUrl,
-          },
-        ]);
+        imageUrls.push(data.publicUrl);
+
+        fs.unlinkSync(file.path);
       }
     }
 
     return res.status(201).json({
       message: "Property created successfully",
-      property,
     });
   } catch (err) {
     console.error(err);
@@ -285,9 +316,8 @@ export const updateProperty = async (req, res) => {
       }
     }
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Property updated successfully",
-      property,
     });
   } catch (err) {
     console.error(err);

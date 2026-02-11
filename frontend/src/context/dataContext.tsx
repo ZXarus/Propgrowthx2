@@ -3,6 +3,7 @@ import axios from "axios";
 import { PropertyData } from "@/components/dashboard/EditPropertyModal";
 import { Transaction } from "@/pages/dashboard/tenant/TenantTransactions";
 import { Complaint } from "@/components/tenant/AddComplaintModal";
+import { useNavigate } from "react-router-dom";
 // import { ProfileData } from "@/pages/Profile";
 
 type DataContextType = {
@@ -28,6 +29,12 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   const token = sessionStorage.getItem("token");
   const role = sessionStorage.getItem("role");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
 
   useEffect(() => {
     const fetchAllData = async () => {

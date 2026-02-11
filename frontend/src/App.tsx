@@ -5,8 +5,6 @@ import PrivateRoute from "./hooks/PrivateRoute";
 import PublicRoute from "./hooks/PublicRoute";
 import AuthPage from "./pages/AuthPage";
 import Index from "./pages/Index";
-import DashboardNavPage from "./pages/DashboardNavPage";
-import OwnerDashboard from "./pages/dashboard/owner/OwnerDashboard";
 import OwnerProperties from "./pages/dashboard/owner/OwnerProperties";
 import OwnerTransactions from "./pages/dashboard/owner/OwnerTransactions";
 import TenantDashboard from "./pages/dashboard/tenant/TenantDashboard";
@@ -23,6 +21,8 @@ import TenantTransactions from "./pages/dashboard/tenant/TenantTransactions";
 import OwnerComplaints from "./pages/dashboard/owner/OwnerComplaints";
 import PaymentsPage from "./pages/PaymentsPage";
 import { DataProvider } from "./context/dataContext";
+import OwnerDashboard from "./pages/dashboard/owner/OwnerDashboard";
+import PropertiesPage from "./pages/property/PropertiesPage";
 
 function App() {
   return (
@@ -31,7 +31,6 @@ function App() {
       <DataProvider>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/dashboard-nav" element={<DashboardNavPage />} />
           <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/dashboard/owner" element={<OwnerDashboard />} />
@@ -54,16 +53,18 @@ function App() {
           />
           <Route path="/profile" element={<Profile />} />
           <Route path="/properties" element={<Properties />} />
-          {/* <Route path="/properties-manage" element={<PropertiesPage />} /> */}
-          {/* <Route path="/all-properties" element={<AllPropertiesPage />} /> */}
           <Route path="/services" element={<Services />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
 
-          <Route element={<PublicRoute />}>
-            <Route path="/auth" element={<AuthPage />} />
-          </Route>
+          <Route path="/properties-manage" element={<PropertiesPage />} />
+          {/* <Route path="/all-properties" element={<AllPropertiesPage />} /> */}
+          <Route path="*" element={<NotFound />} />
 
+          {/* <Route element={<PublicRoute />}>
+            <Route path="/auth" element={<AuthPage />} />
+          </Route> */}
+          {/* 
           <Route element={<PrivateRoute allowedRoles={["owner"]} />}>
             <Route path="/dashboard/owner" element={<OwnerDashboard />} />
             <Route
@@ -78,9 +79,9 @@ function App() {
               path="/dashboard/owner/complaints"
               element={<OwnerComplaints />}
             />
-          </Route>
+          </Route> */}
 
-          <Route element={<PrivateRoute allowedRoles={["tenant"]} />}>
+          {/* <Route element={<PrivateRoute allowedRoles={["tenant"]} />}>
             <Route path="/dashboard/tenant" element={<TenantDashboard />} />
             <Route
               path="/dashboard/tenant/complaints"
@@ -90,13 +91,11 @@ function App() {
               path="/dashboard/tenant/transactions"
               element={<TenantTransactions />}
             />
-          </Route>
+          </Route> */}
 
-          <Route element={<PrivateRoute />}>
+          {/* <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<Profile />} />
-          </Route>
-
-          <Route path="*" element={<NotFound />} />
+          </Route> */}
         </Routes>
       </DataProvider>
     </HelmetProvider>
