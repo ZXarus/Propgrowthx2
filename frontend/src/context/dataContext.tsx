@@ -38,36 +38,48 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchAllData = async () => {
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       setLoading(true);
-      try {
-        const [propsRes, transRes, complaintsRes] = await Promise.all([
-          axios.get(
-            "http://localhost:5000/api/properties/get_all_prop_by_user",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          ),
-          axios.get("http://localhost:5000/api/payment/getbyId", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(
-            `http://localhost:5000/api/complain/getComplainByuserId/${role}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          ),
-        ]);
 
-        setProperties(propsRes.data || []);
-        setTransactions(transRes.data || []);
-        setComplaints(complaintsRes.data || []);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
+      const results = await Promise.allSettled([
+        axios.get("http://localhost:5000/api/properties/get_all_prop_by_user", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(`http://localhost:5000/api/payment/getbyId/${role}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(
+          `http://localhost:5000/api/complain/getComplainByuserId/${role}`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        ),
+      ]);
+
+      // Properties
+      if (results[0].status === "fulfilled") {
+        setProperties(results[0].value.data?.prop || []);
+      } else {
+        console.error("Properties failed:", results[0].reason);
       }
+
+      // Transactions
+      if (results[1].status === "fulfilled") {
+        setTransactions(results[1].value.data?.pay || []);
+      } else {
+        console.error("Transactions failed:", results[1].reason);
+      }
+
+      // Complaints
+      if (results[2].status === "fulfilled") {
+        setComplaints(results[2].value.data?.comp || []);
+      } else {
+        console.error("Complaints failed:", results[2].reason);
+      }
+
+      setLoading(false);
     };
 
     fetchAllData();

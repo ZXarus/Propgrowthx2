@@ -1,46 +1,87 @@
 import { supabase } from "../config/supabase.js";
 
 export const createComplaint = async (req, res) => {
-  const { property_id, tenant_id, message } = req.body;
+  const { pid, tid } = req.params;
 
-  if (!property_id || !tenant_id || !message) {
+  // const tenant_id = req.user.id;
+  const tenant_id = tid;
+
+  const { subject, description, category, priority } = req.body;
+
+  if (!pid || !subject || !description || !category || !priority) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
-    const { data: property, error: propError } = await supabase
+    const { data: property, error: propertyError } = await supabase
       .from("properties")
-      .select("owner_id")
-      .eq("id", property_id)
+      .select("id, property_name, owner_id")
+      .eq("id", pid)
       .single();
 
-    if (propError) {
-      return res.status(404).json({ error: "Property not found" });
+    if (propertyError || !property) {
+      return res.status(404).json(propertyError);
+    }
+
+    const { data: tenantProfile, error: tenantError } = await supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", tenant_id)
+      .single();
+
+    if (tenantError || !tenantProfile) {
+      return res.status(404).json({ error: "Tenant profile not found" });
+    }
+
+    const { data: ownerProfile, error: ownerError } = await supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", property.owner_id)
+      .single();
+
+    if (ownerError || !ownerProfile) {
+      return res.status(404).json({ error: "Owner profile not found" });
     }
 
     const { data, error } = await supabase
-      .from("complains")
+      .from("complaints")
       .insert([
         {
-          property_id,
           tenant_id,
+          tenant_name: tenantProfile.name,
+
           owner_id: property.owner_id,
-          message,
-          status: "pending",
+          owner_name: ownerProfile.name,
+
+          property_id: property.id,
+          property_name: property.name,
+
+          category,
+          subject,
+          description,
+
+          priority,
+          status: "open",
           checked_at: null,
+
+          responses: [],
         },
       ])
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.log(error);
+    }
 
-    res.status(201).json({ success: true, complaint: data });
+    return res.status(201).json({
+      message: "sucessfully fill the complain",
+    });
   } catch (err) {
-    console.error("Complaint error:", err);
-    res
-      .status(500)
-      .json({ error: err.message || "Failed to create complaint" });
+    console.error("Create Complaint Error:", err);
+    return res.status(500).json({
+      error: err.message || "Failed to create complaint",
+    });
   }
 };
 
@@ -50,7 +91,7 @@ export const getUserComplaints = async (req, res) => {
 
   try {
     let query = supabase
-      .from("complains")
+      .from("complaints")
       .select("*")
       .order("created_at", { ascending: false });
 
@@ -64,9 +105,11 @@ export const getUserComplaints = async (req, res) => {
 
     const { data, error } = await query;
 
-    if (error) throw error;
+    if (error) {
+      return res.status(400).json({ comp: [] });
+    }
 
-    res.status(200).json(data);
+    res.status(200).json({ comp: data || [] });
   } catch (err) {
     console.error("Fetch complaints error:", err);
     res

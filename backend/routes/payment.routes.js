@@ -9,7 +9,8 @@ import { verifyToken } from "../middlewares/jwt.middleware.js";
 const router = express.Router();
 
 router.get("/get", getPayments);
-router.get("/getbyId/", verifyToken, getPaymentsById);
+
+router.get("/getbyId/:role", verifyToken, getPaymentsById);
 router.post("/create", createPayment);
 router.put("/update/:id", updatePayment);
 

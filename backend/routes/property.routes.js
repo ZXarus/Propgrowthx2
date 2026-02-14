@@ -5,7 +5,7 @@ import {
   getAllPropertiesByUser,
   updateProperty,
   getAll,
-  buyProperty,
+  // buyProperty,
   updatePropertyPic,
   requestForInvitation,
   acceptInvitation,
@@ -28,7 +28,7 @@ router.get("/get_all", getAll); // get all propties
 router.patch("/update/:id", updateProperty);
 router.patch("/updatePic/:id", upload.single("image"), updatePropertyPic);
 
-router.post("/buy/:property_Id", verifyToken, buyProperty);
+// router.post("/buy/:property_Id", verifyToken, buyProperty);
 
 router.post("/request_for_invitation", requestForInvitation);
 router.get(

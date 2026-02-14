@@ -63,6 +63,8 @@ const sampleProperties: Property[] = [
 ];
 
 export default function OwnerDashboard() {
+  const { complaints } = useData();
+
   const handleLogout = () => {
     sessionStorage.clear();
     navigate("/");
@@ -285,7 +287,7 @@ export default function OwnerDashboard() {
                 id: "complaints",
                 label: "Complaints",
                 icon: "fa-folder",
-                onClick: () => navigate("/dashboard/owner/complaints"),
+                onClick: () => navigate("/owner/complaints"),
               },
               { id: "team", label: "Team", icon: "fa-users" },
               { id: "settings", label: "Settings", icon: "fa-cog" },

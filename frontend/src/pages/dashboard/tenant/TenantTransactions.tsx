@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
+import Layout from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   ArrowLeft,
   Search,
@@ -23,85 +23,93 @@ import {
   AlertTriangle,
   Download,
   CreditCard,
-} from 'lucide-react';
-import { useData } from '@/context/dataContext';
-import { computeTransactionFilters, TransactionTable } from '@/components/tenant/TenantTransactionsAndFilter';
+} from "lucide-react";
+import { useData } from "@/context/dataContext";
+import {
+  computeTransactionFilters,
+  TransactionTable,
+} from "@/components/tenant/TenantTransactionsAndFilter";
 
 export interface Transaction {
+  created_at: string;
   id: number;
   tenant_id?: string;
   owner_id?: string;
+  tenant_name?: string;
+  property_name?: string;
+  properties?: {
+    due_date: string;
+    end_date: string;
+  };
   property_id: string;
-  type: 'rent' | 'deposit' | 'maintenance';
+  type: "rent" | "fee";
   amount: string | number;
   date: string;
-  due_date?: string;
-  images?: string[];
-  status: 'completed' | 'pending' | 'overdue' | 'upcoming';
-  paymentMethod?: string;
-  reference_no?: string;
+  status: "completed" | "pending" | "overdue" | "upcoming";
+  payment_method?: string;
 }
 
 const TenantTransactions = () => {
-  const {transactions,id,properties} = useData();
+  const { transactions, properties } = useData();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState("all");
 
- const {
-  allTransactions,
-  filteredTransactions,
-  pastTabTransactions,
-  currentTabTransactions,
-  upcomingTabTransactions,
-  allTabTransactions,
-  overdueTransactions,
-  upcomingTransactions,
-  totalPaidThisYear,
-  pendingPayments,
-  overduePayments,
-  upcomingPayments,
-} = computeTransactionFilters(transactions, searchTerm, typeFilter);
+  const {
+    allTransactions,
+    filteredTransactions,
+    pastTabTransactions,
+    currentTabTransactions,
+    upcomingTabTransactions,
+    allTabTransactions,
+    overdueTransactions,
+    upcomingTransactions,
+    totalPaidThisYear,
+    pendingPayments,
+    overduePayments,
+    upcomingPayments,
+  } = computeTransactionFilters(transactions, searchTerm, typeFilter);
 
-
- const stats = [
-  {
-    label: "Total Paid (This Year)",
-    value: `₹${totalPaidThisYear.toLocaleString()}`,
-    icon: CheckCircle2,
-    color: "text-success",
-    bgColor: "bg-success/10",
-  },
-  {
-    label: "Pending Payments",
-    value: `₹${pendingPayments.toLocaleString()}`,
-    icon: Clock,
-    color: "text-warning",
-    bgColor: "bg-warning/10",
-  },
-  {
-    label: "Overdue",
-    value: `₹${overduePayments.toLocaleString()}`,
-    icon: AlertTriangle,
-    color: "text-destructive",
-    bgColor: "bg-destructive/10",
-  },
-  {
-    label: "Upcoming (3 months)",
-    value: `₹${upcomingPayments.toLocaleString()}`,
-    icon: Calendar,
-    color: "text-secondary",
-    bgColor: "bg-secondary/10",
-  },
-];
-
+  const stats = [
+    {
+      label: "Total Paid (This Year)",
+      value: `₹${totalPaidThisYear.toLocaleString()}`,
+      icon: CheckCircle2,
+      color: "text-success",
+      bgColor: "bg-success/10",
+    },
+    {
+      label: "Pending Payments",
+      value: `₹${pendingPayments.toLocaleString()}`,
+      icon: Clock,
+      color: "text-warning",
+      bgColor: "bg-warning/10",
+    },
+    {
+      label: "Overdue",
+      value: `₹${overduePayments.toLocaleString()}`,
+      icon: AlertTriangle,
+      color: "text-destructive",
+      bgColor: "bg-destructive/10",
+    },
+    {
+      label: "Upcoming (3 months)",
+      value: `₹${upcomingPayments.toLocaleString()}`,
+      icon: Calendar,
+      color: "text-secondary",
+      bgColor: "bg-secondary/10",
+    },
+  ];
 
   return (
     <>
       <Helmet>
         <title>My Transactions | PropGrowthX</title>
-        <meta name="description" content="View and manage your property transactions, rent payments, and payment history." />
+        <meta
+          name="description"
+          content="View and manage your property transactions, rent payments, and payment history."
+        />
       </Helmet>
 
       <Layout>
@@ -116,8 +124,12 @@ const TenantTransactions = () => {
                   </Link>
                 </Button>
                 <div>
-                  <h1 className="text-3xl font-bold text-foreground">My Transactions</h1>
-                  <p className="text-muted-foreground">Track all your payments and transactions</p>
+                  <h1 className="text-3xl font-bold text-foreground">
+                    My Transactions
+                  </h1>
+                  <p className="text-muted-foreground">
+                    Track all your payments and transactions
+                  </p>
                 </div>
               </div>
               <Button variant="outline">
@@ -129,14 +141,23 @@ const TenantTransactions = () => {
             {/* Stats Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               {stats.map((stat, index) => (
-                <div key={index} className="bg-card border border-border rounded-2xl p-5">
+                <div
+                  key={index}
+                  className="bg-card border border-border rounded-2xl p-5"
+                >
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
+                    <div
+                      className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}
+                    >
                       <stat.icon className={`w-6 h-6 ${stat.color}`} />
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                      <div className="text-sm text-muted-foreground">{stat.label}</div>
+                      <div className="text-2xl font-bold text-foreground">
+                        {stat.value}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {stat.label}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -149,12 +170,21 @@ const TenantTransactions = () => {
                 <div className="flex items-start gap-4">
                   <AlertTriangle className="w-6 h-6 text-destructive shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-destructive mb-1">Overdue Payments</h3>
+                    <h3 className="font-semibold text-destructive mb-1">
+                      Overdue Payments
+                    </h3>
                     <p className="text-sm text-muted-foreground mb-3">
-                      You have {overdueTransactions.length} overdue payment{overdueTransactions.length > 1 ? 's' : ''} totaling ₹
-                      {overdueTransactions.reduce((sum, tx) => sum + Number(tx.amount||0), 0).toLocaleString()}.
+                      You have {overdueTransactions.length} overdue payment
+                      {overdueTransactions.length > 1 ? "s" : ""} totaling ₹
+                      {overdueTransactions
+                        .reduce((sum, tx) => sum + Number(tx.amount || 0), 0)
+                        .toLocaleString()}
+                      .
                     </p>
-                    <Button size="sm" className="bg-destructive hover:bg-destructive/90">
+                    <Button
+                      size="sm"
+                      className="bg-destructive hover:bg-destructive/90"
+                    >
                       <CreditCard className="w-4 h-4 mr-2" />
                       Pay Now
                     </Button>
@@ -169,19 +199,33 @@ const TenantTransactions = () => {
                 <div className="flex items-start gap-4">
                   <Calendar className="w-6 h-6 text-secondary shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-foreground mb-2">Upcoming Payments</h3>
+                    <h3 className="font-semibold text-foreground mb-2">
+                      Upcoming Payments
+                    </h3>
                     <div className="space-y-2">
                       {upcomingTransactions.map((tx) => (
-                        <div key={tx.id} className="flex items-center justify-between text-sm">
+                        <div
+                          key={tx.id}
+                          className="flex items-center justify-between text-sm"
+                        >
                           <div className="flex items-center gap-2">
                             <Home className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-muted-foreground">{properties.find(p => p.id === tx.property_id)?.property_name}</span>
+                            <span className="text-muted-foreground">
+                              {
+                                properties.find((p) => p.id === tx.property_id)
+                                  ?.property_name
+                              }
+                            </span>
                             <span className="text-muted-foreground">•</span>
-                            <span className="text-muted-foreground capitalize">{tx.type}</span>
+                            <span className="text-muted-foreground capitalize">
+                              {tx.type}
+                            </span>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-foreground font-medium">₹{tx.amount.toLocaleString()}</span>
-                            <span className="text-muted-foreground">Due: {tx.due_date?.split('T')[0] || '-'}</span>
+                            <span className="text-foreground font-medium">
+                              ₹{tx.amount.toLocaleString()}
+                            </span>
+                            <span className="text-muted-foreground"></span>
                           </div>
                         </div>
                       ))}
@@ -222,7 +266,9 @@ const TenantTransactions = () => {
                           <SelectItem value="rent">Rent</SelectItem>
                           <SelectItem value="purchase">Purchase</SelectItem>
                           <SelectItem value="deposit">Deposit</SelectItem>
-                          <SelectItem value="maintenance">Maintenance</SelectItem>
+                          <SelectItem value="maintenance">
+                            Maintenance
+                          </SelectItem>
                           <SelectItem value="utility">Utility</SelectItem>
                         </SelectContent>
                       </Select>
@@ -231,29 +277,20 @@ const TenantTransactions = () => {
                 </div>
 
                 <TabsContent value="all">
-                <TransactionTable
-                  transactions={allTabTransactions}
-                />
-              </TabsContent>
+                  <TransactionTable transactions={allTabTransactions} />
+                </TabsContent>
 
-              <TabsContent value="past">
-                <TransactionTable
-                  transactions={pastTabTransactions}
-                />
-              </TabsContent>
+                <TabsContent value="past">
+                  <TransactionTable transactions={pastTabTransactions} />
+                </TabsContent>
 
-              <TabsContent value="current">
-                <TransactionTable
-                  transactions={currentTabTransactions}
-                />
-              </TabsContent>
+                <TabsContent value="current">
+                  <TransactionTable transactions={currentTabTransactions} />
+                </TabsContent>
 
-              <TabsContent value="upcoming">
-                <TransactionTable
-                  transactions={upcomingTabTransactions}
-                />
-              </TabsContent>
-
+                <TabsContent value="upcoming">
+                  <TransactionTable transactions={upcomingTabTransactions} />
+                </TabsContent>
               </Tabs>
             </div>
           </div>

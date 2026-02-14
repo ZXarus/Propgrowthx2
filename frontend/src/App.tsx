@@ -23,6 +23,7 @@ import PaymentsPage from "./pages/PaymentsPage";
 import { DataProvider } from "./context/dataContext";
 import OwnerDashboard from "./pages/dashboard/owner/OwnerDashboard";
 import PropertiesPage from "./pages/property/PropertiesPage";
+import AllPropertiesPage from "./pages/property/AllPropertiesPage";
 
 function App() {
   return (
@@ -31,35 +32,45 @@ function App() {
       <DataProvider>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/dashboard/owner" element={<OwnerDashboard />} />
-          <Route
-            path="/dashboard/owner/properties"
-            element={<OwnerProperties />}
-          />
-          <Route
-            path="/dashboard/owner/transactions"
-            element={<OwnerTransactions />}
-          />
-          <Route path="/dashboard/tenant" element={<TenantDashboard />} />
-          <Route
-            path="/dashboard/tenant/complaints"
-            element={<TenantComplaints />}
-          />
-          <Route
-            path="/dashboard/tenant/transactions"
-            element={<TenantTransactions />}
-          />
+
+          {/* individual payment */}
+
           <Route path="/profile" element={<Profile />} />
-          <Route path="/properties" element={<Properties />} />
           <Route path="/services" element={<Services />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
 
+          {/* Individual property*/}
           <Route path="/properties-manage" element={<PropertiesPage />} />
-          {/* <Route path="/all-properties" element={<AllPropertiesPage />} /> */}
+          <Route path="/all-properties" element={<AllPropertiesPage />} />
+
+          
+          <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/owner/complaints" element={<OwnerComplaints />} />
+
+          {/* here we show all properties */}
+          <Route path="/properties" element={<Properties />} />
+          {/* not found */}
           <Route path="*" element={<NotFound />} />
+
+          {/* 
+          <Route path="/dashboard/tenant" element={<TenantDashboard />} />
+
+          <Route
+            path="/dashboard/tenant/transactions"
+            element={<TenantTransactions />}
+          /> */}
+
+          {/* <Route
+                        path="/dashboard/owner/properties"
+                        element={<OwnerProperties />}
+                      /> */}
+          {/* <Route
+                        path="/dashboard/owner/transactions"
+                        element={<OwnerTransactions />}
+                      /> */}
 
           {/* <Route element={<PublicRoute />}>
             <Route path="/auth" element={<AuthPage />} />

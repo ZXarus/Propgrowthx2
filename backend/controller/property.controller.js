@@ -57,7 +57,7 @@ export const getAllPropertiesByUser = async (req, res) => {
       }),
     );
 
-    res.status(200).json(propertiesWithImages);
+    res.status(200).json({ prop: propertiesWithImages });
   } catch (err) {
     console.error("Unexpected error:", err);
     res.status(500).json({ error: err.message });
@@ -325,25 +325,31 @@ export const updateProperty = async (req, res) => {
   }
 };
 
-export const buyProperty = async (req, res) => {
-  const userId = req.user.id;
-  console.log(userId);
-  const { property_Id } = req.params;
-  console.log(property_Id);
-  const { data, error } = await supabase
-    .from("properties")
-    .update({ buyer_id: userId })
-    .eq("id", property_Id);
+// export const buyProperty = async (req, res) => {
+//   const userId = req.user.id;
+//   // tenant id
+//   console.log(userId);
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
-  return res.status(200).json({ message: "Property purchased successfully" });
+//   const { property_Id } = req.params;
+//   console.log(property_Id);
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};
+//   const { data, error } = await supabase
+//     .from("properties")
+//     .update({ buyer_id: userId })
+//     .eq("id", property_Id);
+
+//   if (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+
+//   createPayment();
+
+//   return res.status(200).json({ message: "Property purchased successfully" });
+
+//   if (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
 
 export const updatePropertyPic = async (req, res) => {
   const { id } = req.params;

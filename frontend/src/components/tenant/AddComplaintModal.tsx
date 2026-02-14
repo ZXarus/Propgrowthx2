@@ -34,17 +34,24 @@ import { useData } from "@/context/dataContext";
 export interface Complaint {
   id: string;
   tenant_id: string;
+  tenant_name: string;
   owner_id?: string;
+  owner_name?: string;
   property_id: string;
-  category: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  subject: string;
-  description: string;
-  status: 'open' | 'in-progress' | 'resolved' | 'closed';
-  images: string[];
+  property_name: string;
+
+  priority: "low" | "medium" | "high" | "urgent";
+  status: "open" | "in progress" | "resolved" | "closed";
+
+  category: string; // plumber // electricaian
+  subject: string; // what is the problem (short)
+
   created_at: string;
   updated_at: string;
-  responses: { date: string; message: string; from: string }[];
+  checked_at: string;
+
+  description: string; // what is the problem in long
+  responses: string[];
 }
 
 const complaintSchema = z.object({
@@ -74,15 +81,13 @@ const categories = [
   "Other",
 ];
 
-const AddComplaintModal = ({
-  open,
-  onOpenChange,
-}: AddComplaintModalProps) => {
-  const { properties, id } = useData();
+const AddComplaintModal = ({ open, onOpenChange }: AddComplaintModalProps) => {
+  const id = "1";
+  const { properties } = useData();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const tenantId = sessionStorage.getItem("id");
-  const [images, setImages] = useState<(string)[]>([]);
+  const [images, setImages] = useState<string[]>([]);
 
   const form = useForm<ComplaintFormValues>({
     resolver: zodResolver(complaintSchema),
@@ -133,7 +138,8 @@ const AddComplaintModal = ({
     const { error } = await supabase.from("complaints").insert([
       {
         tenant_id: tenantId,
-        owner_id: properties.find((p) => p.id === data.property_id)?.owner_id || null,
+        owner_id:
+          properties.find((p) => p.id === data.property_id)?.owner_id || null,
         property_id: data.property_id,
         category: data.category,
         priority: data.priority,
@@ -320,7 +326,9 @@ const AddComplaintModal = ({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="complaint-dialog max-w-lg max-h-[85vh] overflow-hidden">
           <DialogHeader className="complaint-header">
-            <DialogTitle className="complaint-title">Add New Complaint</DialogTitle>
+            <DialogTitle className="complaint-title">
+              Add New Complaint
+            </DialogTitle>
           </DialogHeader>
 
           <Form {...form}>
@@ -334,7 +342,10 @@ const AddComplaintModal = ({
                 render={({ field }) => (
                   <FormItem className="form-item">
                     <FormLabel className="form-label">Property</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger className="modern-input">
                           <SelectValue placeholder="Select a property" />
@@ -342,7 +353,10 @@ const AddComplaintModal = ({
                       </FormControl>
                       <SelectContent>
                         {myProperties.map((property) => (
-                          <SelectItem key={property.id} value={property.id.toString()}>
+                          <SelectItem
+                            key={property.id}
+                            value={property.id.toString()}
+                          >
                             {property.property_name}
                           </SelectItem>
                         ))}
@@ -359,7 +373,10 @@ const AddComplaintModal = ({
                 render={({ field }) => (
                   <FormItem className="form-item">
                     <FormLabel className="form-label">Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger className="modern-input">
                           <SelectValue />
@@ -367,7 +384,10 @@ const AddComplaintModal = ({
                       </FormControl>
                       <SelectContent>
                         {categories.map((category) => (
-                          <SelectItem key={category} value={category.toString()}>
+                          <SelectItem
+                            key={category}
+                            value={category.toString()}
+                          >
                             {category}
                           </SelectItem>
                         ))}
@@ -384,7 +404,10 @@ const AddComplaintModal = ({
                 render={({ field }) => (
                   <FormItem className="form-item">
                     <FormLabel className="form-label">Priority</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger className="modern-input">
                           <SelectValue />
@@ -409,7 +432,11 @@ const AddComplaintModal = ({
                   <FormItem className="form-item">
                     <FormLabel className="form-label">Subject</FormLabel>
                     <FormControl>
-                      <Input placeholder="Water leakage" {...field} className="modern-input" />
+                      <Input
+                        placeholder="Water leakage"
+                        {...field}
+                        className="modern-input"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -423,7 +450,11 @@ const AddComplaintModal = ({
                   <FormItem className="form-item">
                     <FormLabel className="form-label">Description</FormLabel>
                     <FormControl>
-                      <Textarea rows={4} {...field} className="modern-textarea" />
+                      <Textarea
+                        rows={4}
+                        {...field}
+                        className="modern-textarea"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -442,14 +473,23 @@ const AddComplaintModal = ({
                     className="hidden"
                     id="image-upload"
                   />
-                  <label htmlFor="image-upload" className="cursor-pointer inline-block">
+                  <label
+                    htmlFor="image-upload"
+                    className="cursor-pointer inline-block"
+                  >
                     <div className="upload-icon mx-auto mb-3">
-                      <Upload className="w-5 h-5" style={{ color: '#6b7280' }} />
+                      <Upload
+                        className="w-5 h-5"
+                        style={{ color: "#6b7280" }}
+                      />
                     </div>
-                    <p className="text-sm" style={{ color: '#6b7280' }}>
+                    <p className="text-sm" style={{ color: "#6b7280" }}>
                       Click to upload images (max 5)
                     </p>
-                    <p className="text-xs" style={{ color: '#9ca3af', marginTop: 6 }}>
+                    <p
+                      className="text-xs"
+                      style={{ color: "#9ca3af", marginTop: 6 }}
+                    >
                       PNG, JPG up to 10MB each
                     </p>
                   </label>

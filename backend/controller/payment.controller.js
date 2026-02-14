@@ -11,28 +11,29 @@ export const getPayments = async (req, res) => {
 };
 export const getPaymentsById = async (req, res) => {
   const id = req.user.id;
+  const { role } = req.params;
+
+  const userColumn = role === "owner" ? "owner_id" : "tenant_id";
 
   try {
     const { data, error } = await supabase
       .from("payments")
       .select(
         `
-        id,
-        property_name,
-        amount,
-        payment_date,
-        payment_mode,
-        status
+        *,
+        properties (
+          due_date,
+          end_date
+        )
       `,
       )
-      .eq("user_id", id)
-      .order("payment_date", { ascending: false });
+      .eq(userColumn, id);
 
     if (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({ error });
     }
 
-    res.status(200).json(data);
+    res.status(200).json({ pay: data || [] });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch payments" });
   }
@@ -41,8 +42,6 @@ export const getPaymentsById = async (req, res) => {
 export const createPayment = async (req, res) => {
   const { property_id, amount, payment_mode, buyer_id } = req.body;
 
-  const payment_date = new Date().toISOString();
-
   try {
     const { data: buyer, error: buyerError } = await supabase
       .from("profiles")
@@ -50,51 +49,69 @@ export const createPayment = async (req, res) => {
       .eq("id", buyer_id)
       .single();
 
-    if (buyerError) throw buyerError;
+    console.log(buyer);
+
+    if (buyerError) {
+      console.log(buyerError);
+
+      throw buyerError;
+    }
 
     const { data: property, error: propError } = await supabase
       .from("properties")
-      .select("id, property_name, owner_id")
+      .select("id, property_name,owner_id,listing_type")
       .eq("id", property_id)
       .single();
 
-    if (propError) throw propError;
+    console.log(property);
+
+    if (propError) {
+      console.log(propError);
+
+      throw propError;
+    }
 
     const { data: owner, error: ownerError } = await supabase
       .from("profiles")
-      .select("id, name")
+      .select("id,name")
       .eq("id", property.owner_id)
       .single();
+    console.log(owner);
 
-    if (ownerError) throw ownerError;
+    //  tetant all data and owner ra all data
+
+    if (ownerError) {
+      console.log(ownerError);
+
+      throw ownerError;
+    }
+
+    //  here decide it is complete or over due
+    let status = "completed";
 
     const { data, error } = await supabase
       .from("payments")
       .insert([
         {
-          user_id: buyer.id,
-          user_name: owner.name,
+          tenant_id: buyer.id,
+          tenant_name: buyer.name,
           property_id: property.id,
+          owner_id: owner.id,
+          owner_name: owner.name,
           property_name: property.property_name,
           amount,
-          payment_date,
           payment_mode,
-          status: "debited",
-        },
-        {
-          user_id: owner.id,
-          property_id: property.id,
-          user_name: buyer.name,
-          property_name: property.property_name,
-          amount,
-          payment_date,
-          payment_mode,
-          status: "credited",
+          status: status,
+          type: property.listing_type,
         },
       ])
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.log(error);
+
+      throw error;
+    }
 
     return res.status(201).json({
       message: "Payment successful",
