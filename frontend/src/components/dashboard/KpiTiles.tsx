@@ -94,8 +94,8 @@ export default function KpiTiles({
     {
       key: "overdue",
       title: "Overdue Payments",
-      value: Number(formatCurrency(28400, currency)),
-      sub: "27 tenants • Action needed",
+      value: 0,
+      sub: ` ${complaints?.length} action needed`,
       hint: "urgent",
       metric: 28400,
       color: "#DC2626",
@@ -110,9 +110,9 @@ export default function KpiTiles({
     {
       key: "expirations",
       title: "Lease Renewals",
-      value: 6,
+      value: 0,
       sub: "Expiring in 30 days",
-      metric: 6,
+      metric: 0,
     },
     {
       key: "aiOpportunities",

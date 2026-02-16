@@ -18,12 +18,11 @@ const router = express.Router();
 router.post("/login", login);
 router.post("/register", register);
 
-router.get("/profileDetails/:profileId", profileDetails);
+router.get("/profileDetails", verifyToken, profileDetails);
 
 router.patch("/update_pic/:profileId", upload.single("image"), updateProfile);
 
 router.patch("/update_details/:profileId", updatedetails);
-
 
 router.post("/forgot-password", forgotPassword);
 

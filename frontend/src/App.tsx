@@ -46,7 +46,6 @@ function App() {
           <Route path="/properties-manage" element={<PropertiesPage />} />
           <Route path="/all-properties" element={<AllPropertiesPage />} />
 
-          
           <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/owner/complaints" element={<OwnerComplaints />} />
 

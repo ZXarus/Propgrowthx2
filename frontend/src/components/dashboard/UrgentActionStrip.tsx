@@ -1,3 +1,4 @@
+import { useData } from "@/context/dataContext";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 export type Priority = "urgent" | "high" | "normal";
@@ -26,84 +27,113 @@ type Props = {
 const BRAND = "#DC2626";
 
 export default function UrgentActionStrip({
-  items = SAMPLE_URGENT_ITEMS,
   currency = "₹",
   onAction = (a, i) => console.log("action", a, i),
   className = "",
 }: Props) {
+  const { transactions } = useData();
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const navigateToIndex = useCallback((newIndex: number) => {
-    if (newIndex === currentIndex || isAnimating) return;
-    setIsAnimating(true);
-    setCurrentIndex(newIndex);
-    setTimeout(() => setIsAnimating(false), 500);
-  }, [currentIndex, isAnimating]);
+  // ✅ Create overdue items from transactions
+  const overdueItems: UrgentItem[] = React.useMemo(() => {
+    if (!transactions) return [];
+
+    const today = new Date();
+
+    return transactions
+      .filter((t) => {
+        if (!t.properties?.end_date) return false;
+
+        const endDate = new Date(t.properties.end_date);
+        return today > endDate;
+      })
+      .map((t) => {
+        const endDate = new Date(t.properties!.end_date);
+        const diffTime = today.getTime() - endDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        return {
+          id: String(t.id),
+          property: t.property_name || "Property",
+          tenant: t.tenant_name || "Tenant",
+          amount: Number(t.amount),
+          daysOverdue: diffDays,
+          priority: diffDays > 10 ? "urgent" : diffDays > 5 ? "high" : "normal",
+          createdAt: t.created_at,
+          phone: "",
+          email: "",
+        };
+      });
+  }, [transactions]);
+
+  const navigateToIndex = useCallback(
+    (newIndex: number) => {
+      if (newIndex === currentIndex || isAnimating) return;
+      setIsAnimating(true);
+      setCurrentIndex(newIndex);
+      setTimeout(() => setIsAnimating(false), 500);
+    },
+    [currentIndex, isAnimating],
+  );
 
   const nextCard = () => {
-    const nextIndex = (currentIndex + 1) % items.length;
+    const nextIndex = (currentIndex + 1) % overdueItems.length;
     navigateToIndex(nextIndex);
   };
 
   const prevCard = () => {
-    const prevIndex = (currentIndex - 1 + items.length) % items.length;
+    const prevIndex =
+      (currentIndex - 1 + overdueItems.length) % overdueItems.length;
     navigateToIndex(prevIndex);
   };
 
+  if (overdueItems.length === 0) {
+    return (
+      <section className={`w-full ${className}`}>
+        <div className="bg-white rounded-2xl p-10 text-center shadow-sm border border-gray-100">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            🎉 All Properties Are Active
+          </h3>
+          <p className="text-gray-500">
+            No properties have crossed their end date.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className={`w-full ${className}`} role="region" aria-label="Action Queue">
-      <style>
-        {`
-          @media (max-width: 768px) {
-            .urgent-cards-container {
-              height: 360px !important;
-              padding-top: 140px !important;
-            }
-            .urgent-card {
-              width: 280px !important;
-            }
-            .urgent-header {
-              text-align: center !important;
-            }
-            .urgent-title {
-              font-size: 24px !important;
-            }
-            .urgent-subtitle {
-              font-size: 14px !important;
-            }
-          }
-          @media (max-width: 480px) {
-            .urgent-cards-container {
-              height: 320px !important;
-              padding-top: 120px !important;
-            }
-            .urgent-card {
-              width: 260px !important;
-            }
-            .urgent-title {
-              font-size: 20px !important;
-            }
-          }
-        `}
-      </style>
+    <section
+      className={`w-full ${className}`}
+      role="region"
+      aria-label="Action Queue"
+    >
       <div className="urgent-header flex items-center justify-between mb-2">
         <div>
-          <h3 className="urgent-title text-2xl font-bold text-gray-900">Pending Actions</h3>
-          <p className="urgent-subtitle text-base text-gray-500 mt-1">What needs your attention now</p>
+          <h3 className="urgent-title text-2xl font-bold text-gray-900">
+            Pending Actions
+          </h3>
+          <p className="urgent-subtitle text-base text-gray-500 mt-1">
+            What needs your attention now
+          </p>
         </div>
         <div className="text-sm text-gray-400">
-          {currentIndex + 1} of {items.length}
+          {currentIndex + 1} of {overdueItems.length}
         </div>
       </div>
 
-      <div className="urgent-cards-container relative h-[520px] flex items-start justify-center overflow-hidden" style={{paddingTop: '216px'}}>
+      <div
+        className="urgent-cards-container relative h-[520px] flex items-start justify-center overflow-hidden"
+        style={{ paddingTop: "216px" }}
+      >
         <div className="flex items-center justify-center w-full relative">
-          {items.map((item, index) => {
+          {overdueItems.map((item, index) => {
             const offset = index - currentIndex;
             const isActive = index === currentIndex;
             const isVisible = Math.abs(offset) <= 1;
-            
+
             if (!isVisible) return null;
 
             return (
@@ -116,7 +146,7 @@ export default function UrgentActionStrip({
                 offset={offset}
                 onNext={nextCard}
                 onPrev={prevCard}
-                canGoNext={currentIndex < items.length - 1}
+                canGoNext={currentIndex < overdueItems.length - 1}
                 canGoPrev={currentIndex > 0}
               />
             );
@@ -125,14 +155,15 @@ export default function UrgentActionStrip({
 
         {/* Dot indicators */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-          {items.map((_, index) => (
+          {overdueItems.map((_, index) => (
             <button
               key={index}
               onClick={() => navigateToIndex(index)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? 'bg-gray-900 scale-125' : 'bg-gray-300 hover:bg-gray-400'
+                index === currentIndex
+                  ? "bg-gray-900 scale-125"
+                  : "bg-gray-300 hover:bg-gray-400"
               }`}
-              aria-label={`Go to item ${index + 1}`}
             />
           ))}
         </div>
@@ -150,7 +181,7 @@ function ActionCard({
   onNext,
   onPrev,
   canGoNext,
-  canGoPrev
+  canGoPrev,
 }: {
   item: UrgentItem;
   currency: string;
@@ -163,18 +194,18 @@ function ActionCard({
   canGoPrev: boolean;
 }) {
   const urgencyColors = {
-    urgent: '#DC2626',
-    high: '#F59E0B',
-    normal: '#E5E7EB'
+    urgent: "#DC2626",
+    high: "#F59E0B",
+    normal: "#E5E7EB",
   };
 
-  const timeAgo = item.createdAt ? getTimeAgo(item.createdAt) : '2d ago';
-  
+  const timeAgo = item.createdAt ? getTimeAgo(item.createdAt) : "2d ago";
+
   const scale = isActive ? 1.0 : 0.91;
   const opacity = isActive ? 1 : 0.6;
   const zIndex = isActive ? 20 : 10;
   const translateX = offset * 280;
-  const shadow = isActive ? 'shadow-2xl' : 'shadow-lg';
+  const shadow = isActive ? "shadow-2xl" : "shadow-lg";
 
   return (
     <div
@@ -183,12 +214,13 @@ function ActionCard({
         transform: `translateX(${translateX}px) scale(${scale})`,
         opacity,
         zIndex,
-        background: 'linear-gradient(145deg, #ffffff 0%, #fef2f2 50%, #fee2e2 100%)',
-        boxShadow: isActive 
-          ? '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8)' 
-          : '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5)'
+        background:
+          "linear-gradient(145deg, #ffffff 0%, #fef2f2 50%, #fee2e2 100%)",
+        boxShadow: isActive
+          ? "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8)"
+          : "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5)",
       }}
-      onClick={() => onAction('open-detail', item)}
+      onClick={() => onAction("open-detail", item)}
     >
       <div className="p-4 md:p-8">
         {/* Navigation buttons - only show on active card */}
@@ -201,7 +233,7 @@ function ActionCard({
                   onPrev();
                 }}
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg border-0 flex items-center justify-center hover:bg-gray-50 transition-all duration-200 z-30 hover:scale-110"
-                style={{ boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                style={{ boxShadow: "0 4px 15px -3px rgba(0, 0, 0, 0.1)" }}
               >
                 <i className="fas fa-chevron-left text-gray-700 text-xs"></i>
               </button>
@@ -213,7 +245,7 @@ function ActionCard({
                   onNext();
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg border-0 flex items-center justify-center hover:bg-gray-50 transition-all duration-200 z-30 hover:scale-110"
-                style={{ boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                style={{ boxShadow: "0 4px 15px -3px rgba(0, 0, 0, 0.1)" }}
               >
                 <i className="fas fa-chevron-right text-gray-700 text-xs"></i>
               </button>
@@ -229,7 +261,9 @@ function ActionCard({
             </h4>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-red-500"></div>
-              <span className="text-sm text-gray-600 font-medium">Active Property</span>
+              <span className="text-sm text-gray-600 font-medium">
+                Active Property
+              </span>
             </div>
           </div>
           <div className="text-right">
@@ -245,15 +279,22 @@ function ActionCard({
             {item.tenant.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1">
-            <div className="text-base font-bold text-gray-900">{item.tenant}</div>
-            {item.unit && <div className="text-sm text-gray-600 font-medium mt-0.5">{item.unit}</div>}
+            <div className="text-base font-bold text-gray-900">
+              {item.tenant}
+            </div>
+            {item.unit && (
+              <div className="text-sm text-gray-600 font-medium mt-0.5">
+                {item.unit}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Amount with better visual hierarchy */}
         <div className="mb-6">
           <div className="text-3xl font-black text-gray-900 mb-1">
-            {currency}{item.amount?.toLocaleString()}
+            {currency}
+            {item.amount?.toLocaleString()}
           </div>
           {item.daysOverdue && (
             <div className="flex items-center gap-2">
@@ -270,27 +311,27 @@ function ActionCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onAction('send-reminder', item);
+              onAction("send-reminder", item);
             }}
             disabled={!isActive}
             className={`flex-1 px-4 py-2.5 text-xs font-bold rounded-xl transition-all duration-300 focus:outline-none focus:ring-3 focus:ring-red-200 ${
-              isActive 
-                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 shadow-md hover:shadow-lg transform hover:-translate-y-0.5' 
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              isActive
+                ? "bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }`}
           >
             Send Reminder
           </button>
           <a
-            href={isActive ? `tel:${item.phone || '+919876543210'}` : '#'}
+            href={isActive ? `tel:${item.phone || "+919876543210"}` : "#"}
             onClick={(e) => {
               e.stopPropagation();
               if (!isActive) e.preventDefault();
             }}
             className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all duration-300 focus:outline-none focus:ring-3 focus:ring-gray-200 flex items-center justify-center ${
-              isActive 
-                ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 shadow-sm hover:shadow-md' 
-                : 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'
+              isActive
+                ? "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 shadow-sm hover:shadow-md"
+                : "bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed"
             }`}
           >
             <i className="fas fa-phone mr-1.5 text-xs"></i>
@@ -307,50 +348,8 @@ function getTimeAgo(isoString: string): string {
   const date = new Date(isoString);
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return '1d ago';
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "1d ago";
   return `${diffDays}d ago`;
 }
-
-const SAMPLE_URGENT_ITEMS: UrgentItem[] = [
-  {
-    id: "u1",
-    property: "Sunset Villa",
-    tenant: "Asha Patel",
-    unit: "Apt 2B",
-    amount: 120000,
-    daysOverdue: 12,
-    note: "Payment pending despite reminder. Tenant responded and promised to pay by end of week.",
-    priority: "urgent",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-    phone: "+91 98765 43210",
-    email: "asha@example.com",
-  },
-  {
-    id: "u2",
-    property: "Maple Apartments",
-    tenant: "Ravi Kumar",
-    unit: "Apt 4A",
-    amount: 80000,
-    daysOverdue: 9,
-    note: "Tenant reported maintenance issue with AC not working.",
-    priority: "high",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-    phone: "+91 98123 45678",
-    email: "ravi@example.com",
-  },
-  {
-    id: "u3",
-    property: "Orchard House",
-    tenant: "Lina Gomez",
-    unit: "Apt 1",
-    amount: 84000,
-    daysOverdue: 3,
-    note: "First overdue. Send a friendly reminder.",
-    priority: "normal",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    phone: "+91 97000 00111",
-    email: "lina@example.com",
-  },
-];

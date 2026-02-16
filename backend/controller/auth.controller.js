@@ -211,7 +211,7 @@ export const getUserProfileWithProperties = async (req, res) => {
 };
 
 export const profileDetails = async (req, res) => {
-  const { profileId } = req.params;
+  const profileId = req.user.id;
 
   try {
     const { data, error } = await supabase
@@ -228,7 +228,6 @@ export const profileDetails = async (req, res) => {
     }
 
     return res.status(200).json({
-      success: true,
       profile: data,
     });
   } catch (err) {

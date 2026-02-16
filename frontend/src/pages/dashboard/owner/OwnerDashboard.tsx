@@ -756,12 +756,7 @@ export default function OwnerDashboard() {
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
             <div>
-              <PaymentsPanel
-                currency="₹"
-                onAction={(action, payload) => {
-                  console.log("Payment Action:", action, payload);
-                }}
-              />
+              <PaymentsPanel />
             </div>
 
             <UrgentActionStrip
