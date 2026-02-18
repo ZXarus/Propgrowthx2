@@ -65,7 +65,7 @@ export const getNotificationsForUser = async (req, res) => {
 
     if (userId) {
       query = query.or(
-        `tenant_id.eq.${userId},owner_id.eq.${userId},tenant_id.is.null,owner_id.is.null`
+        `tenant_id.eq.${userId},owner_id.eq.${userId},tenant_id.is.null,owner_id.is.null`,
       );
     }
 

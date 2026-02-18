@@ -13,7 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// http://localhost:5000/api/complain/getComplainByuserId/owner
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);

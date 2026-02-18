@@ -53,59 +53,6 @@ function App() {
           <Route path="/properties" element={<Properties />} />
           {/* not found */}
           <Route path="*" element={<NotFound />} />
-
-          {/* 
-          <Route path="/dashboard/tenant" element={<TenantDashboard />} />
-
-          <Route
-            path="/dashboard/tenant/transactions"
-            element={<TenantTransactions />}
-          /> */}
-
-          {/* <Route
-                        path="/dashboard/owner/properties"
-                        element={<OwnerProperties />}
-                      /> */}
-          {/* <Route
-                        path="/dashboard/owner/transactions"
-                        element={<OwnerTransactions />}
-                      /> */}
-
-          {/* <Route element={<PublicRoute />}>
-            <Route path="/auth" element={<AuthPage />} />
-          </Route> */}
-          {/* 
-          <Route element={<PrivateRoute allowedRoles={["owner"]} />}>
-            <Route path="/dashboard/owner" element={<OwnerDashboard />} />
-            <Route
-              path="/dashboard/owner/properties"
-              element={<OwnerProperties />}
-            />
-            <Route
-              path="/dashboard/owner/transactions"
-              element={<OwnerTransactions />}
-            />
-            <Route
-              path="/dashboard/owner/complaints"
-              element={<OwnerComplaints />}
-            />
-          </Route> */}
-
-          {/* <Route element={<PrivateRoute allowedRoles={["tenant"]} />}>
-            <Route path="/dashboard/tenant" element={<TenantDashboard />} />
-            <Route
-              path="/dashboard/tenant/complaints"
-              element={<TenantComplaints />}
-            />
-            <Route
-              path="/dashboard/tenant/transactions"
-              element={<TenantTransactions />}
-            />
-          </Route> */}
-
-          {/* <Route element={<PrivateRoute />}>
-            <Route path="/profile" element={<Profile />} />
-          </Route> */}
         </Routes>
       </DataProvider>
     </HelmetProvider>
