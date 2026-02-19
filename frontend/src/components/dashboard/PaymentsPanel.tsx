@@ -38,16 +38,10 @@ export default function PaymentsPanel() {
   const { transactions } = useData();
   const today = new Date();
 
-  /* ================================
-     SAFE NUMBER CONVERTER
-  ================================= */
   const toNumber = (val: any) => {
     return Number(val) || 0;
   };
 
-  /* ================================
-     OVERDUE LOGIC
-  ================================= */
   const overdue = useMemo(() => {
     return transactions
       ?.filter((t: any) => new Date(t.due_date) < today)
@@ -62,9 +56,6 @@ export default function PaymentsPanel() {
       .sort((a: any, b: any) => b.daysOverdue - a.daysOverdue);
   }, [transactions]);
 
-  /* ================================
-     UPCOMING LOGIC (Next 30 Days)
-  ================================= */
   const upcoming = useMemo(() => {
     return transactions?.filter((t: any) => {
       const due = new Date(t.due_date);

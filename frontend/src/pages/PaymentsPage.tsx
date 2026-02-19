@@ -27,11 +27,25 @@ export interface Transaction {
 
 export default function PaymentsPage() {
   const { transactions } = useData();
+  const today = new Date();
+
+  const overdue = useMemo(() => {
+    return transactions
+      ?.filter((t: any) => new Date(t.due_date) < today)
+      .map((t: any) => ({
+        ...t,
+        amount: Number(t.amount),
+        daysOverdue: Math.ceil(
+          (today.getTime() - new Date(t.due_date).getTime()) /
+            (1000 * 60 * 60 * 24),
+        ),
+      }))
+      .sort((a: any, b: any) => b.daysOverdue - a.daysOverdue);
+  }, [transactions]);
 
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // ================= KPI CALCULATIONS =================
   const kpis = useMemo(() => {
     let pending = 0;
     let collected = 0;
