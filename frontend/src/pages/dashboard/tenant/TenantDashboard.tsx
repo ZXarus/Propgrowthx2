@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
+  User,
   Home,
   Bell,
   ChevronDown,
@@ -34,7 +35,24 @@ const TenantDashboard = () => {
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  if(loading) return <DashboardSkeleton/>
+  // responsiveness helpers
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const onResize = () => {
+      const mobile = window.innerWidth < 1024; // treat <1024 as mobile/tablet breakpoint
+      setIsMobile(mobile);
+      // default collapsed sidebar on small screens
+      if (mobile) setSidebarOpen(false);
+      else setSidebarOpen(true);
+    };
+
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  if (loading) return <DashboardSkeleton/>;
 
   const myProperties = properties.filter((p) => p.buyer_id === id);
   const myTxs = transactions.filter(t => t.tenant_id === id);
@@ -43,7 +61,7 @@ const TenantDashboard = () => {
   const overdueAmount = myTxs
     .filter(t => t.status === 'pending' || t.status === 'overdue')
     .reduce((sum, t) => sum + t.amount, 0);
-  
+
   const kpiItems = [
     {
       key: "totalDue",
@@ -122,6 +140,12 @@ const TenantDashboard = () => {
 
   const selectedKpiData = kpiItems.find(item => item.key === selectedKpi);
 
+const mainMarginClass = isMobile
+  ? 'ml-0'
+  : sidebarOpen
+    ? 'ml-64'
+    : 'ml-20';
+
   return (
     <>
       <Helmet>
@@ -132,12 +156,41 @@ const TenantDashboard = () => {
         />
       </Helmet>
 
+      {/* small helpers for mobile-only overlay styling */}
+      <style>{`
+        /* keep desktop visuals unchanged; add mobile improvements */
+        @media (max-width: 1023px) {
+          /* make header compact on mobile */
+          header .px-4 { padding-left: 12px; padding-right: 12px; }
+          header .py-4 { padding-top: 10px; padding-bottom: 10px; }
+          /* KPI tiles - increase tap area */
+          .kpi-tile { padding: 14px; }
+          /* pending actions - flow vertically on small screens */
+          .pending-wrapper { padding: 0; }
+          .pending-card-inner { position: static !important; margin: 0; }
+          .pending-carousel-controls { display: none !important; }
+          .pending-dots { display: none !important; }
+          /* properties card - reduce paddings for small screens */
+          .property-card { padding: 12px; }
+        }
+      `}</style>
+
       <div className="flex h-screen bg-gray-50">
         {/* Sidebar */}
         <aside
-          className={`${
-            sidebarOpen ? 'w-64' : 'w-20'
-          } fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 z-40 flex flex-col`}
+          className={`
+            fixed top-0 left-0 h-screen bg-white border-r border-gray-200
+            transition-all duration-300 ease-in-out z-50 flex flex-col
+            ${isMobile
+              ? sidebarOpen
+                ? 'w-64 translate-x-0'
+                : 'w-64 -translate-x-full'
+              : sidebarOpen
+                ? 'w-64'
+                : 'w-20'
+            }
+          `}
+          aria-hidden={!sidebarOpen && isMobile}
         >
           {/* Logo Section */}
           <div className="flex items-center justify-between h-20 px-4 border-b border-gray-200">
@@ -199,6 +252,12 @@ const TenantDashboard = () => {
           {/* Bottom Menu */}
           <div className="px-2 py-4 border-t border-gray-200 space-y-2">
             <SidebarItem
+              icon={User}
+              label="Profile"
+              onClick={() => navigate('/profile')}
+              sidebarOpen={sidebarOpen}
+            />
+            <SidebarItem
               icon={HelpCircle}
               label="Support"
               onClick={() => navigate('/contact')}
@@ -221,30 +280,59 @@ const TenantDashboard = () => {
           </div>
         </aside>
 
+        {/* mobile overlay when sidebar open */}
+        {isMobile && sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 z-30"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Main Content */}
-        <main className={`${sidebarOpen ? 'ml-64' : 'ml-20'} flex-1 transition-all duration-300 overflow-y-auto`}>
+        <main
+  className={`
+    flex-1 transition-all duration-300 overflow-y-auto
+    ${!isMobile && (sidebarOpen ? 'ml-64' : 'ml-20')}
+  `}
+>
           {/* Header */}
           <header className="bg-white border-b border-gray-100 sticky top-0 z-30">
             <div className="px-4 md:px-8 py-4 flex items-center justify-between">
               {/* Left - Title */}
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  Dashboard
-                </h1>
-                <p className="text-sm text-gray-500 mt-0.5">Welcome back, Tenant</p>
+              <div className="flex items-center gap-4 w-full">
+                {/* mobile menu button */}
+                {isMobile && (
+                  <button
+                    onClick={() => setSidebarOpen((s) => !s)}
+                    className="p-2 rounded-md hover:bg-gray-50 mr-2"
+                    aria-label="Open sidebar"
+                  >
+                    <Menu className="w-5 h-5 text-gray-600" />
+                  </button>
+                )}
+
+                <div className="flex-1">
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                    Dashboard
+                  </h1>
+                  <p className="text-sm text-gray-500 mt-0.5">Welcome back, Tenant</p>
+                </div>
+
+                {/* Right Actions for small screens moved below to keep header tidy */}
               </div>
 
-              {/* Right Actions */}
+              {/* Right Actions (hidden on very small to avoid crowding; essential actions remain accessible) */}
               <div className="flex items-center gap-2 md:gap-3">
-                {/* Search */}
+                {/* Search (desktop only) */}
                 <div className="hidden md:block relative">
                   <input
                     type="text"
                     placeholder="Search..."
                     className="w-64 border border-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#DC2626]"
+                    aria-label="Search"
                   />
                 </div>
-
 
                 {/* Notifications */}
                 <div className="relative">
@@ -266,7 +354,7 @@ const TenantDashboard = () => {
                         {myTxs.filter(t => t.status === 'pending').length} pending payments
                       </div>
                       <ul className="mt-3 space-y-2">
-                        {myTxs.filter(t => t.status === 'pending').slice(0, 2).map((tx) => (
+                        {myTxs.filter(t => t.status === 'pending').slice(0, 3).map((tx) => (
                           <li key={tx.id} className="px-2 py-2 rounded hover:bg-gray-50">
                             <div className="text-sm">Payment due</div>
                             <div className="text-xs text-gray-400">
@@ -274,6 +362,9 @@ const TenantDashboard = () => {
                             </div>
                           </li>
                         ))}
+                        {myTxs.filter(t => t.status === 'pending').length === 0 && (
+                          <li className="px-2 py-2 text-sm text-gray-500">No notifications</li>
+                        )}
                       </ul>
                     </div>
                   )}
@@ -338,7 +429,7 @@ const TenantDashboard = () => {
                     <button
                       key={item.key}
                       onClick={() => setSelectedKpi(item.key)}
-                      className={`group relative bg-white border rounded-xl p-2 md:p-4 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500 ${
+                      className={`kpi-tile group relative bg-white border rounded-xl p-2 md:p-4 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500 ${
                         item.hint ? 'border-red-200 bg-red-50/30' : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
@@ -481,15 +572,15 @@ const TenantDashboard = () => {
                 </div>
 
                 {pendingActions.length > 0 ? (
-                  <div className="relative h-80 flex items-center justify-center">
-                    <div className="absolute w-full bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 border border-red-200">
+                  <div className="pending-wrapper relative md:h-80 h-auto flex items-center md:justify-center">
+                    <div className="pending-card-inner md:absolute w-full md:w-full bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 border border-red-200">
                       <div className="flex items-start justify-between mb-4">
                         <div>
                           <h4 className="text-xl font-bold text-gray-900">
                             {pendingActions[currentActionIndex].property}
                           </h4>
                           <div className="flex items-center gap-2 mt-1">
-                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                            <div className={`w-2 h-2 rounded-full ${pendingActions[currentActionIndex].priority === 'urgent' ? 'bg-red-500' : 'bg-yellow-500'}`}></div>
                             <span className="text-sm text-gray-600 font-medium">
                               {pendingActions[currentActionIndex].priority === 'urgent'
                                 ? 'Urgent'
@@ -528,13 +619,13 @@ const TenantDashboard = () => {
                         </div>
                       </div>
 
-                      <div className="flex gap-3">
-                        <button className="flex-1 px-4 py-3 text-sm font-bold rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-3 focus:ring-red-200">
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button className="w-full sm:flex-1 px-4 py-3 text-sm font-bold rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-3 focus:ring-red-200">
                           Pay Now
                         </button>
                         <a
                           href={`tel:${pendingActions[currentActionIndex].phone}`}
-                          className="px-4 py-3 text-sm font-bold rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center"
+                          className="w-full sm:w-auto px-4 py-3 text-sm font-bold rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center"
                         >
                           <Phone className="w-4 h-4 mr-2" />
                           Call
@@ -542,38 +633,39 @@ const TenantDashboard = () => {
                       </div>
                     </div>
 
-                    {pendingActions.length > 1 && (
-                      <>
-                        <button
-                          onClick={prevAction}
-                          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-10"
-                        >
-                          <ChevronLeft className="w-5 h-5 text-gray-700" />
-                        </button>
-                        <button
-                          onClick={nextAction}
-                          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-10"
-                        >
-                          <ChevronRight className="w-5 h-5 text-gray-700" />
-                        </button>
-                      </>
-                    )}
-
-                    {pendingActions.length > 1 && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2">
-                        {pendingActions.map((_, index) => (
+                    {/* controls (desktop only) */}
+                    <div className="pending-carousel-controls hidden md:block">
+                      {pendingActions.length > 1 && (
+                        <>
                           <button
-                            key={index}
-                            onClick={() => setCurrentActionIndex(index)}
-                            className={`w-2 h-2 rounded-full transition-all ${
-                              index === currentActionIndex
-                                ? 'bg-gray-900 scale-125'
-                                : 'bg-gray-300 hover:bg-gray-400'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    )}
+                            onClick={prevAction}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-10"
+                            aria-label="Previous action"
+                          >
+                            <ChevronLeft className="w-5 h-5 text-gray-700" />
+                          </button>
+                          <button
+                            onClick={nextAction}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-10"
+                            aria-label="Next action"
+                          >
+                            <ChevronRight className="w-5 h-5 text-gray-700" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    {/* dots (desktop only) */}
+                    <div className="pending-dots hidden md:flex absolute bottom-0 left-1/2 transform -translate-x-1/2 gap-2">
+                      {pendingActions.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentActionIndex(index)}
+                          className={`w-2 h-2 rounded-full transition-all ${index === currentActionIndex ? 'bg-gray-900 scale-125' : 'bg-gray-300 hover:bg-gray-400'}`}
+                          aria-label={`Go to action ${index + 1}`}
+                        />
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="h-80 flex items-center justify-center">
@@ -603,7 +695,7 @@ const TenantDashboard = () => {
                   {myProperties.map((property) => (
                     <div
                       key={property.id}
-                      className="group bg-gradient-to-br from-gray-50 to-white rounded-2xl p-4 md:p-6 hover:shadow-lg border border-gray-100 hover:border-gray-200 transition-all duration-300 cursor-pointer hover:-translate-y-1"
+                      className="property-card group bg-gradient-to-br from-gray-50 to-white rounded-2xl p-4 md:p-6 hover:shadow-lg border border-gray-100 hover:border-gray-200 transition-all duration-300 cursor-pointer hover:-translate-y-1"
                       onClick={() => navigate(`/property/${property.id}`)}
                     >
                       <div className="space-y-3 md:space-y-4">
@@ -750,7 +842,7 @@ const DetailPanel = ({
                       </div>
                       <div className="text-sm text-gray-600 mt-1">
                         {detail.address && `${detail.address}`}
-                        {detail.amount && `₹${detail.amount.toLocaleString()}`}
+                        {detail.amount && ` • ₹${detail.amount.toLocaleString()}`}
                       </div>
                       {detail.date && (
                         <div className="text-xs text-gray-500 mt-2">

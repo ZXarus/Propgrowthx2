@@ -16,40 +16,73 @@ export default function Hero() {
           @media (max-width: 768px) {
             .hero-section {
               height: 100vh !important;
+              min-height: 550px !important;
+              padding-top: 0 !important;
+            }
+            .hero-content {
+              padding: 0 20px !important;
+            }
+            .hero-heading {
+              font-size: clamp(24px, 6vw, 42px) !important;
+              line-height: 1.15 !important;
+              margin-bottom: 18px !important;
+              letter-spacing: -0.02em !important;
+              font-weight: 700 !important;
+            }
+            .hero-subheading {
+              font-size: clamp(13px, 3.5vw, 16px) !important;
+              margin-bottom: 28px !important;
+              line-height: 1.55 !important;
+              opacity: 0.95 !important;
+            }
+            .hero-button {
+              font-size: 12px !important;
+              padding: 14px 28px !important;
+              width: auto !important;
+              max-width: none !important;
+              display: inline-block !important;
+              letter-spacing: 0.5px !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .hero-section {
               min-height: 500px !important;
-              padding-top: 60px !important;
+            }
+            .hero-content {
+              padding: 0 18px !important;
+            }
+            .hero-heading {
+              font-size: clamp(22px, 5.5vw, 36px) !important;
+              line-height: 1.2 !important;
+              margin-bottom: 16px !important;
+            }
+            .hero-subheading {
+              font-size: clamp(12px, 3vw, 14px) !important;
+              margin-bottom: 24px !important;
+            }
+            .hero-button {
+              font-size: 11px !important;
+              padding: 12px 24px !important;
+              letter-spacing: 0.3px !important;
+            }
+          }
+          @media (max-width: 380px) {
+            .hero-section {
+              min-height: 480px !important;
             }
             .hero-content {
               padding: 0 16px !important;
             }
             .hero-heading {
-              font-size: 32px !important;
-              line-height: 1.1 !important;
-              margin-bottom: 16px !important;
+              font-size: clamp(20px, 5vw, 32px) !important;
+              margin-bottom: 14px !important;
             }
             .hero-subheading {
-              font-size: 14px !important;
-              margin-bottom: 24px !important;
+              margin-bottom: 20px !important;
             }
             .hero-button {
-              font-size: 12px !important;
-              padding: 12px 24px !important;
-              width: 100% !important;
-              max-width: 260px !important;
-            }
-          }
-          @media (max-width: 480px) {
-            .hero-section {
-              min-height: 450px !important;
-            }
-            .hero-content {
-              padding: 0 12px !important;
-            }
-            .hero-heading {
-              font-size: 28px !important;
-            }
-            .hero-subheading {
-              font-size: 13px !important;
+              font-size: 11px !important;
+              padding: 11px 20px !important;
             }
           }
           @media (min-width: 769px) and (max-width: 1024px) {

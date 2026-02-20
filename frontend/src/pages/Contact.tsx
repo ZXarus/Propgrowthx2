@@ -1,7 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -12,38 +11,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { 
+  Mail, Phone, MapPin, Clock, Send, CheckCircle2
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    setIsLoaded(true);
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  setIsSubmitting(false);
-  setIsSubmitted(true);
-  toast({
-    title: "Message sent successfully!",
-    description: "Our team will get back to you within 24 hours.",
-  });
-};
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+    toast({
+      title: "Message sent successfully!",
+      description: "Our team will get back to you within 24 hours.",
+    });
+  };
 
   const contactInfo = [
     {
@@ -87,7 +76,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
         * { font-family: 'Geist', sans-serif; box-sizing: border-box; }
 
-        /* Smooth entrance animations */
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -121,30 +109,12 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           }
         }
 
-        @keyframes shimmer {
-          0% {
-            background-position: -1000px 0;
-          }
-          100% {
-            background-position: 1000px 0;
-          }
-        }
-
         @keyframes subtleFloat {
           0%, 100% {
             transform: translateY(0px);
           }
           50% {
             transform: translateY(-8px);
-          }
-        }
-
-        @keyframes glowPulse {
-          0%, 100% {
-            box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.1);
-          }
-          50% {
-            box-shadow: 0 0 0 12px rgba(220, 38, 38, 0);
           }
         }
 
@@ -157,7 +127,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           animation: fadeInUp 0.8s ease-out 0.1s both;
         }
 
-        /* Brand accent */
         :root { --brand-red: #DC2626; }
 
         .contact-hero {
@@ -172,7 +141,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           box-shadow: 0 10px 30px rgba(2,6,23,0.03);
         }
 
-        /* Enhanced decorative accent */
         .contact-hero::before{
           content: '';
           position: absolute;
@@ -213,45 +181,11 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           position: relative;
         }
 
-        .contact-hero .gradient-text-accent::after {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 0;
-          right: 0;
-          height: 3px;
-          background: linear-gradient(90deg, var(--brand-red), #ff6b6b);
-          border-radius: 2px;
-          opacity: 0;
-          animation: fadeInUp 1.2s ease-out 0.4s both;
-        }
-
         .contact-hero p {
           color: #4b5563;
           font-size: 1.06rem;
           line-height: 1.7;
           animation: fadeInUp 0.8s ease-out 0.25s both;
-        }
-
-        .header-subtitle {
-          font-size: 0.95rem;
-          color: #6b7280;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-          font-weight: 600;
-          margin-bottom: 20px;
-          animation: slideInLeft 0.8s ease-out 0s both;
-        }
-
-
-        @media (max-width: 768px) {
-          .contact-hero {
-            padding: 36px 18px 40px;
-          }
-          .contact-hero::before, .contact-hero::after { display: none; }
-          .header-subtitle {
-            font-size: 0.85rem;
-          }
         }
 
         .gradient-text-accent {
@@ -261,28 +195,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           background-clip: text;
         }
 
-        /* Back button styling */
-        .back-btn {
-          background: rgba(255, 255, 255, 0.78);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(2,6,23,0.06);
-          border-radius: 12px;
-          padding: 10px 16px;
-          cursor: pointer;
-          transition: all 0.22s ease;
-          font-size: 13px;
-          font-weight: 600;
-          color: #0f172a;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .back-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(2,6,23,0.08);
-        }
-
-        /* Layout */
         .contact-area {
           display: grid;
           grid-template-columns: 1fr;
@@ -292,7 +204,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           .contact-area { grid-template-columns: 420px 1fr; gap: 42px; }
         }
 
-        /* Contact list */
         .contact-list {
           background: linear-gradient(180deg, rgba(255,255,255,1), rgba(250,250,250,1));
           border: 1px solid rgba(16,24,40,0.04);
@@ -313,19 +224,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           position: relative;
         }
 
-        .contact-row::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          width: 3px;
-          background: linear-gradient(180deg, var(--brand-red), rgba(220,38,38,0));
-          border-radius: 12px 0 0 12px;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-
         .contact-row + .contact-row { margin-top: 10px; }
         .contact-row:hover {
           transform: translateY(-4px);
@@ -333,11 +231,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           background: rgba(255,255,255,0.9);
         }
 
-        .contact-row:hover::before {
-          opacity: 1;
-        }
-
-        /* Icon tile */
         .icon-tile {
           min-width: 56px;
           height: 56px;
@@ -366,7 +259,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           transform: translateX(4px);
         }
 
-        /* Form card */
         .form-card {
           position: relative;
           padding: 24px;
@@ -418,7 +310,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
         .form-cta { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; }
 
-        /* Brand-red send button */
         .submit-btn-modern {
           background: linear-gradient(90deg, var(--brand-red), #b91c1c);
           color: #fff;
@@ -435,7 +326,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           transform: translateY(-3px);
           box-shadow: 0 12px 34px rgba(220,38,38,0.18);
         }
-        .submit-btn-modern:disabled { opacity: .75; cursor: not-allowed; filter: grayscale(.02); }
+        .submit-btn-modern:disabled { opacity: .75; cursor: not-allowed; }
 
         .note-small { font-size:12px; color:#6b7280; }
 
@@ -443,197 +334,189 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
         .muted { color:#6b7280; font-size:13px; }
 
-        /* Section heading animation */
-        .section-heading {
-          animation: fadeInUp 0.8s ease-out 0.2s both;
+        @media (max-width: 768px) {
+          .contact-hero {
+            padding: 36px 18px 40px;
+          }
+          .contact-hero::before, .contact-hero::after { display: none; }
         }
-
-        .section-subheading {
-          animation: fadeInUp 0.8s ease-out 0.3s both;
-        }
-
       `}</style>
 
       <Layout>
         <div className="min-h-screen bg-white">
-
           {/* Enhanced Header */}
           <section className="contact-hero relative pt-20 pb-20 lg:pt-15 lg:pb-20 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="max-w-3xl">
-              
-              <h1 className="hero-title text-5xl lg:text-7xl font-light mb-6 leading-tight">
-                Let's create something
-                <span className="gradient-text-accent font-medium"> extraordinary</span>
-              </h1>
-              
-              <p className="text-lg text-gray-600 leading-relaxed max-w-xl font-light">
-                Have a question about PropGrowthX? We'd love to hear from you. Get in touch with our team and let's discuss how we can help accelerate your property investment journey.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Divider */}
-        <div className="px-6">
-          <div className="max-w-6xl mx-auto border-t border-gray-100" />
-        </div>
-
-        {/* Main Content */}
-        <section className="py-8 lg:py-8 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-1 gap-8">
-              <div className="section-heading mb-3">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2">Get in touch</h2>
-                <p className="text-gray-600 text-sm">We're available across multiple channels</p>
-              </div>
-
-              <div className="contact-area">
-                {/* Left - Contact list */}
-                <aside className="contact-list" aria-label="Contact details">
-                  {contactInfo.map((item, index) => {
-                    const Icon = item.icon;
-                    return (
-                      <a
-                        key={index}
-                        href={item.href}
-                        className="contact-row"
-                        onMouseEnter={() => setHoveredCard(index)}
-                        onMouseLeave={() => setHoveredCard(null)}
-                        rel="noreferrer"
-                        style={{
-                          animation: `fadeInUp 0.8s ease-out ${0.35 + (index * 0.08)}s both`
-                        }}
-                      >
-                        <div className="icon-tile" aria-hidden>
-                          <Icon className="w-5 h-5" style={{ color: 'var(--brand-red)' }} />
-                        </div>
-
-                        <div className="contact-meta">
-                          <div className="contact-title">{item.title}</div>
-                          <div className="contact-value">{item.value}</div>
-                        </div>
-
-                        <div className="contact-arrow" aria-hidden>
-                          <ArrowLeft className="w-4 h-4" style={{ transform: 'rotate(180deg)', opacity: 0.6 }} />
-                        </div>
-                      </a>
-                    );
-                  })}
-                </aside>
-
-                {/* Right - Form card */}
-                <main className="form-card" aria-label="Contact form">
-                  {isSubmitted ? (
-                    <div className="success-panel" style={{ animation: 'fadeInUp 0.6s ease-out' }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 88, height: 88, borderRadius: 44, background: 'linear-gradient(180deg,#ecfdf5,#eefaf3)' , margin: '0 auto 18px' }}>
-                        <CheckCircle2 className="w-10 h-10" style={{ color: '#059669', animation: 'subtleFloat 2.5s ease-in-out infinite' }} />
-                      </div>
-                      <h3 className="text-[22px] font-semibold tracking-tight text-gray-900 mb-2">Message received</h3>
-                      <p className="text-gray-600 mb-5 max-w-md mx-auto text-sm leading-relaxed">
-                        Thanks for reaching out. Our team will review your message and get back to you within 24 hours.
-                      </p>
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
-                        <button
-                          onClick={() => setIsSubmitted(false)}
-                          className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-12 text-sm font-medium transition-all duration-300"
-                        >
-                          Send another message
-                        </button>
-                        <button
-                          onClick={() => window.location.href = '/dashboard/owner'}
-                          className="submit-btn-modern"
-                        >
-                          Back to dashboard
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} aria-label="Contact form body">
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                        <div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Send us a message</div>
-                          <div className="muted">Our team typically replies within 24 hours</div>
-                        </div>
-                      </div>
-
-                      <div className="form-row sm-2">
-                        <div>
-                          <Label htmlFor="firstName" className="field-label">First name</Label>
-                          <Input id="firstName" placeholder="John" required className="modern-input" />
-                        </div>
-                        <div>
-                          <Label htmlFor="lastName" className="field-label">Last name</Label>
-                          <Input id="lastName" placeholder="Doe" required className="modern-input" />
-                        </div>
-                      </div>
-
-                      <div className="form-row sm-2" style={{ marginTop: 12 }}>
-                        <div>
-                          <Label htmlFor="email" className="field-label">Email address</Label>
-                          <Input id="email" type="email" placeholder="you@example.com" required className="modern-input" />
-                        </div>
-                        <div>
-                          <Label htmlFor="phone" className="field-label">Phone number</Label>
-                          <Input id="phone" type="tel" placeholder="+91 98765 43218" className="modern-input" />
-                        </div>
-                      </div>
-
-                      <div style={{ marginTop: 14 }}>
-                        <Label htmlFor="interest" className="field-label">I'm interested in</Label>
-                        <div>
-                          <Select>
-                            <SelectTrigger className="modern-select" aria-label="Interest select">
-                              <SelectValue placeholder="Select an option" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-16 border-gray-200">
-                              <SelectItem value="buying">Buying a property</SelectItem>
-                              <SelectItem value="selling">Selling a property</SelectItem>
-                              <SelectItem value="renting">Renting a property</SelectItem>
-                              <SelectItem value="investing">Investment advisory</SelectItem>
-                              <SelectItem value="analytics">Analytics & reports</SelectItem>
-                              <SelectItem value="enterprise">Enterprise solutions</SelectItem>
-                              <SelectItem value="other">Other inquiry</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div style={{ marginTop: 14 }}>
-                        <Label htmlFor="message" className="field-label">Your message</Label>
-                        <Textarea
-                          id="message"
-                          placeholder="Tell us more about your property inquiry, timeline, or specific needs..."
-                          rows={6}
-                          required
-                          className="modern-textarea"
-                          style={{ resize: 'none' }}
-                        />
-                      </div>
-
-                      <div className="form-cta">
-                        <button
-                          type="submit"
-                          className="submit-btn-modern"
-                          disabled={isSubmitting}
-                          aria-busy={isSubmitting}
-                          aria-label="Send inquiry"
-                        >
-                          <Send className="w-4 h-4" style={{ color: '#fff' }} />
-                          {isSubmitting ? 'Sending...' : 'Send inquiry'}
-                        </button>
-
-                        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div className="note-small">We respond within <span style={{ fontWeight: 700, color: '#111827' }}>24 hours</span></div>
-                        </div>
-                      </div>
-                    </form>
-                  )}
-                </main>
+            <div className="max-w-6xl mx-auto">
+              <div className="max-w-3xl">
+                
+                <h1 className="hero-title text-5xl lg:text-7xl font-light mb-6 leading-tight">
+                  Let's create something
+                  <span className="gradient-text-accent font-medium"> extraordinary</span>
+                </h1>
+                
+                <p className="text-lg text-gray-600 leading-relaxed max-w-xl font-light">
+                  Have a question about PropGrowthX? We'd love to hear from you. Get in touch with our team and let's discuss how we can help accelerate your property investment journey.
+                </p>
               </div>
             </div>
+          </section>
+
+          {/* Divider */}
+          <div className="px-6">
+            <div className="max-w-6xl mx-auto border-t border-gray-100" />
           </div>
-        </section>
+
+          {/* Main Content */}
+          <section className="py-8 lg:py-8 px-6">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid lg:grid-cols-1 gap-8">
+                <div className="mb-3">
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-2">Get in touch</h2>
+                  <p className="text-gray-600 text-sm">We're available across multiple channels</p>
+                </div>
+
+                <div className="contact-area">
+                  {/* Left - Contact list */}
+                  <aside className="contact-list" aria-label="Contact details">
+                    {contactInfo.map((item, index) => {
+                      const Icon = item.icon;
+                      return (
+                        <a
+                          key={index}
+                          href={item.href}
+                          className="contact-row"
+                          onMouseEnter={() => setHoveredCard(index)}
+                          onMouseLeave={() => setHoveredCard(null)}
+                          rel="noreferrer"
+                          style={{
+                            animation: `fadeInUp 0.8s ease-out ${0.35 + (index * 0.08)}s both`
+                          }}
+                        >
+                          <div className="icon-tile" aria-hidden>
+                            <Icon className="w-5 h-5" style={{ color: 'var(--brand-red)' }} />
+                          </div>
+
+                          <div className="contact-meta">
+                            <div className="contact-title">{item.title}</div>
+                            <div className="contact-value">{item.value}</div>
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </aside>
+
+                  {/* Right - Form card */}
+                  <main className="form-card" aria-label="Contact form">
+                    {isSubmitted ? (
+                      <div className="success-panel" style={{ animation: 'fadeInUp 0.6s ease-out' }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 88, height: 88, borderRadius: 44, background: 'linear-gradient(180deg,#ecfdf5,#eefaf3)' , margin: '0 auto 18px' }}>
+                          <CheckCircle2 className="w-10 h-10" style={{ color: '#059669', animation: 'subtleFloat 2.5s ease-in-out infinite' }} />
+                        </div>
+                        <h3 className="text-[22px] font-semibold tracking-tight text-gray-900 mb-2">Message received</h3>
+                        <p className="text-gray-600 mb-5 max-w-md mx-auto text-sm leading-relaxed">
+                          Thanks for reaching out. Our team will review your message and get back to you within 24 hours.
+                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+                          <button
+                            onClick={() => setIsSubmitted(false)}
+                            className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-12 text-sm font-medium transition-all duration-300"
+                          >
+                            Send another message
+                          </button>
+                          <button
+                            onClick={() => window.location.href = '/'}
+                            className="submit-btn-modern"
+                          >
+                            Back to home
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleSubmit} aria-label="Contact form body">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Send us a message</div>
+                            <div className="muted">Our team typically replies within 24 hours</div>
+                          </div>
+                        </div>
+
+                        <div className="form-row sm-2">
+                          <div>
+                            <Label htmlFor="firstName" className="field-label">First name</Label>
+                            <Input id="firstName" placeholder="John" required className="modern-input" />
+                          </div>
+                          <div>
+                            <Label htmlFor="lastName" className="field-label">Last name</Label>
+                            <Input id="lastName" placeholder="Doe" required className="modern-input" />
+                          </div>
+                        </div>
+
+                        <div className="form-row sm-2" style={{ marginTop: 12 }}>
+                          <div>
+                            <Label htmlFor="email" className="field-label">Email address</Label>
+                            <Input id="email" type="email" placeholder="you@example.com" required className="modern-input" />
+                          </div>
+                          <div>
+                            <Label htmlFor="phone" className="field-label">Phone number</Label>
+                            <Input id="phone" type="tel" placeholder="+91 98765 43218" className="modern-input" />
+                          </div>
+                        </div>
+
+                        <div style={{ marginTop: 14 }}>
+                          <Label htmlFor="interest" className="field-label">I'm interested in</Label>
+                          <div>
+                            <Select>
+                              <SelectTrigger className="modern-select" aria-label="Interest select">
+                                <SelectValue placeholder="Select an option" />
+                              </SelectTrigger>
+                              <SelectContent className="rounded-16 border-gray-200">
+                                <SelectItem value="buying">Buying a property</SelectItem>
+                                <SelectItem value="selling">Selling a property</SelectItem>
+                                <SelectItem value="renting">Renting a property</SelectItem>
+                                <SelectItem value="investing">Investment advisory</SelectItem>
+                                <SelectItem value="analytics">Analytics & reports</SelectItem>
+                                <SelectItem value="enterprise">Enterprise solutions</SelectItem>
+                                <SelectItem value="other">Other inquiry</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div style={{ marginTop: 14 }}>
+                          <Label htmlFor="message" className="field-label">Your message</Label>
+                          <Textarea
+                            id="message"
+                            placeholder="Tell us more about your property inquiry, timeline, or specific needs..."
+                            rows={6}
+                            required
+                            className="modern-textarea"
+                            style={{ resize: 'none' }}
+                          />
+                        </div>
+
+                        <div className="form-cta">
+                          <button
+                            type="submit"
+                            className="submit-btn-modern"
+                            disabled={isSubmitting}
+                            aria-busy={isSubmitting}
+                            aria-label="Send inquiry"
+                          >
+                            <Send className="w-4 h-4" style={{ color: '#fff' }} />
+                            {isSubmitting ? 'Sending...' : 'Send inquiry'}
+                          </button>
+
+                          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div className="note-small">We respond within <span style={{ fontWeight: 700, color: '#111827' }}>24 hours</span></div>
+                          </div>
+                        </div>
+                      </form>
+                    )}
+                  </main>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </Layout>
     </>
