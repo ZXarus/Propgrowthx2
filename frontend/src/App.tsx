@@ -12,6 +12,8 @@ import OwnerTransactions from "./pages/dashboard/owner/OwnerTransactions";
 import TenantDashboard from "./pages/dashboard/tenant/TenantDashboard";
 import Properties from "./pages/Properties";
 import PropertyDetails from "./pages/PropertyDetails";
+// import AllPropertiesPage from "./pages/Property/AllPropertiesPage";
+// import PropertiesPage from "./pages/Property/PropertiesPage";
 import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import HowItWorks from "./pages/HowItWorks";
@@ -21,6 +23,9 @@ import TenantComplaints from "./pages/dashboard/tenant/TenantComplaints";
 import TenantTransactions from "./pages/dashboard/tenant/TenantTransactions";
 import OwnerComplaints from "./pages/dashboard/owner/OwnerComplaints";
 import { DataProvider } from "./context/dataContext";
+import PaymentsPage from "./pages/PaymentsPage";
+import PropertiesPage from "./pages/property/PropertiesPage";
+import AllPropertiesPage from "./pages/property/AllPropertiesPage";
 
 function App() {
   return (
@@ -28,43 +33,59 @@ function App() {
       <ScrollToTop />
       <DataProvider>
         <Routes>
-
-        <Route path="/" element={<Index />} />
-        <Route path="/properties" element={<Properties />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/how-it-works" element={<HowItWorks />} />
-        <Route path="/contact" element={<Contact />} />
-
-        <Route element={<PublicRoute />}>
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/setPassword" element={<SetPassword />} />
-        </Route>    
-
-        <Route element={<PrivateRoute allowedRoles={["owner"]} />}>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/dashboard/owner" element={<OwnerDashboard />} />
-          <Route path="/dashboard/owner/properties" element={<OwnerProperties />} />
-          <Route path="/dashboard/owner/transactions" element={<OwnerTransactions />} />
-          <Route path="/dashboard/owner/complaints" element={<OwnerComplaints />} />
-        </Route>
-
-        <Route element={<PrivateRoute allowedRoles={["tenant"]} />}>
-          <Route path="/dashboard/tenant" element={<TenantDashboard />} /> 
-          <Route path="/dashboard/tenant/complaints" element={<TenantComplaints />} />
-          <Route path="/dashboard/tenant/transactions" element={<TenantTransactions />} />
-        </Route>
-
-
-          <Route element={<PrivateRoute />}>
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/property/:id" element={<PropertyDetails />} />
-          </Route>
-
-        <Route path="*" element={<NotFound />} />  
-        
-      </Routes>
+          {/* individual payment */}
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/contact" element={<Contact />} />
+          {/* Individual property*/}
+          <Route path="/properties-manage" element={<PropertiesPage />} />
+          <Route path="/all-properties" element={<AllPropertiesPage />} />
+          <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/owner/complaints" element={<OwnerComplaints />} />
+          {/* here we show all properties */}
+          <Route path="/properties" element={<Properties />} />
+          {/* not found */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </DataProvider>
     </HelmetProvider>
   );
 }
 export default App;
 
+//  <Route path="/" element={<Index />} />
+//     <Route path="/properties" element={<Properties />} />
+//     <Route path="/services" element={<Services />} />
+//     <Route path="/how-it-works" element={<HowItWorks />} />
+//     <Route path="/contact" element={<Contact />} />
+
+//     <Route element={<PublicRoute />}>
+//         <Route path="/auth" element={<AuthPage />} />
+//         <Route path="/setPassword" element={<SetPassword />} />
+//     </Route>
+
+//     <Route element={<PrivateRoute allowedRoles={["owner"]} />}>
+//       <Route path="/dashboard/owner" element={<OwnerDashboard />} />
+//       <Route path="/dashboard/owner/properties" element={<OwnerProperties />} />
+//       <Route path="/dashboard/owner/transactions" element={<OwnerTransactions />} />
+//       <Route path="/dashboard/owner/complaints" element={<OwnerComplaints />} />
+//     </Route>
+
+//     <Route element={<PrivateRoute allowedRoles={["tenant"]} />}>
+//       <Route path="/dashboard/tenant" element={<TenantDashboard />} />
+//       <Route path="/dashboard/tenant/complaints" element={<TenantComplaints />} />
+//       <Route path="/dashboard/tenant/transactions" element={<TenantTransactions />} />
+//     </Route>
+
+//       <Route element={<PrivateRoute />}>
+//         <Route path="/profile/:id" element={<Profile />} />
+//         <Route path="/property/:id" element={<PropertyDetails />} />
+//       </Route>
+
+//     <Route path="*" element={<NotFound />} />
+
+//   </Routes>

@@ -1,7 +1,7 @@
-import { Helmet } from 'react-helmet-async';
-import Layout from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Helmet } from "react-helmet-async";
+import Layout from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import {
   Home,
   Heart,
@@ -17,29 +17,28 @@ import {
   Building2,
   FileText,
   LogOut,
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useData } from "../../../context/dataContext";
-import DashboardSkeleton from '@/pages/SkeletonLoading';
-
+import DashboardSkeleton from "@/pages/SkeletonLoading";
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
-  const { properties, transactions,id,loading} = useData();
+  const id = "1";
+  const { properties, transactions, loading } = useData();
 
-  if(loading) return <DashboardSkeleton/>
+  if (loading) return <DashboardSkeleton />;
 
   const stats = [
     // { label: 'Saved Properties', value: '2', icon: Heart },
-    { label: 'Active Applications', value: '3', icon: Clock },
-    { label: 'Rented', value: '2', icon: CheckCircle2 },
-    { label: 'Property Views', value: '6', icon: Search },
+    { label: "Active Applications", value: "3", icon: Clock },
+    { label: "Rented", value: "2", icon: CheckCircle2 },
+    { label: "Property Views", value: "6", icon: Search },
   ];
-  console.log(id)
+  console.log(id);
 
-  const myProperties = properties.filter((p)=>p.buyer_id === id);
-  const myTxs = transactions.filter(t => t.tenant_id === id);
-
+  const myProperties = properties.filter((p) => p.buyer_id === id);
+  const myTxs = transactions.filter((t) => t.tenant_id === id);
 
   return (
     <>
@@ -73,41 +72,49 @@ const TenantDashboard = () => {
             </div>
 
             <div className="grid md:grid-cols-2 gap-4 mb-8">
-             <Link
-               to="/dashboard/tenant/complaints"
-               className="bg-card border border-border rounded-2xl p-6 hover:border-secondary/50 hover:shadow-lg transition-all group"
-             >
-               <div className="flex items-center justify-between">
-                 <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
-                     <WrenchIcon className="w-6 h-6 text-primary group-hover:text-secondary transition-colors" />
-                   </div>
-                   <div>
-                     <h3 className="font-semibold text-foreground">Manage Complaints</h3>
-                     <p className="text-sm text-muted-foreground">View and manage all your complaints</p>
-                   </div>
-                 </div>
-                 <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors" />
-               </div>
-             </Link>
-             <Link
-               to="/dashboard/tenant/transactions"
-               className="bg-card border border-border rounded-2xl p-6 hover:border-secondary/50 hover:shadow-lg transition-all group"
-             >
-               <div className="flex items-center justify-between">
-                 <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
-                     <FileText className="w-6 h-6 text-primary group-hover:text-secondary transition-colors" />
-                   </div>
-                   <div>
-                     <h3 className="font-semibold text-foreground">Transactions & Payments</h3>
-                     <p className="text-sm text-muted-foreground">Track your rentals & rent payments</p>
-                   </div>
-                 </div>
-                 <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors" />
-               </div>
-             </Link>
-           </div>
+              <Link
+                to="/dashboard/tenant/complaints"
+                className="bg-card border border-border rounded-2xl p-6 hover:border-secondary/50 hover:shadow-lg transition-all group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
+                      <WrenchIcon className="w-6 h-6 text-primary group-hover:text-secondary transition-colors" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">
+                        Manage Complaints
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        View and manage all your complaints
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors" />
+                </div>
+              </Link>
+              <Link
+                to="/dashboard/tenant/transactions"
+                className="bg-card border border-border rounded-2xl p-6 hover:border-secondary/50 hover:shadow-lg transition-all group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
+                      <FileText className="w-6 h-6 text-primary group-hover:text-secondary transition-colors" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">
+                        Transactions & Payments
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Track your rentals & rent payments
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors" />
+                </div>
+              </Link>
+            </div>
 
             {/* Stats Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -121,7 +128,9 @@ const TenantDashboard = () => {
                   <div className="text-2xl font-bold text-foreground mb-1">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
                 </div>
               ))}
             </div>
@@ -167,26 +176,28 @@ const TenantDashboard = () => {
                           </div>
                           <div className="text-sm">
                             <div className="text-muted-foreground">Since</div>
-                            <div className="font-medium text-foreground">
-                              {property?.since || 'N/A'}
-                            </div>
+                            {/* <div className="font-medium text-foreground">
+                              {property?.since || "N/A"}
+                            </div> */}
                           </div>
-                          {property?.endDate && (
+                          {property?.end_date && (
                             <div className="text-sm">
                               <div className="text-muted-foreground">Until</div>
                               <div className="font-medium text-foreground">
-                                {property.endDate || 'N/A'}
+                                {property.end_date || "N/A"}
                               </div>
                             </div>
                           )}
                           <Badge
                             className={
-                              property.status === 'owned'
-                                ? 'bg-success text-primary-foreground'
-                                : 'bg-secondary text-secondary-foreground'
+                              property.status === "SOLD"
+                                ? "bg-success text-primary-foreground"
+                                : "bg-secondary text-secondary-foreground"
                             }
                           >
-                            {property.status === 'owned' ? 'Owned' : 'Active Rental'}
+                            {property.status === "SOLD"
+                              ? "Owned"
+                              : "Active Rental"}
                           </Badge>
                         </div>
                       </div>
@@ -211,7 +222,10 @@ const TenantDashboard = () => {
                       >
                         <div>
                           <div className="font-medium text-foreground text-sm">
-                            {properties.find((p) => p.id === tx.property_id)?.property_name}
+                            {
+                              properties.find((p) => p.id === tx.property_id)
+                                ?.property_name
+                            }
                           </div>
                           <div className="text-xs text-muted-foreground">
                             {tx.type}
@@ -223,7 +237,7 @@ const TenantDashboard = () => {
                         </div>
                         <div className="text-right">
                           <div className="font-bold text-foreground text-sm">
-                            Rs{" "+tx.amount.toLocaleString()}
+                            Rs{" " + tx.amount.toLocaleString()}
                           </div>
                           <Badge variant="outline" className="text-xs mt-1">
                             {tx.status}
@@ -233,8 +247,11 @@ const TenantDashboard = () => {
                     ))}
                   </div>
 
-                  <Button variant="outline" className="w-full mt-4" size="sm"
-                  onClick={() => navigate('/dashboard/tenant/transactions')}
+                  <Button
+                    variant="outline"
+                    className="w-full mt-4"
+                    size="sm"
+                    onClick={() => navigate("/dashboard/tenant/transactions")}
                   >
                     View All Transactions
                   </Button>

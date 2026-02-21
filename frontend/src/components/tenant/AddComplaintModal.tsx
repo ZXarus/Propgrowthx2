@@ -79,7 +79,8 @@ const AddComplaintModal = ({
   open,
   onOpenChange,
 }: AddComplaintModalProps) => {
-  const {properties,id} = useData();
+  const id="1"
+  const {properties} = useData();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const tenantId = sessionStorage.getItem("id");

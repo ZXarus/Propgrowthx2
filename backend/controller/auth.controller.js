@@ -1,5 +1,5 @@
 import { supabase } from "../config/supabase.js";
-
+import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../middlewares/jwt.middleware.js";
 
@@ -39,18 +39,18 @@ export const register = async (req, res) => {
   }
 };
 
-// Login user
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   try {
     const { data: user, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("email", email)
+      .eq("role", role)
       .single();
 
-    if (error || !user) return res.status(400).json({ error: "Invalid email" });
+    if (error || !user) return res.status(400).json({ error: "Invalid data" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid password" });
@@ -60,31 +60,132 @@ export const login = async (req, res) => {
     res.json({
       message: "Login successful",
       token,
-      role:user.role,
-      id:user.id
+      role: user.role,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// forgot password (partially completed )
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
-  console.log("Forgot password request received for:", email);
 
   try {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email);
-
-    if (error) {
-      console.log("Error sending reset email:", error.message);
-      return res.status(400).json({ error: error.message });
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
     }
 
-    console.log("Reset email sent to:", email);
-    res.json({ message: "Password reset email sent" });
+    const { data: user, error: userError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .single();
+
+    if (userError || !user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    await supabase.from("verifyOtp").delete().eq("email", email);
+
+    await supabase.from("verifyOtp").insert({
+      email,
+      otp,
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.COMPANY_EMAIL,
+        pass: process.env.COMPANY_EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: process.env.COMPANY_EMAIL,
+      to: email,
+      subject: "Your OTP Verification",
+      text: `Your OTP is ${otp}.`,
+    });
+
+    return res.status(200).json({
+      message: "OTP sent successfully",
+    });
   } catch (err) {
-    console.log("Unexpected error in forgotPassword:", err.message);
+    console.log("Forgot password error:", err.message);
+    return res
+      .status(500)
+      .json({ error: err.message + "mail is not defined so make it correct" });
+  }
+};
+
+export const passwordUpdate = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    if (!email || !password) {
+      return res.status(400).json({
+        error: "Email and new password are required",
+      });
+    }
+
+    const { data: user, error: userError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .single();
+
+    if (userError || !user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ password: hashedPassword })
+      .eq("email", email);
+
+    if (updateError) {
+      return res.status(500).json({ error: "Password update failed" });
+    }
+
+    await supabase.from("verifyOtp").delete().eq("email", email);
+
+    return res.status(200).json({
+      message: "Password updated successfully",
+    });
+  } catch (err) {
+    console.log("Password update error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    if (!email || !otp) {
+      return res.status(400).json({ error: "Email and OTP required" });
+    }
+
+    const { data, error } = await supabase
+      .from("verifyOtp")
+      .select("*")
+      .eq("email", email)
+      .eq("otp", otp)
+      .single();
+
+    if (error || !data) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    await supabase.from("verifyOtp").delete().eq("email", email);
+
+    return res.status(200).json({ message: "OTP verified successfully" });
+  } catch (err) {
+    console.log("Verify OTP error:", err.message);
     res.status(500).json({ error: err.message });
   }
 };
@@ -105,6 +206,111 @@ export const getUserProfileWithProperties = async (req, res) => {
 
     res.json({ user });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const profileDetails = async (req, res) => {
+  const profileId = req.user.id;
+
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", profileId)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    return res.status(200).json({
+      profile: data,
+    });
+  } catch (err) {
+    console.error("Profile fetch error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  const { profileId } = req.params;
+
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required" });
+    }
+
+    const file = req.file;
+    const fileExt = file.originalname.split(".").pop();
+    const fileName = `${profileId}-${Date.now()}.${fileExt}`;
+    const filePath = `profiles/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("profile-images")
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true,
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: publicUrl } = supabase.storage
+      .from("profile-images")
+      .getPublicUrl(filePath);
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ profile_image: publicUrl.publicUrl })
+      .eq("id", profileId);
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      profile_image: publicUrl.publicUrl,
+    });
+  } catch (err) {
+    console.error("Profile image update error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+export const updatedetails = async (req, res) => {
+  const { profileId } = req.params;
+  const { emer_contact, s_link1, s_link2, s_link3, name, email } = req.body;
+
+  if (!emer_contact && !s_link1 && !s_link2 && !s_link3) {
+    return res.status(400).json({ error: "Nothing to update" });
+  }
+
+  try {
+    const updates = {};
+    if (emer_contact) updates.emer_contact = emer_contact;
+    if (s_link1) updates.s_link1 = s_link1;
+    if (s_link2) updates.s_link2 = s_link2;
+    if (s_link3) updates.s_link3 = s_link3;
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .update(updates)
+      .eq("id", profileId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      profile: data,
+    });
+  } catch (err) {
+    console.error("Update profile details error:", err);
     res.status(500).json({ error: err.message });
   }
 };

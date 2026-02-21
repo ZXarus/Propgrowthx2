@@ -1,19 +1,19 @@
-import { Helmet } from 'react-helmet-async';
-import { useState } from 'react';
-import Layout from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { Helmet } from "react-helmet-async";
+import { useState } from "react";
+import Layout from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/select";
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,9 +23,9 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     setIsSubmitting(false);
     setIsSubmitted(true);
     toast({
@@ -37,27 +37,27 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: Mail,
-      title: 'Email Us',
-      value: 'contact@propgrowthx.com',
-      href: 'mailto:contact@propgrowthx.com',
+      title: "Email Us",
+      value: "contact@propgrowthx.com",
+      href: "mailto:contact@propgrowthx.com",
     },
     {
       icon: Phone,
-      title: 'Call Us',
-      value: '+91 9876543218',
-      href: 'tel:+919876543218',
+      title: "Call Us",
+      value: "+91 9876543218",
+      href: "tel:+919876543218",
     },
     {
       icon: MapPin,
-      title: 'Visit Us',
-      value: 'Banglore, Karnataka, India',
-      href: 'https://www.google.com/maps/place/Bengaluru,+Karnataka,+India/',
+      title: "Visit Us",
+      value: "Banglore, Karnataka, India",
+      href: "https://www.google.com/maps/place/Bengaluru,+Karnataka,+India/",
     },
     {
       icon: Clock,
-      title: 'Business Hours',
-      value: 'Mon - Fri: 9AM - 6PM PST',
-      href: '#',
+      title: "Business Hours",
+      value: "Mon - Fri: 9AM - 6PM PST",
+      href: "#",
     },
   ];
 
@@ -83,7 +83,8 @@ const Contact = () => {
                 Let's Start a Conversation
               </h1>
               <p className="text-lg text-primary-foreground/80">
-                Whether you're looking to invest, list a property, or explore enterprise solutions, our team is here to help.
+                Whether you're looking to invest, list a property, or explore
+                enterprise solutions, our team is here to help.
               </p>
             </div>
           </div>
@@ -99,7 +100,8 @@ const Contact = () => {
                   Contact Information
                 </h2>
                 <p className="text-muted-foreground mb-8">
-                  Reach out through any of these channels. Our team typically responds within 24 hours.
+                  Reach out through any of these channels. Our team typically
+                  responds within 24 hours.
                 </p>
 
                 <div className="space-y-6">
@@ -144,7 +146,8 @@ const Contact = () => {
                         Message Sent Successfully!
                       </h3>
                       <p className="text-muted-foreground mb-6">
-                        Thank you for reaching out. Our team will contact you within 24 hours.
+                        Thank you for reaching out. Our team will contact you
+                        within 24 hours.
                       </p>
                       <Button
                         variant="outline"
@@ -158,19 +161,11 @@ const Contact = () => {
                       <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="firstName">First Name</Label>
-                          <Input
-                            id="firstName"
-                            placeholder="Anand"
-                            required
-                          />
+                          <Input id="firstName" placeholder="Anand" required />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName">Last Name</Label>
-                          <Input
-                            id="lastName"
-                            placeholder="Sharma"
-                            required
-                          />
+                          <Input id="lastName" placeholder="Sharma" required />
                         </div>
                       </div>
 
@@ -201,12 +196,24 @@ const Contact = () => {
                             <SelectValue placeholder="Select an option" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="buying">Buying a Property</SelectItem>
-                            <SelectItem value="selling">Selling a Property</SelectItem>
-                            <SelectItem value="renting">Renting a Property</SelectItem>
-                            <SelectItem value="investing">Investment Advisory</SelectItem>
-                            <SelectItem value="analytics">Analytics & Reports</SelectItem>
-                            <SelectItem value="enterprise">Enterprise Solutions</SelectItem>
+                            <SelectItem value="buying">
+                              Buying a Property
+                            </SelectItem>
+                            <SelectItem value="selling">
+                              Selling a Property
+                            </SelectItem>
+                            <SelectItem value="renting">
+                              Renting a Property
+                            </SelectItem>
+                            <SelectItem value="investing">
+                              Investment Advisory
+                            </SelectItem>
+                            <SelectItem value="analytics">
+                              Analytics & Reports
+                            </SelectItem>
+                            <SelectItem value="enterprise">
+                              Enterprise Solutions
+                            </SelectItem>
                             <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
                         </Select>
@@ -229,7 +236,7 @@ const Contact = () => {
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (
-                          'Sending...'
+                          "Sending..."
                         ) : (
                           <>
                             Send Message
@@ -253,7 +260,8 @@ const Contact = () => {
                 Ready to Start Investing Smarter?
               </h2>
               <p className="text-muted-foreground mb-6">
-                Explore our platform and discover data-driven real estate opportunities.
+                Explore our platform and discover data-driven real estate
+                opportunities.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Button asChild className="bg-secondary hover:bg-secondary/90">

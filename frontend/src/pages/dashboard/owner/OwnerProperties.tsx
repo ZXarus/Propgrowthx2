@@ -1,9 +1,9 @@
-import { useState,useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Link, useNavigate } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
+import Layout from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Building2,
   Plus,
@@ -18,7 +18,7 @@ import {
   Search,
   ArrowLeft,
   MoreVertical,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -26,46 +26,46 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import AddPropertyModal from '@/components/dashboard/AddPropertyModal';
-import EditPropertyModal, { PropertyData } from '@/components/dashboard/EditPropertyModal';
-import DeletePropertyDialog from '@/components/dashboard/DeletePropertyDialog';
-import PropertyAnalyticsModal from '@/components/dashboard/PropertyAnalyticsModal';
-import { useData } from '@/context/dataContext';
-import DashboardSkeleton from '@/pages/SkeletonLoading';
+} from "@/components/ui/dropdown-menu";
+import AddPropertyModal from "@/components/dashboard/AddPropertyModal";
+import EditPropertyModal, {
+  PropertyData,
+} from "@/components/dashboard/EditPropertyModal";
+import DeletePropertyDialog from "@/components/dashboard/DeletePropertyDialog";
+import PropertyAnalyticsModal from "@/components/dashboard/PropertyAnalyticsModal";
+import { useData } from "@/context/dataContext";
 
 interface ExtendedPropertyData extends PropertyData {
   listedDate: string;
-  images:string[]
+  images: string[];
 }
 
 const OwnerProperties = () => {
-  const {properties,setProperties,id,loading} = useData();
-  const navigate = useNavigate();
+  const { properties, setProperties } = useData();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState<ExtendedPropertyData | null>(null);
-   
-  if(loading) return <DashboardSkeleton/>
+  const [selectedProperty, setSelectedProperty] =
+    useState<ExtendedPropertyData | null>(null);
 
   const handleEditClick = (property: ExtendedPropertyData) => {
     setSelectedProperty(property);
@@ -83,52 +83,53 @@ const OwnerProperties = () => {
   };
 
   const handlePropertyUpdated = (updatedProperty: PropertyData) => {
-    setProperties(prev => 
-      prev.map(p => p.id === updatedProperty.id ? { ...p, ...updatedProperty } : p)
+    setProperties((prev) =>
+      prev.map((p) =>
+        p.id === updatedProperty.id ? { ...p, ...updatedProperty } : p,
+      ),
     );
   };
 
   const handlePropertyDeleted = (propertyId: string) => {
-    setProperties(prev => prev.filter(p => p.id !== propertyId));
+    setProperties((prev) => prev.filter((p) => p.id !== propertyId));
   };
 
+  const extendedProperties: ExtendedPropertyData[] = properties.map(
+    (property) => ({
+      ...property,
+      listedDate:
+        (property as any).listedDate ??
+        property.created_at ??
+        new Date().toISOString(),
 
-const extendedProperties: ExtendedPropertyData[] = properties.map(
-  (property) => ({
-    ...property,
-    listedDate:
-      (property as ExtendedPropertyData).listedDate ??
-      property.created_at ??
-      new Date().toISOString(),
+      images: (property as any).images ?? [],
+    }),
+  );
 
-    images:
-      (property as ExtendedPropertyData).images ??
-      [],
-  })
-);
+  // const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
+  const ownerProp = extendedProperties.filter((prop) => prop.owner_id === "1");
 
-const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
+  const filteredProperties = ownerProp.filter((property) => {
+    const name = property.property_name || ""; // fallback to empty string
+    const location = property.city || ""; // fallback to empty string
 
- const filteredProperties = ownerProp.filter((property) => {
-  const name = property.property_name || "";        // fallback to empty string
-  const location = property.city || ""; // fallback to empty string
+    const matchesSearch =
+      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      location.toLowerCase().includes(searchTerm.toLowerCase());
 
-  const matchesSearch =
-    name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    location.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType =
+      filterType === "all" || property.property_type === filterType;
+    const matchesStatus =
+      filterStatus === "all" || property.status === filterStatus;
 
-  const matchesType = filterType === "all" || property.property_type === filterType;
-  const matchesStatus = filterStatus === "all" || property.status === filterStatus;
-
-  return matchesSearch && matchesType && matchesStatus;
-});
-
+    return matchesSearch && matchesType && matchesStatus;
+  });
 
   const stats = {
     total: ownerProp.length,
-    active: ownerProp.filter(p => p.status === 'active').length,
-    rented: ownerProp.filter(p => p.status === 'rented').length,
-    sold: ownerProp.filter(p => p.status === 'sold').length,
+    active: ownerProp.filter((p) => p.status === "AVAILABLE").length,
+    rented: ownerProp.filter((p) => p.status === "BOOKED").length,
+    sold: ownerProp.filter((p) => p.status === "SOLD").length,
     totalValue: ownerProp.reduce((sum, p) => sum, 0),
   };
 
@@ -164,7 +165,7 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
                   Manage and monitor all your property listings
                 </p>
               </div>
-              <Button 
+              <Button
                 className="bg-secondary hover:bg-secondary/90"
                 onClick={() => setIsAddModalOpen(true)}
               >
@@ -173,8 +174,8 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
               </Button>
             </div>
 
-            <AddPropertyModal 
-              open={isAddModalOpen} 
+            <AddPropertyModal
+              open={isAddModalOpen}
               onOpenChange={setIsAddModalOpen}
             />
 
@@ -199,28 +200,46 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
             />
 
             {/* Quick Stats */}
-            {/* <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
               <div className="bg-card border border-border rounded-xl p-4">
-                <div className="text-2xl font-bold text-foreground">{stats.total}</div>
-                <div className="text-sm text-muted-foreground">Total Properties</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {stats.total}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Total Properties
+                </div>
               </div>
               <div className="bg-card border border-border rounded-xl p-4">
-                <div className="text-2xl font-bold text-success">{stats.active}</div>
-                <div className="text-sm text-muted-foreground">Active Listings</div>
+                <div className="text-2xl font-bold text-success">
+                  {stats.active}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Active Listings
+                </div>
               </div>
               <div className="bg-card border border-border rounded-xl p-4">
-                <div className="text-2xl font-bold text-secondary">{stats.rented}</div>
-                <div className="text-sm text-muted-foreground">Currently Rented</div>
+                <div className="text-2xl font-bold text-secondary">
+                  {stats.rented}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Currently Rented
+                </div>
               </div>
               <div className="bg-card border border-border rounded-xl p-4">
-                <div className="text-2xl font-bold text-primary">{stats.sold}</div>
+                <div className="text-2xl font-bold text-primary">
+                  {stats.sold}
+                </div>
                 <div className="text-sm text-muted-foreground">Sold</div>
               </div>
               <div className="bg-card border border-border rounded-xl p-4 col-span-2 md:col-span-1">
-                <div className="text-2xl font-bold text-foreground">${(stats.totalValue / 1000000).toFixed(1)}M</div>
-                <div className="text-sm text-muted-foreground">Portfolio Value</div>
+                <div className="text-2xl font-bold text-foreground">
+                  ${(stats.totalValue / 1000000).toFixed(1)}M
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Portfolio Value
+                </div>
               </div>
-            </div> */}
+            </div>
 
             {/* Filters */}
             <div className="bg-card border border-border rounded-2xl p-6 mb-8">
@@ -271,7 +290,9 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
                       <TableHead>Rent</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-center">Beds/Baths</TableHead>
-                      <TableHead className="text-center">Rooms/Floors</TableHead>
+                      <TableHead className="text-center">
+                        Rooms/Floors
+                      </TableHead>
                       <TableHead className="text-center">Area</TableHead>
                       {/* <TableHead className="text-center">Views</TableHead> */}
                       <TableHead className="text-center">Inquiries</TableHead>
@@ -280,18 +301,19 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
                   </TableHeader>
                   <TableBody>
                     {filteredProperties.map((property) => (
-                      <TableRow key={property.id} 
+                      <TableRow
+                        key={property.id}
                         className="cursor-pointer hover:bg-muted/30 transition"
-                        onClick={() => navigate(`/property/${property.id}`)}
+                        // onClick={() => navigate(`/property/${property.id}`)}
                       >
                         <TableCell>
                           <div className="flex items-start gap-3">
                             <img
                               src={
-                              property.images && property.images.length > 0
-                                ? property.images[0]
-                                : "/placeholder-property.jpg"
-                            }
+                                property.images && property.images.length > 0
+                                  ? property.images[0]
+                                  : "/placeholder-property.jpg"
+                              }
                               alt={property.property_name}
                               className="w-16 h-12 rounded-lg object-cover"
                             />
@@ -299,7 +321,7 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
                               <div className="font-medium text-foreground">
                                 {property.property_name}
                               </div>
-                              <div className="flex items-start gap-1 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <MapPin className="w-3 h-3" />
                                 {property.city}
                               </div>
@@ -308,8 +330,14 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
                         </TableCell>
                         <TableCell>{property.property_type}</TableCell>
                         <TableCell className="font-semibold text-foreground">
-                          {property.monthly_rent ? property.monthly_rent.toLocaleString() : 0}
-                          {property.listing_type !== 'For Sale' && <span className="text-muted-foreground font-normal">/mo</span>}
+                          {property.monthly_rent
+                            ? property.monthly_rent.toLocaleString()
+                            : 0}
+                          {property.listing_type !== "SALE" && (
+                            <span className="text-muted-foreground font-normal">
+                              /mo
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell>{property.status}</TableCell>
                         <TableCell className="text-center">
@@ -336,7 +364,10 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
                         </TableCell>
                         <TableCell className="text-center">
                           <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
-                          {property.total_area ? property.total_area.toLocaleString() : "0"} sqft
+                            {property.total_area
+                              ? property.total_area.toLocaleString()
+                              : "0"}{" "}
+                            sqft
                           </div>
                         </TableCell>
                         {/* <TableCell className="text-center">
@@ -363,24 +394,16 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
                                 <BarChart3 className="w-4 h-4 mr-2" />
                                 View Analytics
                               </DropdownMenuItem> */}
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 className="cursor-pointer"
-                                onClick={(e) => {
-                                e.stopPropagation()
-                                handleEditClick(property)
-                                }
-                              }
+                                onClick={() => handleEditClick(property)}
                               >
                                 <Edit className="w-4 h-4 mr-2" />
                                 Edit Property
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 className="cursor-pointer text-destructive"
-                                 onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteClick(property)
-                                }
-                              }
+                                onClick={() => handleDeleteClick(property)}
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
                                 Delete
@@ -397,8 +420,12 @@ const ownerProp = extendedProperties.filter((prop) => prop.owner_id === id);
               {filteredProperties.length === 0 && (
                 <div className="p-12 text-center">
                   <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-foreground mb-2">No properties found</h3>
-                  <p className="text-muted-foreground">Try adjusting your search or filters</p>
+                  <h3 className="text-lg font-medium text-foreground mb-2">
+                    No properties found
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Try adjusting your search or filters
+                  </p>
                 </div>
               )}
             </div>

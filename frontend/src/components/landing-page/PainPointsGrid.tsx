@@ -1,81 +1,81 @@
 // Component props with defaults
 interface PainPointsGridProps {
-  sectionBg?: string
-  cardBg?: string
-  textColor?: string
-  titleColor?: string
-  accentColor?: string
-  badgeColor?: string
-  eyebrowColor?: string
+  sectionBg?: string;
+  cardBg?: string;
+  textColor?: string;
+  titleColor?: string;
+  accentColor?: string;
+  badgeColor?: string;
+  eyebrowColor?: string;
 }
 
 export default function PainPointsGrid(props: PainPointsGridProps) {
   // Helper function
   function hexToRgba(hex: string, alpha: number = 1): string {
-    if (!hex) return `rgba(0,0,0,${alpha})`
-    if (hex.startsWith('rgba')) return hex
-    if (!hex.startsWith('#')) return `rgba(0,0,0,${alpha})`
+    if (!hex) return `rgba(0,0,0,${alpha})`;
+    if (hex.startsWith("rgba")) return hex;
+    if (!hex.startsWith("#")) return `rgba(0,0,0,${alpha})`;
 
-    const r = parseInt(hex.slice(1, 3), 16)
-    const g = parseInt(hex.slice(3, 5), 16)
-    const b = parseInt(hex.slice(5, 7), 16)
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
   // Default props
   const {
-    sectionBg = '#FFFFFF',
-    cardBg = '#FAFBFC',
-    textColor = '#1F2937',
-    titleColor = '#111827',
-    accentColor = '#DC2626',
-    badgeColor = '#DC2626',
-    eyebrowColor = '#DC2626',
-  } = props
+    sectionBg = "#FFFFFF",
+    cardBg = "#FAFBFC",
+    textColor = "#1F2937",
+    titleColor = "#111827",
+    accentColor = "#DC2626",
+    badgeColor = "#DC2626",
+    eyebrowColor = "#DC2626",
+  } = props;
 
   const painPoints = [
     {
-      badge: '30% LATE PAYMENTS',
-      title: 'Chasing rent on WhatsApp',
+      badge: "30% LATE PAYMENTS",
+      title: "Chasing rent on WhatsApp",
       description:
-        'Payment threads, missed receipts and unclear confirmations - you lose time and money every month.',
+        "Payment threads, missed receipts and unclear confirmations - you lose time and money every month.",
       color: accentColor,
     },
     {
-      badge: 'REVENUE LEAKS',
-      title: 'Underpriced listings',
+      badge: "REVENUE LEAKS",
+      title: "Underpriced listings",
       description:
-        'No market intelligence means pricing mistakes - tenants pay less, and you lose thousands.',
+        "No market intelligence means pricing mistakes - tenants pay less, and you lose thousands.",
       color: accentColor,
     },
     {
-      badge: 'BROKEN WORKFLOW',
-      title: 'Missed repairs & follow-ups',
+      badge: "BROKEN WORKFLOW",
+      title: "Missed repairs & follow-ups",
       description:
-        'Small maintenance grows into big problems - angry tenants, bad reviews and more churn.',
+        "Small maintenance grows into big problems - angry tenants, bad reviews and more churn.",
       color: accentColor,
     },
     {
-      badge: '24/7 STRESS',
+      badge: "24/7 STRESS",
       title: `Always worrying about what's next`,
       description:
-        'Notifications you miss, deadlines you forget - managing feels like firefighting, not running a business.',
+        "Notifications you miss, deadlines you forget - managing feels like firefighting, not running a business.",
       color: accentColor,
     },
-  ]
+  ];
 
   return (
     <section
       style={{
-        width: '100%',
-        boxSizing: 'border-box',
-        padding: '80px 40px',
+        width: "100%",
+        boxSizing: "border-box",
+        padding: "80px 40px",
         background: sectionBg,
         fontFamily:
           "DM Sans, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
         color: textColor,
-        display: 'flex',
-        justifyContent: 'center',
+        display: "flex",
+        justifyContent: "center",
       }}
     >
       <style>
@@ -189,6 +189,10 @@ export default function PainPointsGrid(props: PainPointsGridProps) {
               position: relative;
               top: 0;
               padding-right: 0;
+<<<<<<< HEAD
+=======
+              text-align: center;
+>>>>>>> prasad
             }
             .pp-grid { 
               grid-template-columns: repeat(2, 1fr); 
@@ -202,11 +206,37 @@ export default function PainPointsGrid(props: PainPointsGridProps) {
             .pp-container {
               gap: 32px;
             }
+<<<<<<< HEAD
+=======
+            .pp-card {
+              padding: 20px 16px !important;
+              min-height: 120px !important;
+            }
+            .pp-card-title {
+              font-size: 16px !important;
+            }
+            .pp-desc {
+              font-size: 12px !important;
+            }
+>>>>>>> prasad
           }
           
           @media (max-width: 480px) {
             section {
+<<<<<<< HEAD
               padding: 60px 20px !important;
+=======
+              padding: 32px 12px !important;
+            }
+            .pp-container {
+              gap: 16px !important;
+            }
+            .pp-title {
+              font-size: 24px !important;
+            }
+            .pp-sub {
+              font-size: 13px !important;
+>>>>>>> prasad
             }
           }
         `}
@@ -253,8 +283,8 @@ export default function PainPointsGrid(props: PainPointsGridProps) {
               <div
                 style={{
                   marginTop: 16,
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   gap: 10,
                 }}
               >
@@ -262,7 +292,7 @@ export default function PainPointsGrid(props: PainPointsGridProps) {
                   style={{
                     width: 6,
                     height: 6,
-                    borderRadius: '50%',
+                    borderRadius: "50%",
                     background: p.color,
                     boxShadow: `0 4px 12px ${hexToRgba(p.color, 0.25)}`,
                   }}
@@ -282,5 +312,5 @@ export default function PainPointsGrid(props: PainPointsGridProps) {
         </div>
       </div>
     </section>
-  )
+  );
 }

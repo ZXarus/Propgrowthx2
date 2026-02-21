@@ -1,4 +1,9 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
@@ -19,11 +24,9 @@ interface PayPaymentModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const PayPaymentModal = ({
-  open,
-  onOpenChange,
-}: PayPaymentModalProps) => {
-  const { properties,id} = useData();
+const PayPaymentModal = ({ open, onOpenChange }: PayPaymentModalProps) => {
+  const id = "1";
+  const { properties } = useData();
   const [loading, setLoading] = useState(false);
   const userId = sessionStorage.getItem("id");
 
@@ -31,21 +34,21 @@ const PayPaymentModal = ({
   const [type, setType] = useState("rent");
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("UPI");
-  const [myProperties,setMyProperties] = useState<PropertyData[]>([]);
-  
-useEffect(()=>{
-    setMyProperties(properties.filter((p)=>p.buyer_id === id));
-  },[id, properties])
+  const [myProperties, setMyProperties] = useState<PropertyData[]>([]);
 
   useEffect(() => {
-  const selected = myProperties.find(p => p.id === propertyId);
-  if (selected) {
-    setAmount(String(selected.monthly_rent));
-  }
-}, [myProperties, propertyId]);
+    setMyProperties(properties.filter((p) => p.buyer_id === id));
+  }, [id, properties]);
+
+  useEffect(() => {
+    const selected = myProperties.find((p) => p.id === propertyId);
+    if (selected) {
+      setAmount(String(selected.monthly_rent));
+    }
+  }, [myProperties, propertyId]);
 
   const handlePay = async () => {
-     if (!propertyId || !amount) {
+    if (!propertyId || !amount) {
       toast({
         title: "Missing fields",
         description: "Please fill all required fields",
@@ -59,14 +62,15 @@ useEffect(()=>{
     const { error } = await supabase.from("payments").insert([
       {
         tenant_id: userId,
-        owner_id: properties.find(p => p.id === propertyId)?.owner_id,
+        owner_id: properties.find((p) => p.id === propertyId)?.owner_id,
         property_id: propertyId,
         type: type,
         amount: Number(amount),
         status: "completed",
         date: new Date().toISOString(),
         payment_method: "UPI",
-        due_date: myProperties.find(p => p.id === propertyId)?.due_date || null,
+        due_date:
+          myProperties.find((p) => p.id === propertyId)?.due_date || null,
         reference_no: `TXN-${Date.now()}`,
       },
     ]);
@@ -102,14 +106,14 @@ useEffect(()=>{
             <SelectTrigger>
               <SelectValue placeholder="Select a property" />
             </SelectTrigger>
-          <SelectContent>
-            {myProperties.map((property) => (
-              <SelectItem key={property.id} value={property.id.toString()}>
-                {property.property_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <SelectContent>
+              {myProperties.map((property) => (
+                <SelectItem key={property.id} value={property.id.toString()}>
+                  {property.property_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           <label htmlFor="Payment Type"></label>
           <Select value={type} onValueChange={setType}>
@@ -130,9 +134,9 @@ useEffect(()=>{
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
-          
+
           <label htmlFor="Payment Method"></label>
-           <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+          <Select value={paymentMethod} onValueChange={setPaymentMethod}>
             <SelectTrigger>
               <SelectValue placeholder="Payment Method" />
             </SelectTrigger>
