@@ -12,8 +12,7 @@ import OwnerTransactions from "./pages/dashboard/owner/OwnerTransactions";
 import TenantDashboard from "./pages/dashboard/tenant/TenantDashboard";
 import Properties from "./pages/Properties";
 import PropertyDetails from "./pages/PropertyDetails";
-// import AllPropertiesPage from "./pages/Property/AllPropertiesPage";
-// import PropertiesPage from "./pages/Property/PropertiesPage";
+
 import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import HowItWorks from "./pages/HowItWorks";
@@ -48,6 +47,16 @@ function App() {
           <Route path="/owner/complaints" element={<OwnerComplaints />} />
           {/* here we show all properties */}
           <Route path="/properties" element={<Properties />} />
+          {/* tenant code */}
+          <Route path="/dashboard/tenant" element={<TenantDashboard />} />
+          <Route
+            path="/dashboard/tenant/complaints"
+            element={<TenantComplaints />}
+          />{" "}
+          <Route
+            path="/dashboard/tenant/transactions"
+            element={<TenantTransactions />}
+          />
           {/* not found */}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -57,35 +66,7 @@ function App() {
 }
 export default App;
 
-//  <Route path="/" element={<Index />} />
-//     <Route path="/properties" element={<Properties />} />
-//     <Route path="/services" element={<Services />} />
-//     <Route path="/how-it-works" element={<HowItWorks />} />
-//     <Route path="/contact" element={<Contact />} />
-
-//     <Route element={<PublicRoute />}>
-//         <Route path="/auth" element={<AuthPage />} />
-//         <Route path="/setPassword" element={<SetPassword />} />
-//     </Route>
-
-//     <Route element={<PrivateRoute allowedRoles={["owner"]} />}>
-//       <Route path="/dashboard/owner" element={<OwnerDashboard />} />
-//       <Route path="/dashboard/owner/properties" element={<OwnerProperties />} />
-//       <Route path="/dashboard/owner/transactions" element={<OwnerTransactions />} />
-//       <Route path="/dashboard/owner/complaints" element={<OwnerComplaints />} />
-//     </Route>
-
-//     <Route element={<PrivateRoute allowedRoles={["tenant"]} />}>
-//       <Route path="/dashboard/tenant" element={<TenantDashboard />} />
-//       <Route path="/dashboard/tenant/complaints" element={<TenantComplaints />} />
-//       <Route path="/dashboard/tenant/transactions" element={<TenantTransactions />} />
-//     </Route>
-
 //       <Route element={<PrivateRoute />}>
 //         <Route path="/profile/:id" element={<Profile />} />
 //         <Route path="/property/:id" element={<PropertyDetails />} />
 //       </Route>
-
-//     <Route path="*" element={<NotFound />} />
-
-//   </Routes>
