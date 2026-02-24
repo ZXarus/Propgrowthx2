@@ -53,8 +53,6 @@ const TenantTransactions = () => {
   const [activeTab, setActiveTab] = useState("all");
 
   const {
-    allTransactions,
-    filteredTransactions,
     pastTabTransactions,
     currentTabTransactions,
     upcomingTabTransactions,

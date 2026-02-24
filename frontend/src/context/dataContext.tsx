@@ -29,6 +29,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   const token = sessionStorage.getItem("token");
   const role = sessionStorage.getItem("role");
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -49,9 +50,12 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         axios.get("http://localhost:5000/api/auth/profileDetails", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get("http://localhost:5000/api/properties/get_all_prop_by_user", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        axios.get(
+          `http://localhost:5000/api/properties/get_all_prop_by_user/${role}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
         axios.get(`http://localhost:5000/api/payment/getbyId/${role}`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
@@ -93,8 +97,6 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
     fetchAllData();
   }, [token]);
-
-  console.log(profile);
 
   return (
     <DataContext.Provider

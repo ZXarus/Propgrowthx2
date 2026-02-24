@@ -17,28 +17,51 @@ import {
   Building2,
   FileText,
   LogOut,
+  IndianRupee,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useData } from "../../../context/dataContext";
 import DashboardSkeleton from "@/pages/SkeletonLoading";
+import { useEffect, useState } from "react";
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
-  const id = "1";
   const { properties, transactions, loading } = useData();
 
+  const [stats, setStats] = useState([
+    { label: "Active Applications", value: 0, icon: Clock },
+    { label: "Rented", value: 0, icon: CheckCircle2 },
+    { label: "Property Views", value: 0, icon: Search },
+  ]);
+
+  useEffect(() => {
+    if (!properties || properties.length === 0) return;
+
+    let activeCount = 0;
+    let rentedCount = 0;
+    let viewsCount = 0;
+
+    properties.forEach((p) => {
+      if (!p.listing_type) return;
+
+      if (p.listing_type === "SALE") activeCount++;
+      if (p.listing_type === "RENT") rentedCount++;
+      // if (p.listing_type === "") viewsCount++;
+    });
+
+    setStats((prev) =>
+      prev.map((item) => {
+        if (item.label === "Active Applications")
+          return { ...item, value: activeCount };
+        if (item.label === "Rented") return { ...item, value: rentedCount };
+        if (item.label === "Property Views")
+          return { ...item, value: viewsCount };
+        return item;
+      }),
+    );
+  }, [properties]);
+
   if (loading) return <DashboardSkeleton />;
-
-  const stats = [
-    // { label: 'Saved Properties', value: '2', icon: Heart },
-    { label: "Active Applications", value: "3", icon: Clock },
-    { label: "Rented", value: "2", icon: CheckCircle2 },
-    { label: "Property Views", value: "6", icon: Search },
-  ];
-  console.log(id);
-
-  const myProperties = properties.filter((p) => p.buyer_id === id);
-  const myTxs = transactions.filter((t) => t.tenant_id === id);
 
   return (
     <>
@@ -63,12 +86,6 @@ const TenantDashboard = () => {
                   Explore, save, and manage your properties
                 </p>
               </div>
-              {/* <Button asChild className="bg-secondary hover:bg-secondary/90">
-                <Link to="/properties">
-                  <Search className="w-5 h-5 mr-2" />
-                  Explore Properties
-                </Link>
-              </Button>  */}
             </div>
 
             <div className="grid md:grid-cols-2 gap-4 mb-8">
@@ -145,7 +162,7 @@ const TenantDashboard = () => {
                   </h2>
 
                   <div className="space-y-4">
-                    {myProperties.map((property) => (
+                    {properties.map((property) => (
                       <div
                         key={property.id}
                         className="flex flex-col md:flex-row md:items-center cursor-pointer
@@ -215,7 +232,7 @@ const TenantDashboard = () => {
                   </h2>
 
                   <div className="space-y-4">
-                    {myTxs.map((tx) => (
+                    {transactions.map((tx) => (
                       <div
                         key={tx.id}
                         className="flex items-start justify-between pb-4 border-b border-border last:border-0 last:pb-0"
@@ -258,32 +275,44 @@ const TenantDashboard = () => {
                 </div>
 
                 {/* Quick Actions */}
-                {/* <div className="bg-card border border-border rounded-2xl p-6">
+                <div className="bg-card border border-border rounded-2xl p-6">
                   <h2 className="text-lg font-semibold text-foreground mb-4">
                     Quick Actions
                   </h2>
 
                   <div className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start" asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                    >
                       <Link to="/properties">
                         <Search className="w-4 h-4 mr-2" />
                         Browse Properties
                       </Link>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start" asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                    >
                       <Link to="/analytics">
                         <IndianRupee className="w-4 h-4 mr-2" />
                         View Market Insights
                       </Link>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start" asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                    >
                       <Link to="/contact">
                         <Calendar className="w-4 h-4 mr-2" />
                         Schedule Consultation
                       </Link>
                     </Button>
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           </div>

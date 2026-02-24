@@ -34,15 +34,15 @@ import { PropertyData } from "../dashboard/EditPropertyModal";
 
 export interface Complaint {
   id: string;
-  tenant_id:string
-  owner_id?:string
+  tenant_id: string;
+  owner_id?: string;
   property_id: string;
   category: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  priority: "low" | "medium" | "high" | "urgent";
   subject: string;
   description: string;
-  status: 'open' | 'in-progress' | 'resolved' | 'closed';
-  images:string[];
+  status: "open" | "in-progress" | "resolved" | "closed";
+  images: string[];
   created_at: string;
   updated_at: string;
   responses: { date: string; message: string; from: string }[];
@@ -63,7 +63,7 @@ interface AddComplaintModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-  
+
 const categories = [
   "Maintenance",
   "Appliances",
@@ -75,19 +75,15 @@ const categories = [
   "Other",
 ];
 
-const AddComplaintModal = ({
-  open,
-  onOpenChange,
-}: AddComplaintModalProps) => {
-  const id="1"
-  const {properties} = useData();
+const AddComplaintModal = ({ open, onOpenChange }: AddComplaintModalProps) => {
+  const { properties } = useData();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const tenantId = sessionStorage.getItem("id");
-  const [images, setImages] = useState<(string)[]>([]);
-  const [myProperties,setMyProperties] = useState<PropertyData[]>([]);
-  
-    const form = useForm<ComplaintFormValues>({
+  const [images, setImages] = useState<string[]>([]);
+  const [myProperties, setMyProperties] = useState<PropertyData[]>([]);
+
+  const form = useForm<ComplaintFormValues>({
     resolver: zodResolver(complaintSchema),
     defaultValues: {
       property_id: "",
@@ -99,49 +95,43 @@ const AddComplaintModal = ({
     },
   });
 
-  useEffect(()=>{
-    setMyProperties(properties.filter((p)=>p.buyer_id === id));
-  },[id, properties])
-  
- const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (!e.target.files) return;
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
 
-  const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files);
 
-  files.forEach((file) => {
-    const reader = new FileReader();
+    files.forEach((file) => {
+      const reader = new FileReader();
 
-    reader.onload = () => {
-      const result = reader.result;
+      reader.onload = () => {
+        const result = reader.result;
 
-      if (typeof result === "string") {
-        setImages((prev) => {
-          const updated: string[] = [...prev, result];
-          return updated.slice(0, 5);
-        });
-      }
-    };
+        if (typeof result === "string") {
+          setImages((prev) => {
+            const updated: string[] = [...prev, result];
+            return updated.slice(0, 5);
+          });
+        }
+      };
 
-    reader.readAsDataURL(file);
-  });
+      reader.readAsDataURL(file);
+    });
 
-  e.target.value = "";
-};
-
-
+    e.target.value = "";
+  };
 
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-
-   const onSubmit = async (data: ComplaintFormValues) => {
+  const onSubmit = async (data: ComplaintFormValues) => {
     setIsSubmitting(true);
 
     const { error } = await supabase.from("complaints").insert([
       {
         tenant_id: tenantId,
-        owner_id: properties.find((p) => p.id === data.property_id)?.owner_id || null,
+        owner_id:
+          properties.find((p) => p.id === data.property_id)?.owner_id || null,
         property_id: data.property_id,
         category: data.category,
         priority: data.priority,
@@ -179,14 +169,20 @@ const AddComplaintModal = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 max-h-[70vh] overflow-y-auto pr-1"
+          >
             <FormField
               control={form.control}
               name="property_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Property</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a property" />
@@ -194,7 +190,10 @@ const AddComplaintModal = ({
                     </FormControl>
                     <SelectContent>
                       {myProperties.map((property) => (
-                        <SelectItem key={property.id} value={property.id.toString()}>
+                        <SelectItem
+                          key={property.id}
+                          value={property.id.toString()}
+                        >
                           {property.property_name}
                         </SelectItem>
                       ))}
@@ -211,7 +210,10 @@ const AddComplaintModal = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue />
@@ -236,7 +238,10 @@ const AddComplaintModal = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Priority</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue />
@@ -287,15 +292,15 @@ const AddComplaintModal = ({
                 Complaint Images
               </h3>
 
-                <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors">
-                  <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageUpload}
-                className="hidden"
-                id="image-upload"
-              />
+              <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="image-upload"
+                />
                 <label htmlFor="image-upload" className="cursor-pointer">
                   <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">
@@ -317,7 +322,7 @@ const AddComplaintModal = ({
                       />
                       <button
                         type="button"
-                        onClick={() =>removeImage(index)}
+                        onClick={() => removeImage(index)}
                         className="absolute top-1 right-1 bg-black/70 text-white rounded-full px-2"
                       >
                         ✕
@@ -325,7 +330,6 @@ const AddComplaintModal = ({
                     </div>
                   ))}
                 </div>
-
               )}
             </div>
 
@@ -339,10 +343,7 @@ const AddComplaintModal = ({
                 Cancel
               </Button>
               <Button type="submit" className="flex-1 bg-secondary">
-                {isSubmitting ? (
-                  "Submitting..."
-              ) : (
-                "Submit")}
+                {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
             </div>
           </form>

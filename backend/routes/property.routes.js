@@ -21,7 +21,7 @@ router.post(
   createProperty,
 );
 router.get("/getById/:property_Id", getPropertyById); // for get one propty on  which he click
-router.get("/get_all_prop_by_user", verifyToken, getAllPropertiesByUser); // get all propties
+router.get("/get_all_prop_by_user/:role", verifyToken, getAllPropertiesByUser); // get all propties
 
 router.get("/get_all", getAll); // get all propties
 

@@ -27,9 +27,17 @@ export const getPropertyById = async (req, res) => {
 };
 
 export const getAllPropertiesByUser = async (req, res) => {
-  const owner_id = req.user.id;
+  const user_id = req.user.id;
+  const { role } = req.params;
 
-  if (!owner_id) {
+  let idTile = "";
+  if (role == "owner") {
+    idTile = "owner_id";
+  } else {
+    idTile = "buyer_id";
+  }
+
+  if (!user_id) {
     return res.status(400).json({ error: "Owner ID is required" });
   }
 
@@ -37,7 +45,7 @@ export const getAllPropertiesByUser = async (req, res) => {
     const { data: properties, error } = await supabase
       .from("properties")
       .select("*")
-      .eq("owner_id", owner_id);
+      .eq(idTile, user_id);
 
     if (error) throw error;
 

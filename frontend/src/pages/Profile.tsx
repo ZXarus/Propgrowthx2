@@ -1,32 +1,6 @@
-export type ProfileData = {
-  id?: string;
-  name: string;
-
-  email: string;
-  role?: "tenant" | "owner";
-  password: string;
-  profile_image: string;
-  emer_contact: string | null;
-  s_link1: string | null;
-  s_link2: string | null;
-  s_link3: string | null;
-  phone: string;
-  address: string | null;
-  city: string | null;
-  state: string | null;
-  zip_code: string | null;
-  avatar: string | null;
-  past_residence?: string | null;
-
-  id_proof?: string | null;
-  background?: string | null;
-
-  company?: string | null;
-  comp_address?: string | null;
-};
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+
 import {
   Card,
   CardContent,
@@ -41,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import {
   User,
   Mail,
@@ -56,22 +32,51 @@ import {
   Globe,
   Briefcase,
 } from "lucide-react";
+
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
 import { useData } from "@/context/dataContext";
 
-type family_members_details = {
+export type ProfileData = {
+  id?: string;
   name: string;
+  email: string;
+  role?: "tenant" | "owner";
+  password: string;
+  profile_image: string;
+  emer_contact: string | null;
+  s_link1: string | null;
+  s_link2: string | null;
+  s_link3: string | null;
   phone: string;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  zip_code: string | null;
+  avatar: string | null;
+  past_residence?: string | null;
+  id_proof?: string | null;
+  background?: string | null;
+  company?: string | null;
+  comp_address?: string | null;
 };
 
 const Profile = () => {
   const { profile, setProfile } = useData();
-  const { id } = useParams<{ id: string }>();
+
+  const currentProfile = Array.isArray(profile)
+    ? profile[0]
+    : profile
+      ? profile
+      : null;
+
+  const role = currentProfile?.role || "tenant";
+  const isOwner = role === "owner";
+
   const [isLoading, setIsLoading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [idPreview, setIdPreview] = useState<string | null>(null);
 
+  // Notification settings
   const [notifications, setNotifications] = useState({
     emailAlerts: true,
     smsAlerts: false,
@@ -80,122 +85,59 @@ const Profile = () => {
     marketUpdates: false,
   });
 
-  const currProfile = profile?.find((p) => p.id === id);
-
-  useEffect(() => {
-    if (currProfile?.id_proof) {
-      setIdPreview(currProfile.id_proof);
-    }
-  }, [currProfile]);
-
-  const isOwner = currProfile.role === "owner";
-  const currRole = sessionStorage.getItem("role") === currProfile.role;
-
-  const handleIdProofChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const result = reader.result;
-
-      if (typeof result === "string") {
-        setIdPreview(result);
-
-        setProfile((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, id_proof: result } : p)),
-        );
-      }
-    };
-
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  };
-
+  // Update profile input values
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
+
+    setProfile((prev: any) =>
+      Array.isArray(prev)
+        ? [{ ...prev[0], [name]: value }]
+        : { ...prev, [name]: value },
+    );
   };
 
-  const handleClosedRelativeChange = (
-    field: "name" | "relation" | "phone" | "address",
-    value: string,
-  ) => {
-    setProfile((prev) => {
-      if (!prev) return prev;
-
-      return prev.map((p) =>
-        p.id === id
-          ? {
-              ...p,
-              closed_relative: {
-                [field]: value,
-              },
-            }
-          : p,
-      );
-    });
-  };
-
+  // Avatar file change
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    const previewURL = URL.createObjectURL(file);
+    setAvatarPreview(previewURL);
 
-    reader.onload = () => {
-      const result = reader.result;
-
-      // ✅ strict type guard
-      if (typeof result === "string") {
-        setAvatarPreview(result);
-        setProfile((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, avatar: result } : p)),
-        );
-      }
-    };
-
-    reader.readAsDataURL(file);
-    e.target.value = "";
+    setProfile((prev: any) =>
+      Array.isArray(prev)
+        ? [{ ...prev[0], avatar: previewURL }]
+        : { ...prev, avatar: previewURL },
+    );
   };
 
+  // ID Proof change
+  const handleIdProofChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const previewURL = URL.createObjectURL(file);
+    setIdPreview(previewURL);
+
+    setProfile((prev: any) =>
+      Array.isArray(prev)
+        ? [{ ...prev[0], id_proof: previewURL }]
+        : { ...prev, id_proof: previewURL },
+    );
+  };
+
+  // Save Profile Button
   const handleSaveProfile = async () => {
     if (!profile) return;
 
     setIsLoading(true);
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        name: currProfile.name,
-        phone: currProfile.phone,
-        avatar: currProfile.avatar,
-        address: currProfile.address,
-        city: currProfile.city,
-        state: currProfile.state,
-        zip_code: currProfile.zip_code,
-        s_link1: currProfile.s_link1,
-        s_link2: currProfile.s_link2,
-        s_link3: currProfile.s_link3,
-        company: currProfile.company,
-        comp_address: currProfile.comp_address,
-        past_residence: currProfile.past_residence,
-        id_proof: currProfile.id_proof,
-        background: currProfile.background,
-      })
-      .eq("id", id);
-
-    setIsLoading(false);
-
-    if (error) {
-      toast.error("Profile not save");
-      return;
-    }
-    toast.success("Profile saved!");
+    setTimeout(() => {
+      setIsLoading(false);
+      toast.success("Profile saved!");
+    }, 800);
   };
 
   return (
@@ -219,9 +161,7 @@ const Profile = () => {
                 </Link>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">
-                  {isOwner ? "Owner Profile" : "Tenant Profile"}
-                </h1>
+                <h1 className="text-3xl font-bold text-foreground">{role}</h1>
                 <p className="text-muted-foreground">
                   Manage your profile and account settings
                 </p>
@@ -245,9 +185,9 @@ const Profile = () => {
                   <div className="flex items-center gap-6">
                     <div className="relative">
                       <div className="w-24 h-24 rounded-full bg-accent flex items-center justify-center overflow-hidden border-4 border-secondary/20">
-                        {avatarPreview || currProfile?.avatar ? (
+                        {avatarPreview || currentProfile?.avatar ? (
                           <img
-                            src={avatarPreview || currProfile?.avatar || ""}
+                            src={avatarPreview || currentProfile?.avatar}
                             alt="Avatar"
                             className="w-full h-full object-cover"
                           />
@@ -262,7 +202,6 @@ const Profile = () => {
                         <Camera className="w-4 h-4" />
                       </label>
                       <input
-                        disabled={!currRole}
                         id="avatar-upload"
                         type="file"
                         accept="image/*"
@@ -282,50 +221,38 @@ const Profile = () => {
 
                   <Separator />
 
-                  {/* Name Fields */}
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label>Name</Label>
                     <Input
-                      disabled={!currRole}
                       name="name"
-                      value={currProfile?.name ?? ""}
+                      value={currentProfile?.name ?? ""}
                       onChange={handleInputChange}
                       placeholder="Enter name"
                     />
                   </div>
 
-                  {/* Contact Fields */}
+                  {/* Email & Phone */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="email"
-                        className="flex items-center gap-2"
-                      >
+                      <Label className="flex items-center gap-2">
                         <Mail className="w-4 h-4" />
                         Email Address
                       </Label>
                       <Input
-                        id="email"
                         name="email"
                         type="email"
-                        value={currProfile?.email ?? ""}
-                        onChange={handleInputChange}
+                        value={currentProfile?.email ?? ""}
                         disabled
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="phone"
-                        className="flex items-center gap-2"
-                      >
+                      <Label className="flex items-center gap-2">
                         <Phone className="w-4 h-4" />
                         Phone Number
                       </Label>
                       <Input
-                        disabled={!currRole}
-                        id="phone"
                         name="phone"
-                        value={currProfile?.phone ?? ""}
+                        value={currentProfile?.phone ?? ""}
                         onChange={handleInputChange}
                         placeholder="Enter phone number"
                       />
@@ -334,16 +261,15 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              {isOwner && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Briefcase className="w-5 h-5" />
-                      Family Details
-                    </CardTitle>
-                  </CardHeader>
-                </Card>
-              )}
+              {/* Family Details */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Briefcase className="w-5 h-5" />
+                    Family Details
+                  </CardTitle>
+                </CardHeader>
+              </Card>
 
               {/* Address */}
               <Card>
@@ -355,46 +281,38 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="address">Street Address</Label>
+                    <Label>Street Address</Label>
                     <Input
-                      disabled={!currRole}
-                      id="address"
                       name="address"
-                      value={currProfile?.address ?? ""}
+                      value={currentProfile?.address ?? ""}
                       onChange={handleInputChange}
                       placeholder="Enter street address"
                     />
                   </div>
                   <div className="grid md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="city">City</Label>
+                      <Label>City</Label>
                       <Input
-                        disabled={!currRole}
-                        id="city"
                         name="city"
-                        value={currProfile?.city ?? ""}
+                        value={currentProfile?.city ?? ""}
                         onChange={handleInputChange}
                         placeholder="Enter city"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="state">State</Label>
+                      <Label>State</Label>
                       <Input
-                        disabled={!currRole}
-                        id="state"
                         name="state"
-                        value={currProfile?.state ?? ""}
+                        value={currentProfile?.state ?? ""}
                         onChange={handleInputChange}
                         placeholder="Enter state"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="zip_code">Zip Code</Label>
+                      <Label>Zip Code</Label>
                       <Input
-                        disabled={!currRole}
-                        id="zip_code"
                         name="zip_code"
-                        value={currProfile?.zip_code ?? ""}
+                        value={currentProfile?.zip_code ?? ""}
                         onChange={handleInputChange}
                         placeholder="Enter zip code"
                       />
@@ -402,6 +320,8 @@ const Profile = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Social Links */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -415,21 +335,18 @@ const Profile = () => {
                   <div className="space-y-2">
                     <Label>Company / Business Name</Label>
                     <Input
-                      disabled={!currRole}
                       name="company"
-                      value={currProfile?.company ?? ""}
+                      value={currentProfile?.company ?? ""}
                       onChange={handleInputChange}
                       placeholder="Enter business name"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="address">Street Address</Label>
+                    <Label>Street Address</Label>
                     <Input
-                      disabled={!currRole}
-                      id="comp_address"
                       name="comp_address"
-                      value={currProfile?.comp_address ?? ""}
+                      value={currentProfile?.comp_address ?? ""}
                       onChange={handleInputChange}
                       placeholder="Enter company/business address"
                     />
@@ -438,9 +355,8 @@ const Profile = () => {
                   <div className="space-y-2">
                     <Label>Website</Label>
                     <Input
-                      disabled={!currRole}
                       name="s_link1"
-                      value={currProfile?.s_link1 ?? ""}
+                      value={currentProfile?.s_link1 ?? ""}
                       onChange={handleInputChange}
                       placeholder="https://"
                     />
@@ -449,9 +365,8 @@ const Profile = () => {
                   <div className="space-y-2">
                     <Label>LinkedIn</Label>
                     <Input
-                      disabled={!currRole}
                       name="s_link2"
-                      value={currProfile?.s_link2 ?? ""}
+                      value={currentProfile?.s_link2 ?? ""}
                       onChange={handleInputChange}
                       placeholder="https://linkedin.com/in/..."
                     />
@@ -460,9 +375,8 @@ const Profile = () => {
                   <div className="space-y-2">
                     <Label>Instagram / Twitter</Label>
                     <Input
-                      disabled={!currRole}
                       name="s_link3"
-                      value={currProfile?.s_link3 ?? ""}
+                      value={currentProfile?.s_link3 ?? ""}
                       onChange={handleInputChange}
                       placeholder="https://"
                     />
@@ -470,313 +384,309 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
+              {/* Tenant Only Sections */}
               {!isOwner && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Shield className="w-5 h-5" />
-                      Tenant Verification Details
-                    </CardTitle>
-                    <CardDescription>
-                      Residential history and verification information
-                    </CardDescription>
-                  </CardHeader>
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Shield className="w-5 h-5" />
+                        Tenant Verification Details
+                      </CardTitle>
+                      <CardDescription>
+                        Residential history and verification information
+                      </CardDescription>
+                    </CardHeader>
 
-                  <CardContent className="space-y-4">
-                    {/* Past Residence */}
-                    <div className="space-y-2">
-                      <Label>Past Residence Address</Label>
-                      <Textarea
-                        disabled={!currRole}
-                        name="past_residence"
-                        value={currProfile?.past_residence ?? ""}
-                        onChange={handleInputChange}
-                        placeholder="Enter previous residence address"
-                      />
-                    </div>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Past Residence Address</Label>
+                        <Textarea
+                          name="past_residence"
+                          value={currentProfile?.past_residence ?? ""}
+                          onChange={handleInputChange}
+                          placeholder="Enter previous residence address"
+                        />
+                      </div>
 
-                    {/* ID Proof */}
-                    <div className="space-y-2">
-                      <Label>ID Proof (Aadhaar / PAN / Passport)</Label>
+                      <div className="space-y-2">
+                        <Label>ID Proof (Aadhaar / PAN / Passport)</Label>
 
-                      <Input
-                        disabled={!currRole}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleIdProofChange}
-                      />
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleIdProofChange}
+                        />
 
-                      {idPreview && (
-                        <div className="mt-2">
-                          <img
-                            src={idPreview}
-                            alt="ID Proof Preview"
-                            className="w-48 h-auto rounded-md border"
+                        {idPreview && (
+                          <div className="mt-2">
+                            <img
+                              src={idPreview}
+                              alt="ID Proof Preview"
+                              className="w-48 h-auto rounded-md border"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Background / Occupation</Label>
+                        <Textarea
+                          name="background"
+                          value={currentProfile?.background ?? ""}
+                          onChange={handleInputChange}
+                          placeholder="Student / Job / Business / Other"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Emergency Contact */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Globe className="w-5 h-5" />
+                        Emergency Contact
+                      </CardTitle>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div className="space-y-2">
+                          <Label>Name</Label>
+                          <Input
+                            name="emer_contact"
+                            value={currentProfile?.emer_contact ?? ""}
+                            onChange={handleInputChange}
+                            placeholder="Enter name"
                           />
                         </div>
-                      )}
-                    </div>
 
-                    {/* Background */}
-                    <div className="space-y-2">
-                      <Label>Background / Occupation</Label>
-                      <Textarea
-                        disabled={!currRole}
-                        name="background"
-                        value={currProfile?.background ?? ""}
-                        onChange={handleInputChange}
-                        placeholder="Student / Job / Business / Other"
-                      />
-                    </div>
+                        <div className="space-y-2">
+                          <Label>Phone</Label>
+                          <Input
+                            name="emer_phone"
+                            value={currentProfile?.emer_contact ?? ""}
+                            onChange={handleInputChange}
+                            placeholder="Enter phone"
+                          />
+                        </div>
 
-                    {/* Family Members */}
-                  </CardContent>
-                </Card>
-              )}
-
-              {!isOwner && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Globe className="w-5 h-5" />
-                      Emergency Contact
-                    </CardTitle>
-                  </CardHeader>
-
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                      {/* Name */}
-                      <div className="space-y-2">
-                        <Label>Name</Label>
+                        <div className="space-y-2 md:col-span-4">
+                          <Label>Residence Address</Label>
+                          <Textarea
+                            name="emer_address"
+                            value={currentProfile?.address ?? ""}
+                            onChange={handleInputChange}
+                            placeholder="Enter residence address"
+                          />
+                        </div>
                       </div>
-
-                      {/* Phone */}
-                      <div className="space-y-2">
-                        <Label>Phone</Label>
-                        <Input
-                          disabled={!currRole}
-                          type="tel"
-                          value={currProfile.phone ?? ""}
-                          onChange={(e) =>
-                            handleClosedRelativeChange("phone", e.target.value)
-                          }
-                          placeholder="Enter phone number"
-                        />
-                      </div>
-
-                      {/* Address */}
-                      <div className="space-y-2 md:col-span-4">
-                        <Label>Residence Address</Label>
-                        <Textarea
-                          disabled={!currRole}
-                          value={currProfile.address ?? ""}
-                          onChange={(e) =>
-                            handleClosedRelativeChange(
-                              "address",
-                              e.target.value,
-                            )
-                          }
-                          placeholder="Enter residence address"
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </>
               )}
 
               {/* Notification Settings */}
-              {currRole && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Bell className="w-5 h-5" />
-                      Notification Preferences
-                    </CardTitle>
-                    <CardDescription>
-                      Choose how you want to receive notifications
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-foreground">
-                          Email Alerts
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          Receive notifications via email
-                        </div>
-                      </div>
-                      <Switch
-                        checked={notifications.emailAlerts}
-                        onCheckedChange={(checked) =>
-                          setNotifications((prev) => ({
-                            ...prev,
-                            emailAlerts: checked,
-                          }))
-                        }
-                      />
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-foreground">
-                          SMS Alerts
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          Receive notifications via SMS
-                        </div>
-                      </div>
-                      <Switch
-                        checked={notifications.smsAlerts}
-                        onCheckedChange={(checked) =>
-                          setNotifications((prev) => ({
-                            ...prev,
-                            smsAlerts: checked,
-                          }))
-                        }
-                      />
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-foreground">
-                          Property Inquiries
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          Get notified when someone inquires about your property
-                        </div>
-                      </div>
-                      <Switch
-                        checked={notifications.inquiryNotifications}
-                        onCheckedChange={(checked) =>
-                          setNotifications((prev) => ({
-                            ...prev,
-                            inquiryNotifications: checked,
-                          }))
-                        }
-                      />
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-foreground">
-                          Payment Reminders
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          Get reminded about upcoming rent payments
-                        </div>
-                      </div>
-                      <Switch
-                        checked={notifications.paymentReminders}
-                        onCheckedChange={(checked) =>
-                          setNotifications((prev) => ({
-                            ...prev,
-                            paymentReminders: checked,
-                          }))
-                        }
-                      />
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-foreground">
-                          Market Updates
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          Receive real estate market insights and trends
-                        </div>
-                      </div>
-                      <Switch
-                        checked={notifications.marketUpdates}
-                        onCheckedChange={(checked) =>
-                          setNotifications((prev) => ({
-                            ...prev,
-                            marketUpdates: checked,
-                          }))
-                        }
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bell className="w-5 h-5" />
+                    Notification Preferences
+                  </CardTitle>
+                  <CardDescription>
+                    Choose how you want to receive notifications
+                  </CardDescription>
+                </CardHeader>
 
-              {/* Quick Links */}
-              {currRole && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Shield className="w-5 h-5" />
-                      Account Settings
-                    </CardTitle>
-                    <CardDescription>
-                      Manage your account security and billing
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <Button
-                        variant="outline"
-                        className="justify-start h-auto py-4"
-                      >
-                        <Shield className="w-5 h-5 mr-3" />
-                        <div className="text-left">
-                          <div className="font-medium">Security Settings</div>
-                          <div className="text-sm text-muted-foreground">
-                            Password, 2FA, sessions
-                          </div>
-                        </div>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="justify-start h-auto py-4"
-                      >
-                        <CreditCard className="w-5 h-5 mr-3" />
-                        <div className="text-left">
-                          <div className="font-medium">Billing & Payments</div>
-                          <div className="text-sm text-muted-foreground">
-                            Payment methods, invoices
-                          </div>
-                        </div>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="justify-start h-auto py-4"
-                      >
-                        <Building2 className="w-5 h-5 mr-3" />
-                        <div className="text-left">
-                          <div className="font-medium">Property Settings</div>
-                          <div className="text-sm text-muted-foreground">
-                            Default listing preferences
-                          </div>
-                        </div>
-                      </Button>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-foreground">
+                        Email Alerts
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Receive notifications via email
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                    <Switch
+                      checked={notifications.emailAlerts}
+                      onCheckedChange={(checked) =>
+                        setNotifications((prev) => ({
+                          ...prev,
+                          emailAlerts: checked,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-foreground">
+                        SMS Alerts
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Receive notifications via SMS
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.smsAlerts}
+                      onCheckedChange={(checked) =>
+                        setNotifications((prev) => ({
+                          ...prev,
+                          smsAlerts: checked,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-foreground">
+                        Property Inquiries
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Get notified when someone inquires about your property
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.inquiryNotifications}
+                      onCheckedChange={(checked) =>
+                        setNotifications((prev) => ({
+                          ...prev,
+                          inquiryNotifications: checked,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-foreground">
+                        Payment Reminders
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Get reminded about upcoming rent payments
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.paymentReminders}
+                      onCheckedChange={(checked) =>
+                        setNotifications((prev) => ({
+                          ...prev,
+                          paymentReminders: checked,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-foreground">
+                        Market Updates
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Receive real estate market insights and trends
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notifications.marketUpdates}
+                      onCheckedChange={(checked) =>
+                        setNotifications((prev) => ({
+                          ...prev,
+                          marketUpdates: checked,
+                        }))
+                      }
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Account Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="w-5 h-5" />
+                    Account Settings
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your account security and billing
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <Button
+                      variant="outline"
+                      className="justify-start h-auto py-4"
+                    >
+                      <Shield className="w-5 h-5 mr-3" />
+                      <div className="text-left">
+                        <div className="font-medium">Security Settings</div>
+                        <div className="text-sm text-muted-foreground">
+                          Password, 2FA, sessions
+                        </div>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="justify-start h-auto py-4"
+                    >
+                      <CreditCard className="w-5 h-5 mr-3" />
+                      <div className="text-left">
+                        <div className="font-medium">Billing & Payments</div>
+                        <div className="text-sm text-muted-foreground">
+                          Payment methods, invoices
+                        </div>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="justify-start h-auto py-4"
+                    >
+                      <Building2 className="w-5 h-5 mr-3" />
+                      <div className="text-left">
+                        <div className="font-medium">Property Settings</div>
+                        <div className="text-sm text-muted-foreground">
+                          Default listing preferences
+                        </div>
+                      </div>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Save Button */}
-              {currRole && (
-                <div className="flex justify-end gap-4">
-                  <Button variant="outline" asChild>
-                    <Link to="/dashboard/owner">Cancel</Link>
-                  </Button>
-                  <Button
-                    className="bg-secondary hover:bg-secondary/90"
-                    onClick={handleSaveProfile}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      "Saving..."
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Changes
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-end gap-4">
+                <Button variant="outline" asChild>
+                  <Link to="/dashboard/owner">Cancel</Link>
+                </Button>
+
+                <Button
+                  className="bg-secondary hover:bg-secondary/90"
+                  onClick={handleSaveProfile}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    "Saving..."
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

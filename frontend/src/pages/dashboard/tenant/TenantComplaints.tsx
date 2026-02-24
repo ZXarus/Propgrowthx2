@@ -12,8 +12,7 @@ import { useData } from "@/context/dataContext";
 import DashboardSkeleton from "@/pages/SkeletonLoading";
 
 const TenantComplaints = () => {
-  const id = "1";
-  const { complaints, setComplaints, loading } = useData();
+  const { complaints, loading } = useData();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(
@@ -25,8 +24,6 @@ const TenantComplaints = () => {
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
 
   if (loading) return <DashboardSkeleton />;
-
-  const comp = complaints.filter((c) => c.tenant_id === id);
 
   return (
     <>

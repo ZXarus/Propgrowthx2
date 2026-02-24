@@ -185,37 +185,41 @@ const AuthPage: React.FC = () => {
 
         {!isLogin && (
           <div>
-            {/* {!otpSent && (
-          <button style={{marginBottom:10}}
-            type="button"
-            className="auth-btn"
-            onClick={sendOtp}
-          >
-            Send OTP
-          </button>
-        )} */}
+            {!otpSent && (
+              <button
+                style={{ marginBottom: 10 }}
+                type="button"
+                className="auth-btn"
+                onClick={sendOtp}
+              >
+                Send OTP
+              </button>
+            )}
 
-            {/* {otpSent && !otpVerified && (
-      <>
-        <div className="input-group">
-          <input
-            type="text"
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className="auth-input"
-          />
-        </div>
+            {otpSent && !otpVerified && (
+              <>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    placeholder="Enter OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="auth-input"
+                  />
+                </div>
 
-        {!otpVerified &&  <button
-          type="button" style={{marginBottom:10}}
-          className="auth-btn"
-          onClick={verifyOtp}
-        >
-          Verify OTP
-        </button>}
-      </>
-    )} */}
+                {!otpVerified && (
+                  <button
+                    type="button"
+                    style={{ marginBottom: 10 }}
+                    className="auth-btn"
+                    onClick={verifyOtp}
+                  >
+                    Verify OTP
+                  </button>
+                )}
+              </>
+            )}
             <div className="input-group">
               <UserCogIcon />
               <select
