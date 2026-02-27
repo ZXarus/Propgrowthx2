@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import ScrollToTop from "./hooks/ScrollToTop";
 import PrivateRoute from "./hooks/PrivateRoute";
@@ -11,8 +12,8 @@ import OwnerProperties from "./pages/dashboard/owner/OwnerProperties";
 import OwnerTransactions from "./pages/dashboard/owner/OwnerTransactions";
 import TenantDashboard from "./pages/dashboard/tenant/TenantDashboard";
 import Properties from "./pages/Properties";
-import PropertyDetails from "./pages/PropertyDetails";
 
+import PropertyDetails from "./pages/PropertyDetails";
 import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import HowItWorks from "./pages/HowItWorks";
@@ -21,52 +22,107 @@ import Profile from "./pages/Profile";
 import TenantComplaints from "./pages/dashboard/tenant/TenantComplaints";
 import TenantTransactions from "./pages/dashboard/tenant/TenantTransactions";
 import OwnerComplaints from "./pages/dashboard/owner/OwnerComplaints";
-import { DataProvider } from "./context/dataContext";
 import PaymentsPage from "./pages/PaymentsPage";
+import { DataProvider } from "./context/dataContext";
+import SecuritySettingsPage from "@/pages/SecuritySettingsPage";
+import BillingPage from "./pages/BillingPage";
+import PropertySettingsPage from "@/pages/PropertySettingsPage";
+import AboutUsPage from "@/pages/AboutUsPage";
+import TenantSupport from "./pages/dashboard/tenant/TenantSupport";
 import PropertiesPage from "./pages/property/PropertiesPage";
 import AllPropertiesPage from "./pages/property/AllPropertiesPage";
 
+const HomeRedirect = () => {
+  const role = sessionStorage.getItem("role")?.toLowerCase();
+
+  console.log("ROLE:", role);
+
+  if (role === "tenant") {
+    return <Navigate to="/dashboard/tenant" replace />;
+  }
+
+  if (role === "owner") {
+    return <Navigate to="/dashboard-nav" replace />;
+  }
+
+  return <Index />;
+};
 function App() {
   return (
     <HelmetProvider>
       <ScrollToTop />
       <DataProvider>
         <Routes>
-          <Route path="/" element={<Index />} />
+          {/* PUBLIC ROUTES - No Protection */}
+          <Route path="/" element={<HomeRedirect />} />
           <Route path="/auth" element={<AuthPage />} />
-          <Route path="/dashboard/owner" element={<OwnerDashboard />} />
-          {/* individual payment */}
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/setPassword" element={<SetPassword />} />
           <Route path="/services" element={<Services />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
-          {/* Individual property*/}
-          <Route path="/properties-manage" element={<PropertiesPage />} />
-          <Route path="/all-properties" element={<AllPropertiesPage />} />
-          <Route path="/payments" element={<PaymentsPage />} />
-          <Route path="/owner/complaints" element={<OwnerComplaints />} />
-          {/* here we show all properties */}
-          <Route path="/properties" element={<Properties />} />
-          {/* tenant code */}
-          <Route path="/dashboard/tenant" element={<TenantDashboard />} />
-          <Route
-            path="/dashboard/tenant/complaints"
-            element={<TenantComplaints />}
-          />{" "}
-          <Route
-            path="/dashboard/tenant/transactions"
-            element={<TenantTransactions />}
-          />
-          {/* not found */}
+          <Route path="/about-us" element={<AboutUsPage />} />
+
+          {/* PRIVATE ROUTES - TENANT ONLY */}
+          <Route element={<PrivateRoute allowedRoles={["tenant"]} />}>
+            <Route path="/dashboard/tenant" element={<TenantDashboard />} />
+            <Route
+              path="/dashboard/tenant/complaints"
+              element={<TenantComplaints />}
+            />
+            <Route
+              path="/dashboard/tenant/transactions"
+              element={<TenantTransactions />}
+            />
+            <Route
+              path="/dashboard/tenant/support"
+              element={<TenantSupport />}
+            />
+            <Route path="/properties" element={<Properties />} />
+            <Route path="/profile/:id" element={<Profile />} />
+          </Route>
+
+          {/* PRIVATE ROUTES - OWNER ONLY */}
+          <Route element={<PrivateRoute allowedRoles={["owner"]} />}>
+            <Route path="/dashboard/owner" element={<OwnerDashboard />} />
+            <Route
+              path="/dashboard/owner/properties"
+              element={<OwnerProperties />}
+            />
+            <Route
+              path="/dashboard/owner/transactions"
+              element={<OwnerTransactions />}
+            />
+            <Route
+              path="/dashboard/owner/complaints"
+              element={<OwnerComplaints />}
+            />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+
+          {/* PRIVATE ROUTES - ANY LOGGED IN USER */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/payments" element={<PaymentsPage />} />
+            <Route path="/properties-manage" element={<PropertiesPage />} />
+            <Route path="/all-properties" element={<AllPropertiesPage />} />
+            <Route path="/property/:id" element={<PropertyDetails />} />
+            <Route
+              path="/security-settings"
+              element={<SecuritySettingsPage />}
+            />
+            <Route path="/billing" element={<BillingPage />} />
+            <Route
+              path="/property-settings"
+              element={<PropertySettingsPage />}
+            />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+
+          {/* 404 - MUST BE LAST */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </DataProvider>
     </HelmetProvider>
   );
 }
-export default App;
 
-//       <Route element={<PrivateRoute />}>
-//         <Route path="/profile/:id" element={<Profile />} />
-//         <Route path="/property/:id" element={<PropertyDetails />} />
-//       </Route>
+export default App;
