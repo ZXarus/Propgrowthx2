@@ -35,7 +35,6 @@ import {
   Trash2,
   QrCode,
 } from "lucide-react";
-// import { QRCodeCanvas } from "qrcode.react";
 
 import { useData } from "@/context/dataContext";
 import EditPropertyModal, {
@@ -43,9 +42,12 @@ import EditPropertyModal, {
 } from "@/components/dashboard/EditPropertyModal";
 import DeletePropertyDialog from "@/components/dashboard/DeletePropertyDialog";
 import { generateInvite } from "@/hooks/GenerateInvite";
+import axios from "axios";
+import { ProfileData } from "./Profile";
 
 const PropertyDetails = () => {
   const { properties, profile, setProperties } = useData();
+
   const { id } = useParams<{ id: string }>();
   const isOwner = sessionStorage.getItem("role") === "owner";
   const navigate = useNavigate();
@@ -53,6 +55,9 @@ const PropertyDetails = () => {
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(
     null,
   );
+  const [buyer, setBuyer] = useState<ProfileData | null>(null);
+  const [owner, setOwner] = useState<ProfileData | null>(null);
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
@@ -90,6 +95,32 @@ const PropertyDetails = () => {
   };
 
   const property = id ? properties.find((p) => p.id === id) : null;
+  const getDetails = async () => {
+    try {
+      const owner_id = property.owner_id;
+      const buyer_id = property.buyer_id;
+
+      const payload: any = {
+        owner_id: owner_id,
+        buyer_id: buyer_id,
+      };
+
+      await axios
+        .post(`http://localhost:5000/api/auth/privateProfileDetails`, payload)
+        .then((res) => {
+          setBuyer(res.data.buyer);
+          setOwner(res.data.owner);
+        });
+    } catch (error) {
+      alert("something went wrong");
+    }
+  };
+  useEffect(() => {
+    if (property == null) {
+      return;
+    }
+    getDetails();
+  }, [property]);
 
   if (!property) {
     return (
@@ -454,14 +485,14 @@ const PropertyDetails = () => {
                     <CardTitle className="text-lg">Quick Actions</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <a
-                      href={`mailto:${profile.find((p) => p.id === property.owner_id)?.email}`}
-                    >
-                      <Button className="w-full bg-secondary hover:bg-secondary/90">
-                        <Mail className="w-4 h-4 mr-2" />
-                        Contact Owner
-                      </Button>
-                    </a>
+                    {owner && (
+                      <a href={`mailto:${owner.email}`}>
+                        <Button className="w-full bg-secondary hover:bg-secondary/90">
+                          <Mail className="w-4 h-4 mr-2" />
+                          Contact Owner
+                        </Button>
+                      </a>
+                    )}
                     <Button
                       variant="outline"
                       className="w-full"
@@ -567,10 +598,7 @@ const PropertyDetails = () => {
                       </div>
                       <div>
                         <div className="font-medium text-foreground">
-                          {
-                            profile.find((p) => p.id === property.owner_id)
-                              ?.name
-                          }
+                          {owner?.name || "unknown"}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           Property Owner
@@ -580,21 +608,11 @@ const PropertyDetails = () => {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Phone className="w-4 h-4" />
-                        <span>
-                          {
-                            profile.find((p) => p.id === property.owner_id)
-                              ?.phone
-                          }
-                        </span>
+                        <span>{owner?.phone || "unknown"}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Mail className="w-4 h-4" />
-                        <span>
-                          {
-                            profile.find((p) => p.id === property.owner_id)
-                              ?.email
-                          }
-                        </span>
+                        <span>{owner?.email || "unknown"}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -621,10 +639,7 @@ const PropertyDetails = () => {
                         </div>
                         <div>
                           <div className="font-medium text-foreground">
-                            {
-                              profile.find((p) => p.id === property.buyer_id)
-                                ?.name
-                            }
+                            {buyer?.name || "unknown"}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             Property Tenant
@@ -634,21 +649,11 @@ const PropertyDetails = () => {
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Phone className="w-4 h-4" />
-                          <span>
-                            {
-                              profile.find((p) => p.id === property.buyer_id)
-                                ?.phone
-                            }
-                          </span>
+                          <span>{buyer?.phone || "unknown"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Mail className="w-4 h-4" />
-                          <span>
-                            {
-                              profile.find((p) => p.id === property.buyer_id)
-                                ?.email
-                            }
-                          </span>
+                          <span>{buyer?.phone || "unknown"}</span>
                         </div>
                       </div>
                     </CardContent>
@@ -664,22 +669,22 @@ const PropertyDetails = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center">
+                      {/* <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">
                           Past Tenants
                         </span>
-                      </div>
+                      </div> */}
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">Inquiries</span>
                         <span className="font-semibold text-foreground">
                           {property?.inquiries ?? 0}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
+                      {/* <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">
                           Days Listed
                         </span>
-                      </div>
+                      </div> */}
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">
                           Price per sqft

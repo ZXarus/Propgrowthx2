@@ -65,7 +65,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         ),
       ]);
 
-      // Properties
+      // Profile
       if (results[0].status === "fulfilled") {
         setProfile(results[0].value.data?.profile || []);
       } else {

@@ -1,14 +1,18 @@
 import { supabase } from "../config/supabase.js";
 
 export const createComplaint = async (req, res) => {
-  const { pid, tid } = req.params;
+  const tenant_id = req.user.id;
+  const {
+    owner_id,
+    property_id,
+    category,
+    priority,
+    subject,
+    description,
+    status,
+  } = req.body;
 
-  // const tenant_id = req.user.id;
-  const tenant_id = tid;
-
-  const { subject, description, category, priority } = req.body;
-
-  if (!pid || !subject || !description || !category || !priority) {
+  if (!subject || !description || !category || !priority) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -16,7 +20,7 @@ export const createComplaint = async (req, res) => {
     const { data: property, error: propertyError } = await supabase
       .from("properties")
       .select("id, property_name, owner_id")
-      .eq("id", pid)
+      .eq("id", property_id)
       .single();
 
     if (propertyError || !property) {
@@ -76,6 +80,7 @@ export const createComplaint = async (req, res) => {
 
     return res.status(201).json({
       message: "sucessfully fill the complain",
+      complaint: data,
     });
   } catch (err) {
     console.error("Create Complaint Error:", err);

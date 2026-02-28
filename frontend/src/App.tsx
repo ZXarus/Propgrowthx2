@@ -35,14 +35,13 @@ import AllPropertiesPage from "./pages/property/AllPropertiesPage";
 const HomeRedirect = () => {
   const role = sessionStorage.getItem("role")?.toLowerCase();
 
-  console.log("ROLE:", role);
 
   if (role === "tenant") {
     return <Navigate to="/dashboard/tenant" replace />;
   }
 
   if (role === "owner") {
-    return <Navigate to="/dashboard-nav" replace />;
+    return <Navigate to="/dashboard/owner" replace />;
   }
 
   return <Index />;

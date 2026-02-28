@@ -40,14 +40,13 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password } = req.body;
 
   try {
     const { data: user, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("email", email)
-      .eq("role", role)
       .single();
 
     if (error || !user) return res.status(400).json({ error: "Invalid data" });
@@ -232,6 +231,50 @@ export const profileDetails = async (req, res) => {
     });
   } catch (err) {
     console.error("Profile fetch error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+export const privateProfileDetails = async (req, res) => {
+  try {
+    const { owner_id, buyer_id } = req.body;
+
+    if (!owner_id || !buyer_id) {
+      return res.status(400).json({
+        success: false,
+        message: "owner_id and buyer_id are required",
+      });
+    }
+
+    const { data: ownerData, error: ownerError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", owner_id)
+      .single();
+
+    const { data: buyerData, error: buyerError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", buyer_id)
+      .single();
+
+    if (ownerError || buyerError || !ownerData || !buyerData) {
+      return res.status(404).json({
+        success: false,
+        message: "Owner or Buyer profile not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      owner: ownerData,
+      buyer: buyerData,
+    });
+  } catch (err) {
+    console.error("Profile fetch error:", err);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

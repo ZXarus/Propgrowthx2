@@ -9,6 +9,7 @@ import {
   profileDetails,
   updateProfile,
   updatedetails,
+  privateProfileDetails,
 } from "../controller/auth.controller.js";
 import { verifyToken } from "../middlewares/jwt.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
@@ -19,6 +20,7 @@ router.post("/login", login);
 router.post("/register", register);
 
 router.get("/profileDetails", verifyToken, profileDetails);
+router.post("/privateProfileDetails", privateProfileDetails);
 
 router.patch("/update_pic/:profileId", upload.single("image"), updateProfile);
 

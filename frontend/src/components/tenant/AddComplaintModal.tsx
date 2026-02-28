@@ -31,6 +31,7 @@ import { useEffect, useState } from "react";
 import { Upload } from "lucide-react";
 import { useData } from "@/context/dataContext";
 import { PropertyData } from "../dashboard/EditPropertyModal";
+import axios from "axios";
 
 export interface Complaint {
   id: string;
@@ -76,12 +77,12 @@ const categories = [
 ];
 
 const AddComplaintModal = ({ open, onOpenChange }: AddComplaintModalProps) => {
-  const { properties } = useData();
+  const { properties, setComplaints, complaints } = useData();
+  const token = sessionStorage.getItem("token");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const tenantId = sessionStorage.getItem("id");
   const [images, setImages] = useState<string[]>([]);
-  const [myProperties, setMyProperties] = useState<PropertyData[]>([]);
 
   const form = useForm<ComplaintFormValues>({
     resolver: zodResolver(complaintSchema),
@@ -95,70 +96,68 @@ const AddComplaintModal = ({ open, onOpenChange }: AddComplaintModalProps) => {
     },
   });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
+  // const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (!e.target.files) return;
 
-    const files = Array.from(e.target.files);
+  //   const files = Array.from(e.target.files);
 
-    files.forEach((file) => {
-      const reader = new FileReader();
+  //   files.forEach((file) => {
+  //     const reader = new FileReader();
 
-      reader.onload = () => {
-        const result = reader.result;
+  //     reader.onload = () => {
+  //       const result = reader.result;
 
-        if (typeof result === "string") {
-          setImages((prev) => {
-            const updated: string[] = [...prev, result];
-            return updated.slice(0, 5);
-          });
-        }
-      };
+  //       if (typeof result === "string") {
+  //         setImages((prev) => {
+  //           const updated: string[] = [...prev, result];
+  //           return updated.slice(0, 5);
+  //         });
+  //       }
+  //     };
 
-      reader.readAsDataURL(file);
-    });
+  //     reader.readAsDataURL(file);
+  //   });
 
-    e.target.value = "";
-  };
+  //   e.target.value = "";
+  // };
 
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
+  // const removeImage = (index: number) => {
+  //   setImages((prev) => prev.filter((_, i) => i !== index));
+  // };
 
   const onSubmit = async (data: ComplaintFormValues) => {
     setIsSubmitting(true);
 
-    const { error } = await supabase.from("complaints").insert([
-      {
-        tenant_id: tenantId,
-        owner_id:
-          properties.find((p) => p.id === data.property_id)?.owner_id || null,
+    try {
+      const payload = {
         property_id: data.property_id,
         category: data.category,
         priority: data.priority,
         subject: data.subject,
         description: data.description,
         status: "open",
-        images: images,
-      },
-    ]);
+      };
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Complaint Submitted",
-        description: "We will respond shortly",
-      });
+      console.log("Submitting:", payload);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/complain/create",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      alert("Complaint submitted");
 
       form.reset();
       onOpenChange(false);
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting complaint");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   return (
@@ -189,7 +188,7 @@ const AddComplaintModal = ({ open, onOpenChange }: AddComplaintModalProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {myProperties.map((property) => (
+                      {properties.map((property) => (
                         <SelectItem
                           key={property.id}
                           value={property.id.toString()}
@@ -287,21 +286,21 @@ const AddComplaintModal = ({ open, onOpenChange }: AddComplaintModalProps) => {
               )}
             />
 
-            <div className="space-y-4">
-              <h3 className="font-semibold text-foreground border-b border-border pb-2">
+            {/* <div className="space-y-4"> */}
+            {/* <h3 className="font-semibold text-foreground border-b border-border pb-2">
                 Complaint Images
-              </h3>
+              </h3> */}
 
-              <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors">
-                <input
+            {/* <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-secondary/50 transition-colors"> */}
+            {/* <input
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={handleImageUpload}
                   className="hidden"
                   id="image-upload"
-                />
-                <label htmlFor="image-upload" className="cursor-pointer">
+                /> */}
+            {/* <label htmlFor="image-upload" className="cursor-pointer">
                   <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">
                     Click to upload images (max 5)
@@ -309,29 +308,29 @@ const AddComplaintModal = ({ open, onOpenChange }: AddComplaintModalProps) => {
                   <p className="text-xs text-muted-foreground mt-1">
                     PNG, JPG up to 10MB each
                   </p>
-                </label>
-              </div>
+                </label> */}
+            {/* </div> */}
 
-              {images.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
-                  {images.map((img, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={img}
-                        className="h-32 w-full object-cover rounded-lg"
-                      />
-                      <button
+            {/* {images.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                {images.map((img, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={img}
+                      className="h-32 w-full object-cover rounded-lg"
+                    /> */}
+            {/* <button
                         type="button"
                         onClick={() => removeImage(index)}
                         className="absolute top-1 right-1 bg-black/70 text-white rounded-full px-2"
                       >
                         ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                      </button> */}
+            {/* </div>
+                ))}
+              </div>
+            )} */}
+            {/* </div> */}
 
             <div className="flex gap-3 pt-4">
               <Button

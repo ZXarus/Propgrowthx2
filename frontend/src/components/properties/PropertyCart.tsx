@@ -1,44 +1,35 @@
-import { MapPin, Bed, Bath, Square, Tag } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-
-interface PropertyCardProps {
-  id: string;
-  title: string;
-  location: string;
-  monthly_rent: number;
-  type: 'buy' | 'rent' | 'lease';
-  bedrooms: number;
-  bathrooms: number;
-  area: number;
-  image: string;
-  isNew?: boolean;
-}
+import { MapPin, Bed, Bath, Square, Tag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PropertyData } from "../dashboard/EditPropertyModal";
+import { useNavigate } from "react-router-dom";
 
 const PropertyCard = ({
-  title,
-  location,
+  property_name,
+  address,
   monthly_rent,
-  type,
+  listing_type,
   bedrooms,
   bathrooms,
-  area,
-  image,
-  isNew,
-}: PropertyCardProps) => {
+  total_area,
+  id,
+}: PropertyData) => {
+  const navigate = useNavigate();
   const typeLabels = {
-    buy: { label: 'For Sale', color: 'bg-success text-primary-foreground' },
-    rent: { label: 'For Rent', color: 'bg-secondary text-secondary-foreground' },
-    lease: { label: 'For Lease', color: 'bg-warning text-foreground' },
+    buy: { label: "For Sale", color: "bg-success text-primary-foreground" },
+    rent: {
+      label: "For Rent",
+      color: "bg-secondary text-secondary-foreground",
+    },
+    lease: { label: "For Lease", color: "bg-warning text-foreground" },
   };
 
   const formatPrice = (price: number, type: string) => {
-    const formatted = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'INR',
+    const formatted = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "INR",
       maximumFractionDigits: 0,
     }).format(price);
-    return type === 'buy' ? formatted : `${formatted}/mo`;
+    return type === "buy" ? formatted : `${formatted}/mo`;
   };
 
   return (
@@ -46,31 +37,21 @@ const PropertyCard = ({
       {/* Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={image}
-          alt={title}
+          src="#"
+          alt={property_name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute top-3 left-3 flex gap-2">
-          <Badge className={typeLabels[type].color}>
-            {typeLabels[type].label}
-          </Badge>
-          {isNew && (
-            <Badge variant="secondary" className="bg-primary text-primary-foreground">
-              New
-            </Badge>
-          )}
-        </div>
       </div>
 
       {/* Content */}
       <div className="p-5">
         <div className="flex items-center gap-1 text-muted-foreground text-sm mb-2">
           <MapPin className="w-4 h-4" />
-          <span>{location}</span>
+          <span>{address}</span>
         </div>
 
         <h3 className="text-lg font-semibold text-foreground mb-3 line-clamp-1">
-          {title}
+          {property_name}
         </h3>
 
         {/* Features */}
@@ -85,7 +66,7 @@ const PropertyCard = ({
           </div>
           <div className="flex items-center gap-1">
             <Square className="w-4 h-4" />
-            <span>{area} sqft</span>
+            <span>{total_area} sqft</span>
           </div>
         </div>
 
@@ -94,12 +75,15 @@ const PropertyCard = ({
           <div className="flex items-center gap-1">
             <Tag className="w-4 h-4 text-secondary" />
             <span className="text-md font-bold text-foreground">
-              {formatPrice(monthly_rent, type)}
+              {formatPrice(monthly_rent, listing_type)}
             </span>
           </div>
-          <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground">
+          <button
+            className="text-primary border-primary hover:bg-primary hover:text-primary-foreground border-2 border-blue-400 p-2 rounded-md"
+            onClick={() => navigate(`/property/${id}`)}
+          >
             View Details
-          </Button>
+          </button>
         </div>
       </div>
     </div>
