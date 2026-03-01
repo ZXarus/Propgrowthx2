@@ -317,7 +317,7 @@ export default function OwnerDashboard() {
 
       {/* Main header + content container */}
       <div className="dashboard-main flex-1 min-h-screen">
-        <header className="dashboard-header h-16 bg-white border-b border-gray-100 flex items-center px-6 sticky top-0 z-30">
+        <header className="dashboard-header h-16 bg-white border-b border-gray-100 flex items-center gap-40 px-6 sticky top-0 z-30">
           {/* Mobile menu toggle */}
           <button
             className="mobile-menu-toggle p-2 rounded-md hover:bg-gray-50 mr-3 xl:hidden"

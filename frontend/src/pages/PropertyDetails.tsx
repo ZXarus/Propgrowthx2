@@ -244,7 +244,7 @@ const PropertyDetails = () => {
       />
 
       <Layout>
-        <div className="bg-muted/30 min-h-screen py-8 lg:py-12">
+        <div className="min-h-screen ">
           <div className="container-custom">
             {/* Back Button */}
             <button

@@ -36,8 +36,10 @@ import axios from "axios";
 export interface Complaint {
   id: string;
   tenant_id: string;
+  tenant_name: string;
   owner_id?: string;
   property_id: string;
+  property_name: string;
   category: string;
   priority: "low" | "medium" | "high" | "urgent";
   subject: string;

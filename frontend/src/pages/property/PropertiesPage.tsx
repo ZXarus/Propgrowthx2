@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import AddPropertyModal from "@/components/dashboard/AddPropertyModal";
 import type { PropertyData } from "../../components/dashboard/EditPropertyModal";
 import { useData } from "@/context/dataContext";
+import { useNavigate } from "react-router-dom";
 
 const BRAND = "#DC2626";
 
@@ -13,8 +14,6 @@ const STATUS_COLORS: Record<string, string> = {
 };
 export default function PropertiesPage() {
   const { properties, setProperties } = useData();
-
-  console.log(properties);
 
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("All Types");
@@ -151,6 +150,7 @@ function PropertyGrid({ properties }: { properties: PropertyData[] }) {
 }
 
 function PropertyCard({ property }: { property: PropertyData }) {
+  const navigate = useNavigate();
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
       {/* Image */}
@@ -220,6 +220,7 @@ function PropertyCard({ property }: { property: PropertyData }) {
           <button
             className="flex-1 px-3 py-2 rounded-xl text-white text-xs md:text-sm font-medium transition-all duration-200"
             style={{ background: BRAND }}
+            onClick={() => navigate(`/property/${property.id}`)}
           >
             View Details
           </button>

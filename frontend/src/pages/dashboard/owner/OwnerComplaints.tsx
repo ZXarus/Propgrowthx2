@@ -1,30 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { NavLink } from "react-router-dom";
-import Layout from "@/components/layout/Layout";
+import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   BarChart3,
   Clock,
   CheckCircle,
   AlertCircle,
   TrendingUp,
 } from "lucide-react";
+import { Complaint } from "@/components/tenant/AddComplaintModal";
 import ComplaintList from "@/components/dashboard/ComplaintList";
 import { useData } from "@/context/dataContext";
-import { Complaint } from "@/components/tenant/AddComplaintModal";
+import DashboardSkeleton from "@/pages/SkeletonLoading";
 
 const OwnerComplaints = () => {
-  // ✅ Now using real backend complaints
-  const { complaints } = useData();
+  const navigate = useNavigate();
+  const { complaints, setComplaints, loading } = useData();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [priorityFilter, setPriorityFilter] = useState("all");
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(
     null,
   );
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Start closed on mobile
+  useEffect(() => {
+    if (window.innerWidth < 768) setSidebarOpen(false);
+  }, []);
+
+  // Mobile nav helper — close drawer then navigate
+  const mobileGoTo = (path: string) => {
+    if (window.innerWidth < 768) setSidebarOpen(false);
+    navigate(path);
+  };
+
+  if (loading) return <DashboardSkeleton />;
 
   const stats = {
     total: complaints.length,
@@ -32,7 +45,10 @@ const OwnerComplaints = () => {
     inProgress: complaints.filter((c) => c.status === "in-progress").length,
     resolved: complaints.filter((c) => c.status === "resolved").length,
     urgent: complaints.filter(
-      (c) => c.priority === "urgent" && c.status !== "resolved",
+      (c) =>
+        c.priority === "urgent" &&
+        c.status !== "resolved" &&
+        c.status !== "closed",
     ).length,
   };
 
@@ -49,147 +65,626 @@ const OwnerComplaints = () => {
         />
       </Helmet>
 
-      {/* <Layout showNavbar={false} showFooter={false}> */}
-      <Layout>
-        <div className="min-h-screen bg-white">
-          <div className="max-w-[1100px] mx-auto px-5 py-6">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@500;600;700;800&display=swap');
+
+        :root {
+          --brand-red: #DC2626;
+          --muted: #6b7280;
+          --card-border: rgba(16,24,40,0.06);
+          --glass: rgba(255,255,255,0.78);
+        }
+
+        * { box-sizing: border-box; font-family: 'Geist', sans-serif; }
+
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInLeft {
+          from { opacity: 0; transform: translateX(-20px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(20px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+
+        .page-title {
+          font-family: 'Inter', 'Geist', system-ui, sans-serif;
+          font-size: clamp(36px, 4.5vw, 56px);
+          font-weight: 400;
+          letter-spacing: -1.5px;
+          line-height: 1.1;
+          color: #0b1220;
+          margin: 0;
+          animation: slideInLeft 0.7s ease-out 0.1s both;
+        }
+        .title-accent {
+          color: var(--brand-red);
+          font-weight: 700;
+          animation: slideInRight 0.7s ease-out 0.2s both;
+          display: inline-block;
+        }
+
+        .container-custom {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 24px 32px;
+        }
+        /* MOBILE ONLY: top padding to clear floating hamburger */
+        @media (max-width: 767px) {
+          .container-custom { padding: 56px 16px 16px; }
+        }
+
+        .header-hero {
+          position: relative;
+          padding: 32px 40px 36px;
+          border-radius: 20px;
+          background: linear-gradient(180deg, #FFF5F5 0%, #FFE4E6 100%);
+          border: 1px solid rgba(220, 38, 38, 0.12);
+          animation: fadeInUp 0.8s ease-out 0s both;
+        }
+        @media (max-width: 768px) { .header-hero { padding: 20px 24px 24px; border-radius: 16px; } }
+        @media (max-width: 640px) { .header-hero { padding: 16px 18px 20px; border-radius: 12px; } }
+        .header-hero::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          box-shadow: 0 20px 50px rgba(2, 6, 23, 0.05);
+        }
+
+        .header-subtitle {
+          font-size: 16px;
+          color: var(--muted);
+          font-weight: 400;
+          letter-spacing: 0.2px;
+          line-height: 1.6;
+          margin-top: 12px;
+          animation: fadeInUp 0.8s ease-out 0.25s both;
+        }
+        @media (max-width: 640px) { .header-subtitle { font-size: 13px; margin-top: 8px; } }
+
+        .divider-line {
+          height: 1px;
+          background: linear-gradient(90deg, rgba(220,38,38,0), rgba(220,38,38,0.3) 20%, rgba(220,38,38,0.5) 50%, rgba(220,38,38,0.3) 80%, rgba(220,38,38,0));
+          width: 100%;
+          margin-top: 22px;
+          animation: fadeInUp 0.8s ease-out 0.35s both;
+        }
+        @media (max-width: 640px) { .divider-line { margin-top: 14px; } }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(1, minmax(0,1fr));
+          gap: 16px;
+        }
+        @media (min-width: 640px)  { .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+        @media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(5, minmax(0,1fr)); } }
+
+        .stat-card {
+          position: relative;
+          border-radius: 12px;
+          overflow: hidden;
+          padding: 16px;
+          background: linear-gradient(180deg,#fff,#fbfcfd);
+          border: 1px solid var(--card-border);
+          box-shadow: 0 8px 24px rgba(2,6,23,0.03);
+          transition: transform .18s cubic-bezier(.2,.9,.2,1), box-shadow .18s ease, border-color .18s ease;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          min-height: 120px;
+          animation: fadeInUp 0.7s ease-out both;
+        }
+        .stat-card:nth-child(1) { animation-delay: 0.4s; }
+        .stat-card:nth-child(2) { animation-delay: 0.5s; }
+        .stat-card:nth-child(3) { animation-delay: 0.6s; }
+        .stat-card:nth-child(4) { animation-delay: 0.7s; }
+        .stat-card:nth-child(5) { animation-delay: 0.8s; }
+        .stat-card::before {
+          content: '';
+          position: absolute;
+          left: 0; top: 0; bottom: 0;
+          width: 6px;
+          background: linear-gradient(180deg, rgba(220,38,38,0.12), rgba(220,38,38,0.06));
+          opacity: 0.95;
+        }
+        .stat-top { display: flex; gap: 12px; align-items: center; }
+        .stat-icon {
+          width: 48px; height: 48px;
+          border-radius: 10px;
+          background: linear-gradient(180deg,#fff,#f7f8fb);
+          display: inline-flex; align-items: center; justify-content: center;
+          border: 1px solid rgba(2,6,23,0.03);
+          box-shadow: 0 6px 18px rgba(2,6,23,0.03);
+          flex-shrink: 0;
+          animation: scaleIn 0.6s cubic-bezier(.2,.9,.2,1) both;
+        }
+        .stat-card:nth-child(1) .stat-icon { animation-delay: 0.5s; }
+        .stat-card:nth-child(2) .stat-icon { animation-delay: 0.6s; }
+        .stat-card:nth-child(3) .stat-icon { animation-delay: 0.7s; }
+        .stat-card:nth-child(4) .stat-icon { animation-delay: 0.8s; }
+        .stat-card:nth-child(5) .stat-icon { animation-delay: 0.9s; }
+        .stat-icon svg { width: 20px; height: 20px; color: var(--brand-red); }
+        .stat-number { font-size: 22px; font-weight: 800; color: #0b1220; }
+        .stat-label  { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; }
+        .stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 48px rgba(2,6,23,0.08); border-color: rgba(2,6,23,0.09); }
+        .stat-card.open::before     { background: linear-gradient(180deg, rgba(255,193,7,0.15), rgba(255,193,7,0.06)); }
+        .stat-card.progress::before { background: linear-gradient(180deg, rgba(14,165,164,0.12), rgba(14,165,164,0.05)); }
+        .stat-card.resolved::before { background: linear-gradient(180deg, rgba(5,150,105,0.12), rgba(5,150,105,0.04)); }
+        .stat-card.urgent {
+          background: linear-gradient(180deg, rgba(220,38,38,0.06) 0%, #fff9f9 100%);
+          border: 1.2px solid rgba(220,38,38,0.18);
+          box-shadow: 0 8px 24px rgba(220,38,38,0.09);
+        }
+        .stat-card.urgent::before { background: linear-gradient(180deg, rgba(220,38,38,0.22), rgba(220,38,38,0.08)); }
+        .stat-card.urgent:hover { border-color: rgba(220,38,38,0.28); box-shadow: 0 20px 48px rgba(220,38,38,0.12); }
+        .stat-card.urgent .stat-icon { background: rgba(220,38,38,0.1); border-color: rgba(220,38,38,0.15); }
+        .stat-card.urgent .stat-icon svg { color: #dc2626; }
+        .stat-card.urgent .stat-number { color: #991b1b; }
+        .stat-card.urgent .stat-label  { color: #7f1d1d; font-weight: 800; }
+
+        .resolution-card {
+          margin-top: 18px;
+          border-radius: 12px;
+          padding: 16px;
+          display: flex;
+          gap: 16px;
+          align-items: center;
+          justify-content: space-between;
+          border: 1px solid rgba(2,6,23,0.04);
+          background: linear-gradient(180deg,#fff,#fcfcfc);
+          box-shadow: 0 14px 40px rgba(2,6,23,0.03);
+          animation: fadeInUp 0.8s ease-out 0.9s both;
+        }
+        .resolution-left { flex: 1; min-width: 0; }
+        .resolution-title { font-size: 12px; font-weight: 800; color: #111827; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+        .resolution-stat  { font-size: 30px; font-weight: 800; color: var(--brand-red); margin-bottom: 6px; }
+        .resolution-desc  { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+        .progress-bar  { height: 8px; background: #f3f4f6; border-radius: 999px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--brand-red), #ff6b6b); width: 0%; transition: width 900ms cubic-bezier(.2,.9,.2,1); }
+        .progress-circle {
+          width: 84px; height: 84px;
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          position: relative;
+          box-shadow: 0 8px 20px rgba(2,6,23,0.04);
+          flex-shrink: 0;
+          animation: scaleIn 0.7s cubic-bezier(.2,.9,.2,1) 0.95s both;
+        }
+        .progress-circle .inner {
+          width: 64px; height: 64px;
+          border-radius: 50%;
+          background: #fff;
+          display: flex; align-items: center; justify-content: center;
+          font-weight: 700; color: #0b1220;
+          box-shadow: 0 2px 8px rgba(2,6,23,0.04);
+        }
+        .complaint-section { margin-top: 18px; animation: fadeInUp 0.8s ease-out 1s both; }
+      `}</style>
+
+      <div className="flex h-screen bg-gray-50 overflow-hidden">
+        {/* ═══════════════════════════════════════
+            MOBILE ONLY — floating hamburger
+        ═══════════════════════════════════════ */}
+        {!sidebarOpen && (
+          <button
+            className="md:hidden fixed top-3 left-3 z-50 w-10 h-10 flex items-center justify-center
+              bg-white border border-gray-200 rounded-xl shadow-md hover:bg-gray-50 transition-all duration-200"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+          >
+            <i className="fas fa-bars text-gray-700 text-sm"></i>
+          </button>
+        )}
+
+        {/* ═══════════════════════════════════════
+            MOBILE ONLY — backdrop
+        ═══════════════════════════════════════ */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* ═══════════════════════════════════════
+            MOBILE ONLY — full drawer, auto-closes on nav
+        ═══════════════════════════════════════ */}
+        <aside
+          className={`md:hidden fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-100 z-50
+            flex flex-col transform transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        >
+          <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+            <div className="w-10 h-10 rounded-md overflow-hidden shadow-sm flex-shrink-0">
+              <img
+                src="/logo.png"
+                alt="PropGrowthX Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <span className="font-semibold text-gray-900 text-base">
+              PropGrowthX
+            </span>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="ml-auto p-1.5 rounded-md hover:bg-gray-50 text-gray-500"
+              aria-label="Close menu"
+            >
+              <i className="fas fa-times text-sm"></i>
+            </button>
+          </div>
+          <nav className="px-2 py-4 flex-1 overflow-y-auto">
+            {[
+              {
+                id: "dashboard",
+                label: "Dashboard",
+                icon: "fa-chart-bar",
+                path: "/dashboard-nav",
+              },
+              {
+                id: "properties",
+                label: "Properties",
+                icon: "fa-building",
+                path: "/properties-manage",
+              },
+              {
+                id: "payments",
+                label: "Payments",
+                icon: "fa-receipt",
+                path: "/payments",
+              },
+              {
+                id: "support",
+                label: "Support",
+                icon: "fa-headset",
+                path: "/contact",
+              },
+              {
+                id: "complaints",
+                label: "Complaints",
+                icon: "fa-folder",
+                path: "/dashboard/owner/complaints",
+              },
+              {
+                id: "profile",
+                label: "Profile",
+                icon: "fa-user",
+                path: "/profile",
+              },
+              { id: "settings", label: "Settings", icon: "fa-cog", path: null },
+            ].map((item) => (
+              <MobileNavItem
+                key={item.id}
+                label={item.label}
+                icon={item.icon}
+                active={item.id === "complaints"}
+                onClick={() =>
+                  item.path ? mobileGoTo(item.path) : setSidebarOpen(false)
+                }
+              />
+            ))}
+          </nav>
+          <div className="px-3 py-4 border-t border-gray-100">
+            <div className="text-xs text-gray-500">
+              © {new Date().getFullYear()} PropGrowthX
+            </div>
+          </div>
+        </aside>
+
+        {/* ═══════════════════════════════════════
+            DESKTOP / TABLET — inline sidebar, unchanged
+        ═══════════════════════════════════════ */}
+        <aside
+          className={`hidden md:flex flex-col flex-shrink-0 bg-white border-r border-gray-100 h-screen sticky top-0 z-40
+            transition-all duration-200 ease-in-out ${sidebarOpen ? "w-64" : "w-20"}`}
+          aria-label="Sidebar"
+        >
+          <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+            <div className="w-12 h-12 rounded-md overflow-hidden shadow-sm flex-shrink-0">
+              <img
+                src="/logo.png"
+                alt="PropGrowthX Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            {sidebarOpen && (
+              <span className="font-semibold text-gray-900 text-lg">
+                PropGrowthX
+              </span>
+            )}
+            <button
+              onClick={() => setSidebarOpen((s) => !s)}
+              className="ml-auto bg-transparent p-2 rounded-md hover:bg-gray-50"
+              aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            >
+              <i
+                className={`fas ${sidebarOpen ? "fa-chevron-left" : "fa-chevron-right"} text-gray-600 text-sm`}
+              ></i>
+            </button>
+          </div>
+          <nav className="px-2 py-4 flex-1 overflow-y-auto">
+            {[
+              {
+                id: "dashboard",
+                label: "Dashboard",
+                icon: "fa-chart-bar",
+                onClick: () => navigate("/dashboard-nav"),
+              },
+              {
+                id: "properties",
+                label: "Properties",
+                icon: "fa-building",
+                onClick: () => navigate("/properties-manage"),
+              },
+              {
+                id: "payments",
+                label: "Payments",
+                icon: "fa-receipt",
+                onClick: () => navigate("/payments"),
+              },
+              {
+                id: "support",
+                label: "Support",
+                icon: "fa-headset",
+                onClick: () => navigate("/contact"),
+              },
+              {
+                id: "complaints",
+                label: "Complaints",
+                icon: "fa-folder",
+                onClick: () => navigate("/dashboard/owner/complaints"),
+              },
+              {
+                id: "profile",
+                label: "Profile",
+                icon: "fa-user",
+                onClick: () => navigate("/profile"),
+              },
+              {
+                id: "settings",
+                label: "Settings",
+                icon: "fa-cog",
+                onClick: undefined,
+              },
+            ].map((item) => (
+              <NavItem
+                key={item.id}
+                label={item.label}
+                icon={item.icon}
+                collapsed={!sidebarOpen}
+                active={item.id === "complaints"}
+                onClick={item.onClick}
+              />
+            ))}
+          </nav>
+          <div className="px-3 py-4 border-t border-gray-100">
+            {sidebarOpen ? (
+              <div className="text-xs text-gray-500">
+                © {new Date().getFullYear()} PropGrowthX
+              </div>
+            ) : (
+              <div className="text-center text-xs text-gray-400">©PG</div>
+            )}
+          </div>
+        </aside>
+
+        {/* ═══════════════════════════════════════
+            MAIN CONTENT
+        ═══════════════════════════════════════ */}
+        <main className="flex-1 overflow-y-auto min-w-0 bg-white">
+          <div className="container-custom">
             {/* Header */}
-            <div className="mb-8">
-              <div className="bg-gradient-to-b from-red-100/10 to-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                <NavLink to="/dashboard/owner">
-                  <button className="flex items-center gap-2 bg-white/70 backdrop-blur-md border border-gray-200 hover:shadow-lg hover:-translate-y-1 transition-all px-4 py-2 rounded-lg">
-                    <ArrowLeft className="w-4 h-4" />
-                    <span className="font-semibold">Back</span>
-                  </button>
-                </NavLink>
-
-                <h1 className="font-serif text-4xl sm:text-5xl mt-4 text-gray-900 leading-snug">
-                  Your complaints,
-                  <br />
-                  <span className="text-red-600 font-bold">our priority</span>
-                </h1>
-
-                <p className="mt-3 text-gray-500 text-sm">
-                  Stay on top of tenant issues. Track what's open, respond
-                  faster, and close complaints with confidence.
-                </p>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-red-400/50 to-transparent mt-6" />
+            <div className="header-section pb-8">
+              <div className="header-hero">
+                <div className="max-w-3xl">
+                  <h1 className="page-title mb-3">
+                    Your complaints,
+                    <br />
+                    <span className="title-accent">our priority</span>
+                  </h1>
+                  <p className="header-subtitle">
+                    Stay on top of tenant issues. Track what's open, respond
+                    faster, and close complaints with confidence.
+                  </p>
+                </div>
+                <div className="divider-line" />
               </div>
             </div>
 
-            {/* Stats */}
-            <section className="py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <StatCard
-                  icon={<BarChart3 className="text-red-600" />}
-                  number={stats.total}
-                  label="Total"
-                />
-
-                <StatCard
-                  icon={<AlertCircle className="text-red-600" />}
-                  number={stats.open}
-                  label="Open"
-                  border="border-yellow-400"
-                />
-
-                <StatCard
-                  icon={<Clock className="text-red-600" />}
-                  number={stats.inProgress}
-                  label="In Progress"
-                  border="border-teal-400"
-                />
-
-                <StatCard
-                  icon={<CheckCircle className="text-red-600" />}
-                  number={stats.resolved}
-                  label="Resolved"
-                  border="border-green-400"
-                />
-
-                <StatCard
-                  icon={<TrendingUp className="text-red-600" />}
-                  number={stats.urgent}
-                  label="Urgent"
-                  border="border-red-500"
-                />
+            {/* Stats Grid */}
+            <section className="py-6">
+              <div className="stats-grid">
+                <div className="stat-card urgent">
+                  <div className="stat-top">
+                    <div className="stat-icon" aria-hidden>
+                      <TrendingUp />
+                    </div>
+                    <div>
+                      <div className="stat-number">{stats.urgent}</div>
+                      <div className="stat-label">Urgent</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-top">
+                    <div className="stat-icon" aria-hidden>
+                      <BarChart3 />
+                    </div>
+                    <div>
+                      <div className="stat-number">{stats.total}</div>
+                      <div className="stat-label">Total</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="stat-card open">
+                  <div className="stat-top">
+                    <div className="stat-icon" aria-hidden>
+                      <AlertCircle />
+                    </div>
+                    <div>
+                      <div className="stat-number">{stats.open}</div>
+                      <div className="stat-label">Open</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="stat-card progress">
+                  <div className="stat-top">
+                    <div className="stat-icon" aria-hidden>
+                      <Clock />
+                    </div>
+                    <div>
+                      <div className="stat-number">{stats.inProgress}</div>
+                      <div className="stat-label">In Progress</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="stat-card resolved">
+                  <div className="stat-top">
+                    <div className="stat-icon" aria-hidden>
+                      <CheckCircle />
+                    </div>
+                    <div>
+                      <div className="stat-number">{stats.resolved}</div>
+                      <div className="stat-label">Resolved</div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {stats.total > 0 && (
-                <div className="mt-5 border rounded-xl p-4 flex items-center justify-between shadow-sm bg-white">
-                  <div>
-                    <div className="text-xs font-bold tracking-wide text-gray-800 uppercase">
-                      You've resolved
-                    </div>
-                    <div className="text-3xl font-extrabold text-red-600 mt-1">
-                      {resolutionRate}%
-                    </div>
-                    <div className="text-gray-500 text-sm mt-1">
+                <div className="resolution-card">
+                  <div className="resolution-left">
+                    <div className="resolution-title">You've resolved</div>
+                    <div className="resolution-stat">{resolutionRate}%</div>
+                    <p className="resolution-desc">
                       {stats.resolved} out of {stats.total} complaints
-                    </div>
-
-                    <div className="w-full h-2 bg-gray-200 rounded-full mt-3 overflow-hidden">
+                    </p>
+                    <div className="progress-bar" aria-hidden>
                       <div
-                        className="h-full bg-gradient-to-r from-red-600 to-red-400"
+                        className="progress-fill"
                         style={{ width: `${resolutionRate}%` }}
                       />
                     </div>
                   </div>
-
                   <div
-                    className="w-20 h-20 rounded-full flex items-center justify-center shadow"
+                    className="progress-circle"
+                    aria-hidden
                     style={{
-                      background: `conic-gradient(#dc2626 ${
-                        resolutionRate * 3.6
-                      }deg, #e2e8f0 ${resolutionRate * 3.6}deg)`,
+                      background: `conic-gradient(var(--brand-red) 0deg ${resolutionRate * 3.6}deg, #eef2f7 ${resolutionRate * 3.6}deg 360deg)`,
                     }}
                   >
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-sm font-bold">
-                      {resolutionRate}%
-                    </div>
+                    <div className="inner">{resolutionRate}%</div>
                   </div>
                 </div>
               )}
             </section>
 
-            {/* Complaint List */}
-            <div className="mt-6 pb-8">
+            {/* Complaints List */}
+            <div className="complaint-section pb-8">
               <ComplaintList
                 complaints={complaints}
+                setComplaints={setComplaints}
+                onSelect={(complaint) => {
+                  setSelectedComplaint(complaint);
+                  setIsDetailModalOpen(true);
+                }}
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 statusFilter={statusFilter}
                 setStatusFilter={setStatusFilter}
                 priorityFilter={priorityFilter}
                 setPriorityFilter={setPriorityFilter}
-                isDetailModalOpen={isDetailModalOpen}
-                setIsDetailModalOpen={setIsDetailModalOpen}
-                selectedComplaint={selectedComplaint}
-                setSelectedComplaint={setSelectedComplaint}
               />
             </div>
           </div>
-        </div>
-      </Layout>
+        </main>
+      </div>
     </>
   );
 };
 
-export default OwnerComplaints;
-
-const StatCard = ({ icon, number, label, border = "border-gray-200" }) => (
-  <div
-    className={`flex flex-col gap-3 p-4 border rounded-xl shadow-sm bg-white hover:-translate-y-1 hover:shadow-xl transition-all ${border}`}
-  >
-    <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-gray-50 border">
-      {icon}
-    </div>
-    <div>
-      <div className="text-2xl font-extrabold text-gray-900">{number}</div>
-      <div className="text-xs uppercase tracking-wide font-semibold text-gray-500">
+// ── Mobile-only nav item ──
+function MobileNavItem({
+  label,
+  icon,
+  active = false,
+  onClick,
+}: {
+  label: string;
+  icon: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-3 py-3 rounded-md transition-colors duration-150
+        ${active ? "bg-red-50" : "hover:bg-gray-50"}`}
+      aria-label={label}
+    >
+      <span
+        className={`w-8 h-8 flex items-center justify-center rounded-md flex-shrink-0 ${active ? "bg-red-100" : "bg-gray-50"}`}
+      >
+        <i
+          className={`fas ${icon} text-sm ${active ? "text-red-600" : "text-gray-600"}`}
+        ></i>
+      </span>
+      <span
+        className={`text-sm font-medium ${active ? "text-red-600 font-semibold" : "text-gray-700"}`}
+      >
         {label}
-      </div>
-    </div>
-  </div>
-);
+      </span>
+    </button>
+  );
+}
+
+// ── Desktop/tablet nav item ──
+function NavItem({
+  label,
+  icon,
+  collapsed = false,
+  active = false,
+  onClick,
+}: {
+  label: string;
+  icon: string;
+  collapsed?: boolean;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      className={`w-full flex items-center gap-3 px-3 py-3 rounded-md transition-colors duration-150
+        ${active ? "bg-red-50" : "hover:bg-gray-50"}`}
+      aria-label={label}
+      title={collapsed ? label : undefined}
+      onClick={onClick}
+    >
+      <span
+        className={`w-8 h-8 flex items-center justify-center rounded-md flex-shrink-0 ${active ? "bg-red-100" : "bg-gray-50"}`}
+      >
+        <i
+          className={`fas ${icon} text-sm ${active ? "text-red-600" : "text-gray-600"}`}
+        ></i>
+      </span>
+      {!collapsed && (
+        <span
+          className={`text-sm font-medium ${active ? "text-red-600 font-semibold" : "text-gray-900"}`}
+        >
+          {label}
+        </span>
+      )}
+    </button>
+  );
+}
+
+export default OwnerComplaints;

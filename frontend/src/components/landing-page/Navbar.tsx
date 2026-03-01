@@ -18,6 +18,13 @@ export default function Navbar() {
     }
   };
 
+  if (
+    location.pathname.includes("payments") ||
+    location.pathname.includes("property")
+  ) {
+    return null;
+  }
+
   return (
     <nav
       className="fixed z-50 left-1/2 -translate-x-1/2 

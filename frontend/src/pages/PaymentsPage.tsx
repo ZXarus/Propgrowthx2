@@ -102,7 +102,7 @@ export default function PaymentsPage() {
           <div className="border-b border-gray-100">
             <div className="container-custom py-8">
               <a
-                href="/dashboard-nav"
+                href="/dashboard/owner"
                 className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6"
               >
                 <ArrowLeft className="w-4 h-4" />
