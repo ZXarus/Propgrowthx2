@@ -40,7 +40,6 @@ const NAV_ITEMS = [
   { id: "payments",    label: "Payments",    icon: "fa-receipt",    path: "/payments" },
   { id: "support",     label: "Support",     icon: "fa-headset",    path: "/contact" },
   { id: "complaints",  label: "Complaints",  icon: "fa-folder",     path: "/dashboard/owner/complaints" },
-  { id: "team",        label: "Team",        icon: "fa-users",      path: null },
   { id: "profile",     label: "Profile",     icon: "fa-user",       path: "/profile" },
   { id: "settings",    label: "Settings",    icon: "fa-cog",        path: null },
 ];
@@ -502,14 +501,14 @@ export default function DashboardNav() {
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-gray-50 relative z-10">
-          <KpiTiles currency="₹" onAction={(action, payload) => console.log('KPI Action:', action, payload)} className="mb-6 md:mb-8" />
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
+        <main className="flex-1 overflow-y-auto p-3 md:p-6 bg-gray-50 relative z-10">
+          <KpiTiles currency="₹" onAction={(action, payload) => console.log('KPI Action:', action, payload)} className="mb-4 md:mb-5" />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-5 mb-4 md:mb-5">
             <div><PaymentsPanel currency="₹" onAction={(action, payload) => console.log('Payment Action:', action, payload)} /></div>
             <UrgentActionStrip currency="₹" onAction={(action, item) => console.log('Urgent Action:', action, item)} />
           </div>
-          <PaymentsSections currency="₹" onAction={(action, payload) => console.log('Payment Sections Action:', action, payload)} className="mb-6 md:mb-8" />
-          <PropertiesOverview className="mb-6 md:mb-8" />
+          <PaymentsSections currency="₹" onAction={(action, payload) => console.log('Payment Sections Action:', action, payload)} className="mb-4 md:mb-5" />
+          <PropertiesOverview className="mb-4 md:mb-5" />
         </main>
       </div>
     </div>

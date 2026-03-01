@@ -131,7 +131,6 @@ export default function PropertiesPage() {
             { id: "payments",   label: "Payments",   icon: "fa-receipt",    path: "/payments" },
             { id: "support",    label: "Support",    icon: "fa-headset",    path: "/contact" },
             { id: "complaints", label: "Complaints", icon: "fa-folder",     path: "/dashboard/owner/complaints" },
-            { id: "team",       label: "Team",       icon: "fa-users",      path: null },
             { id: "profile",    label: "Profile",    icon: "fa-user",       path: "/profile" },
             { id: "settings",   label: "Settings",   icon: "fa-cog",        path: null },
           ].map((item) => (
@@ -186,7 +185,6 @@ export default function PropertiesPage() {
             { id: "payments",   label: "Payments",   icon: "fa-receipt",    onClick: () => navigate("/payments") },
             { id: "support",    label: "Support",    icon: "fa-headset",    onClick: () => navigate("/contact") },
             { id: "complaints", label: "Complaints", icon: "fa-folder",     onClick: () => navigate("/dashboard/owner/complaints") },
-            { id: "team",       label: "Team",       icon: "fa-users",      onClick: undefined },
             { id: "profile",    label: "Profile",    icon: "fa-user",       onClick: () => navigate("/profile") },
             { id: "settings",   label: "Settings",   icon: "fa-cog",        onClick: undefined },
           ].map((item) => (
@@ -215,20 +213,41 @@ export default function PropertiesPage() {
           On mobile: no sidebar offset needed.
       ═══════════════════════════════════════ */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@500;600;700;800&display=swap');
+          * { font-family: 'Geist', sans-serif; }
+          :root { --brand-red: #DC2626; --muted: #6b7280; }
+          @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+          @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+          @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+          .prop-page-title { font-family: 'Inter','Geist',system-ui,sans-serif; font-size: clamp(28px,4vw,48px); font-weight: 400; letter-spacing: -1.5px; line-height: 1.1; color: #0b1220; margin: 0; animation: slideInLeft 0.7s ease-out 0.1s both; }
+          .prop-title-accent { color: var(--brand-red); font-weight: 700; animation: slideInRight 0.7s ease-out 0.2s both; display: inline-block; }
+          .prop-header-hero { position: relative; padding: 24px 28px 28px; border-radius: 16px; background: linear-gradient(180deg,#FFF5F5 0%,#FFE4E6 100%); border: 1px solid rgba(220,38,38,0.12); animation: fadeInUp 0.8s ease-out 0s both; }
+          @media (min-width: 768px) { .prop-header-hero { padding: 32px 40px 36px; border-radius: 20px; } }
+          .prop-header-hero::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: 0 20px 50px rgba(2,6,23,0.05); }
+          .prop-header-subtitle { font-size: 14px; color: var(--muted); font-weight: 400; letter-spacing: 0.2px; line-height: 1.6; margin-top: 10px; animation: fadeInUp 0.8s ease-out 0.25s both; }
+          @media (max-width: 768px) { .prop-header-subtitle { font-size: 13px; margin-top: 8px; } }
+          .prop-divider-line { height: 1px; background: linear-gradient(90deg,rgba(220,38,38,0),rgba(220,38,38,0.3) 20%,rgba(220,38,38,0.5) 50%,rgba(220,38,38,0.3) 80%,rgba(220,38,38,0)); width: 100%; margin-top: 16px; animation: fadeInUp 0.8s ease-out 0.35s both; }
+        `}</style>
+
+        {/* Hero Header */}
+        <div className="bg-white flex-shrink-0 px-4 sm:px-6 md:px-8 py-4 md:py-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="prop-header-hero">
+              <h1 className="prop-page-title mb-2">
+                My <span className="prop-title-accent">Properties</span>
+              </h1>
+              <p className="prop-header-subtitle">Manage your property portfolio, track performance, and monitor tenant information all in one place.</p>
+              <div className="prop-divider-line" />
+            </div>
+          </div>
+        </div>
 
         {/* Header */}
         <div className="bg-white border-b border-gray-100 flex-shrink-0">
-          <div className="px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-4 pl-14 md:pl-8">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg overflow-hidden flex-shrink-0">
-                  <img src="/logo.png" alt="PropGrowthX Logo" className="w-full h-full object-contain" />
-                </div>
-                <div className="min-w-0">
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Properties</h1>
-                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block -mt-1">Manage your portfolio</p>
-                </div>
-              </div>
+          <div className="px-4 sm:px-6 md:px-8 py-3 md:py-4">
+            <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+              <div className="flex-1"></div>
 
               <button
                 onClick={() => setModalOpen(true)}
@@ -244,26 +263,26 @@ export default function PropertiesPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-white border-b border-gray-100 flex-shrink-0">
-          <div className="px-4 py-3 sm:px-6 sm:py-3 md:px-8 md:py-3 pl-14 md:pl-8">
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+        <div className="bg-white flex-shrink-0 border-b border-gray-100">
+          <div className="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3">
+            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row gap-2 sm:gap-3 items-center">
               {/* Search */}
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 w-full sm:w-auto">
                 <div className="relative">
-                  <i className="fas fa-search absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <i className="fas fa-search absolute left-3 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search properties..."
-                    className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 focus:border-red-300 focus:ring-4 focus:ring-red-50 transition-all duration-200 text-xs sm:text-sm"
+                    className="w-full pl-9 sm:pl-10 pr-3 py-2 rounded-lg border border-gray-200 focus:border-red-300 focus:ring-2 focus:ring-red-50 transition-all duration-200 text-xs sm:text-sm"
                   />
                 </div>
               </div>
 
               {/* Filters & View Toggle */}
-              <div className="flex gap-2 sm:gap-3 items-center">
+              <div className="flex gap-1.5 sm:gap-2 items-center flex-wrap justify-center sm:justify-start">
                 <select
-                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 bg-white text-xs sm:text-sm font-medium focus:border-red-300 focus:ring-4 focus:ring-red-50 transition-all duration-200"
+                  className="px-2.5 sm:px-3 py-2 rounded-lg border border-gray-200 bg-white text-xs font-medium focus:border-red-300 focus:ring-2 focus:ring-red-50 transition-all duration-200"
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
                 >
@@ -273,7 +292,7 @@ export default function PropertiesPage() {
                 </select>
 
                 <select
-                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 bg-white text-xs sm:text-sm font-medium focus:border-red-300 focus:ring-4 focus:ring-red-50 transition-all duration-200"
+                  className="px-2.5 sm:px-3 py-2 rounded-lg border border-gray-200 bg-white text-xs font-medium focus:border-red-300 focus:ring-2 focus:ring-red-50 transition-all duration-200"
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
@@ -284,17 +303,17 @@ export default function PropertiesPage() {
                   <option>Under Maintenance</option>
                 </select>
 
-                <div className="flex bg-gray-100 rounded-lg sm:rounded-xl p-1 flex-shrink-0">
+                <div className="flex bg-gray-100 rounded-lg p-1 flex-shrink-0">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`px-3 py-2.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${viewMode === "grid" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
+                    className={`px-2 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${viewMode === "grid" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
                     title="Grid view"
                   >
                     <i className="fas fa-th-large"></i>
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`px-3 py-2.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${viewMode === "list" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
+                    className={`px-2 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${viewMode === "list" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
                     title="List view"
                   >
                     <i className="fas fa-list"></i>
@@ -306,15 +325,17 @@ export default function PropertiesPage() {
         </div>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-gray-50">
           <div className="px-4 sm:px-6 md:px-8 py-6 sm:py-8">
-            {filtered.length === 0 ? (
-              <EmptyState onAddProperty={() => setModalOpen(true)} />
-            ) : viewMode === "grid" ? (
-              <PropertyGrid properties={filtered} />
-            ) : (
-              <PropertyList properties={filtered} />
-            )}
+            <div className="max-w-6xl mx-auto">
+              {filtered.length === 0 ? (
+                <EmptyState onAddProperty={() => setModalOpen(true)} />
+              ) : viewMode === "grid" ? (
+                <PropertyGrid properties={filtered} />
+              ) : (
+                <PropertyList properties={filtered} />
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -368,17 +389,17 @@ function NavItem({ label, icon, collapsed = false, active = false, onClick }: { 
 
 function EmptyState({ onAddProperty }: { onAddProperty: () => void }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-8 sm:p-12 text-center">
-      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-        <i className="fas fa-building text-2xl sm:text-3xl text-gray-400"></i>
+    <div className="bg-white rounded-xl border border-gray-100 p-12 sm:p-16 text-center max-w-2xl mx-auto">
+      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-6 sm:mb-8 rounded-xl bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center border border-red-100">
+        <i className="fas fa-building text-2xl sm:text-3xl text-red-400"></i>
       </div>
-      <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No properties yet</h3>
-      <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 max-w-md mx-auto">
+      <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">No properties yet</h3>
+      <p className="text-sm sm:text-base text-gray-600 mb-8 sm:mb-10">
         Start building your portfolio by adding your first property. Track rent, manage tenants, and optimize your investments.
       </p>
       <button
         onClick={onAddProperty}
-        className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl text-white font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 text-sm sm:text-base"
+        className="inline-flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 rounded-lg sm:rounded-xl text-white font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 text-sm sm:text-base"
         style={{ background: `linear-gradient(135deg, ${BRAND} 0%, #B91C1C 100%)` }}
       >
         <i className="fas fa-plus text-sm"></i>
@@ -407,10 +428,10 @@ function PropertyCard({ property }: { property: PropertyRecord }) {
   };
 
   return (
-    <div className="bg-white rounded-lg sm:rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full">
-      <div className="h-40 sm:h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group flex flex-col h-full">
+      <div className="h-40 sm:h-48 lg:h-56 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
         {property.images && property.images.length > 0 ? (
-          <img src={property.images[0].url} alt={property.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <img src={property.images[0].url} alt={property.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <i className="fas fa-building text-3xl sm:text-4xl text-gray-400"></i>
@@ -428,30 +449,30 @@ function PropertyCard({ property }: { property: PropertyRecord }) {
         </div>
       </div>
 
-      <div className="p-4 sm:p-6 flex flex-col flex-1">
+      <div className="p-4 sm:p-5 lg:p-6 flex flex-col flex-1">
         <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors duration-200 text-sm sm:text-base line-clamp-2">
           {property.name}
         </h3>
-        <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-1">
-          {property.address.street}, {property.address.city}
+        <p className="text-xs sm:text-sm text-gray-600 mb-4 line-clamp-1 flex items-center gap-1">
+          <i className="fas fa-map-marker-alt text-xs flex-shrink-0"></i>{property.address.street}, {property.address.city}
         </p>
 
-        <div className="flex items-baseline justify-between mb-3">
+        <div className="flex items-baseline justify-between mb-4">
           <div className="text-lg sm:text-2xl font-bold text-gray-900">
             {property.rentPerMonth ? `₹${property.rentPerMonth.toLocaleString()}` : "—"}
-            {property.listingType === "For Rent" && property.rentPerMonth && <span className="text-xs sm:text-sm font-normal text-gray-600">/mo</span>}
+            {property.listingType === "For Rent" && property.rentPerMonth && <span className="text-xs sm:text-sm font-normal text-gray-600 ml-1">/mo</span>}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 mb-4 flex-wrap">
-          <div className="flex items-center gap-1"><i className="fas fa-bed text-xs"></i><span>{property.bedrooms}</span></div>
-          <div className="flex items-center gap-1"><i className="fas fa-bath text-xs"></i><span>{property.bathrooms}</span></div>
-          {property.areaSqft && <div className="flex items-center gap-1"><i className="fas fa-ruler-combined text-xs"></i><span>{property.areaSqft} sqft</span></div>}
+        <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-600 mb-4 flex-wrap">
+          <div className="flex items-center gap-1.5"><i className="fas fa-bed text-xs text-red-600"></i><span>{property.bedrooms} {property.bedrooms === 1 ? 'Bed' : 'Beds'}</span></div>
+          <div className="flex items-center gap-1.5"><i className="fas fa-bath text-xs text-red-600"></i><span>{property.bathrooms} {property.bathrooms === 1 ? 'Bath' : 'Baths'}</span></div>
+          {property.areaSqft && <div className="flex items-center gap-1.5"><i className="fas fa-ruler-combined text-xs text-red-600"></i><span>{property.areaSqft} sqft</span></div>}
         </div>
 
         <div className="flex gap-2 mt-auto">
-          <button className="flex-1 px-3 py-2 sm:py-2.5 rounded-lg border border-gray-200 text-xs sm:text-sm font-medium hover:bg-gray-50 transition-colors duration-200">Edit</button>
-          <button className="flex-1 px-3 py-2 sm:py-2.5 rounded-lg text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:shadow-lg" style={{ background: BRAND }}>View Details</button>
+          <button className="flex-1 px-3 py-2.5 sm:py-3 rounded-lg border border-gray-200 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">Edit</button>
+          <button className="flex-1 px-3 py-2.5 sm:py-3 rounded-lg text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5" style={{ background: BRAND }}>View Details</button>
         </div>
       </div>
     </div>

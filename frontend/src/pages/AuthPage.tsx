@@ -102,7 +102,7 @@ const AuthPage: React.FC = () => {
 
           navigate(
             user.role === "owner"
-              ? "/dashboard/owner"
+              ? "/dashboard-nav"
               : inviteValid ? `/profile/${user.id}` : "/dashboard/tenant" 
           );
 

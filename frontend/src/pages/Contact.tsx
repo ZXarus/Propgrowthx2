@@ -70,20 +70,64 @@ const Contact = () => {
         @keyframes subtleFloat  { 0%,100% { transform:translateY(0);  } 50% { transform:translateY(-8px); } }
 
         /* ── Hero ── */
-        .hero-title {
+        .sp-page-title {
           font-family: 'Inter', 'Geist', system-ui, sans-serif;
-          letter-spacing: -1px;
-          background: linear-gradient(135deg, #000 0%, #404040 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          animation: fadeInUp 0.8s ease-out 0.1s both;
+          font-size: clamp(36px, 4.5vw, 56px);
+          font-weight: 400;
+          letter-spacing: -1.5px;
+          line-height: 1.1;
+          color: #0b1220;
+          margin: 0;
+          animation: slideInLeft 0.7s ease-out 0.1s both;
         }
-        .gradient-text-accent {
-          background: linear-gradient(90deg, var(--brand-red), #ff6b6b);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+        @media (max-width: 640px) { .sp-page-title { font-size: clamp(24px, 5vw, 42px); } }
+
+        .sp-title-accent {
+          color: var(--brand-red);
+          font-weight: 700;
+          animation: slideInRight 0.7s ease-out 0.2s both;
+          display: inline-block;
+        }
+
+        .sp-header-hero {
           position: relative;
+          padding: 32px 40px 36px;
+          border-radius: 20px;
+          background: linear-gradient(180deg, #FFF5F5 0%, #FFE4E6 100%);
+          border: 1px solid rgba(220, 38, 38, 0.12);
+          animation: fadeInUp 0.8s ease-out 0s both;
         }
+        @media (max-width: 768px) { .sp-header-hero { padding: 20px 24px 24px; border-radius: 16px; } }
+        @media (max-width: 640px) { .sp-header-hero { padding: 16px 18px 20px; border-radius: 12px; } }
+        .sp-header-hero::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          box-shadow: 0 20px 50px rgba(2, 6, 23, 0.05);
+        }
+
+        .sp-header-subtitle {
+          font-size: 16px;
+          color: #6b7280;
+          font-weight: 400;
+          letter-spacing: 0.2px;
+          line-height: 1.6;
+          margin-top: 12px;
+          animation: fadeInUp 0.8s ease-out 0.25s both;
+        }
+        @media (max-width: 768px) { .sp-header-subtitle { font-size: 14px; margin-top: 10px; } }
+        @media (max-width: 640px) { .sp-header-subtitle { font-size: 12px; margin-top: 8px; line-height: 1.5; } }
+
+        .sp-divider-line {
+          height: 1px;
+          background: linear-gradient(90deg, rgba(220,38,38,0), rgba(220,38,38,0.3) 20%, rgba(220,38,38,0.5) 50%, rgba(220,38,38,0.3) 80%, rgba(220,38,38,0));
+          width: 100%;
+          margin-top: 22px;
+          animation: fadeInUp 0.8s ease-out 0.35s both;
+        }
+        @media (max-width: 640px) { .sp-divider-line { margin-top: 14px; } }
 
         /* ── Contact list ── */
         .contact-area {
@@ -216,7 +260,6 @@ const Contact = () => {
               { id: "payments",   label: "Payments",   icon: "fa-receipt",  path: "/payments" },
               { id: "support",    label: "Support",    icon: "fa-headset",  path: "/contact" },
               { id: "complaints", label: "Complaints", icon: "fa-folder",   path: "/dashboard/owner/complaints" },
-              { id: "team",       label: "Team",       icon: "fa-users",    path: null },
               { id: "profile",    label: "Profile",    icon: "fa-user",     path: "/profile" },
               { id: "settings",   label: "Settings",   icon: "fa-cog",      path: null },
             ].map((item) => (
@@ -263,7 +306,6 @@ const Contact = () => {
               { id: "payments",   label: "Payments",   icon: "fa-receipt",  onClick: () => navigate("/payments") },
               { id: "support",    label: "Support",    icon: "fa-headset",  onClick: () => navigate("/contact") },
               { id: "complaints", label: "Complaints", icon: "fa-folder",   onClick: () => navigate("/dashboard/owner/complaints") },
-              { id: "team",       label: "Team",       icon: "fa-users",    onClick: undefined },
               { id: "profile",    label: "Profile",    icon: "fa-user",     onClick: () => navigate("/profile") },
               { id: "settings",   label: "Settings",   icon: "fa-cog",      onClick: undefined },
             ].map((item) => (
@@ -293,27 +335,25 @@ const Contact = () => {
             <div className="min-h-screen">
 
               {/* ── Hero ── */}
-              <section className="relative pt-12 pb-12 lg:pt-16 lg:pb-16 px-6 pl-14 md:pl-6">
+              <section className="py-8 lg:py-12 px-6">
                 <div className="max-w-6xl mx-auto">
-                  <div className="max-w-3xl">
-                    <h1 className="hero-title text-4xl sm:text-5xl lg:text-7xl font-light mb-6 leading-tight">
-                      Let's create something
-                      <span className="gradient-text-accent font-medium"> extraordinary</span>
-                    </h1>
-                    <p className="text-base lg:text-lg text-gray-600 leading-relaxed max-w-xl font-light" style={{ animation: 'fadeInUp 0.8s ease-out 0.25s both' }}>
-                      Have a question about PropGrowthX? We'd love to hear from you. Get in touch with our team and let's discuss how we can help accelerate your property investment journey.
-                    </p>
+                  <div className="sp-header-hero">
+                    <div className="max-w-3xl flex-1">
+                      <h1 className="sp-page-title mb-3">
+                        Let's create something<br />
+                        <span className="sp-title-accent">extraordinary</span>
+                      </h1>
+                      <p className="sp-header-subtitle">
+                        Have a question about PropGrowthX? We'd love to hear from you. Get in touch with our team and let's discuss how we can help accelerate your property investment journey.
+                      </p>
+                    </div>
+                    <div className="sp-divider-line" />
                   </div>
                 </div>
               </section>
 
-              {/* Divider */}
-              <div className="px-6 pl-14 md:pl-6">
-                <div className="max-w-6xl mx-auto border-t border-gray-100" />
-              </div>
-
               {/* ── Contact content ── */}
-              <section className="py-8 lg:py-8 px-6 pl-14 md:pl-6">
+              <section className="py-8 lg:py-8 px-6">
                 <div className="max-w-6xl mx-auto">
                   <div className="grid lg:grid-cols-1 gap-8">
                     <div className="mb-3">

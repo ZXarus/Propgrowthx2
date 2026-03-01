@@ -359,7 +359,6 @@ const Profile = () => {
                   { id: "payments",   label: "Payments",   icon: "fa-receipt",  path: "/payments" },
                   { id: "support",    label: "Support",    icon: "fa-headset",  path: "/contact" },
                   { id: "complaints", label: "Complaints", icon: "fa-folder",   path: "/dashboard/owner/complaints" },
-                  { id: "team",       label: "Team",       icon: "fa-users",    path: null },
                   { id: "profile",    label: "Profile",    icon: "fa-user",     path: "/profile" },
                   { id: "settings",   label: "Settings",   icon: "fa-cog",      path: null },
                 ].map((item) => (
@@ -408,7 +407,6 @@ const Profile = () => {
                   { id: "payments",   label: "Payments",   icon: "fa-receipt",  onClick: () => navigate("/payments") },
                   { id: "support",    label: "Support",    icon: "fa-headset",  onClick: () => navigate("/contact") },
                   { id: "complaints", label: "Complaints", icon: "fa-folder",   onClick: () => navigate("/dashboard/owner/complaints") },
-                  { id: "team",       label: "Team",       icon: "fa-users",    onClick: undefined },
                   { id: "profile",    label: "Profile",    icon: "fa-user",     onClick: () => navigate("/profile") },
                   { id: "settings",   label: "Settings",   icon: "fa-cog",      onClick: undefined },
                 ].map((item) => (

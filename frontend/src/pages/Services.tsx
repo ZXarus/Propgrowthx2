@@ -72,7 +72,7 @@ const Services = () => {
         'Buyer matching & verification',
       ],
       cta: 'List Your Property',
-      href: '/dashboard/owner',
+      href: '/dashboard-nav',
     },
     {
       icon: Key,

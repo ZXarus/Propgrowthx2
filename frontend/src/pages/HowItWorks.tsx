@@ -147,7 +147,7 @@ const HowItWorks = () => {
 
             <div className="text-center mt-12">
               <Button size="lg" asChild className="bg-secondary hover:bg-secondary/90">
-                <Link to="/dashboard/owner">
+                <Link to="/dashboard-nav">
                   Access Owner Dashboard
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>

@@ -60,31 +60,20 @@ const registeredProperty = {
 const Properties = () => {
   const navigate = useNavigate();
   const { id, loading } = useData();
-  const [sidebarOpen, setSidebarOpen] = useState(false); // mobile: closed by default
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['overview']));
 
-  // Handle screen resize for sidebar
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setSidebarOpen(false); // mobile: closed
-      } else {
-        setSidebarOpen(true);  // desktop: open (collapsible)
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // ── KEY FIX ──
+  // Only set initial value once on mount (no resize listener).
+  // Desktop toggles freely; mobile starts closed.
+  // The resize listener was the culprit — it fought desktop toggle clicks.
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
+
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['overview']));
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(section)) {
-        newSet.delete(section);
-      } else {
-        newSet.add(section);
-      }
+      if (newSet.has(section)) newSet.delete(section);
+      else newSet.add(section);
       return newSet;
     });
   };
@@ -223,7 +212,7 @@ const Properties = () => {
               .title-accent { color: var(--brand-red); font-weight: 700; animation: slideInRight 0.7s ease-out 0.2s both; display: inline-block; }
               .container-custom { max-width: 1400px; margin: 0 auto; padding: 16px 20px; }
               @media (min-width: 768px) { .container-custom { padding: 24px 32px; } }
-              @media (max-width: 767px) { .container-custom { padding: 56px 16px 16px; } } /* extra top padding for floating button */
+              @media (max-width: 767px) { .container-custom { padding: 56px 16px 16px; } }
               @media (max-width: 640px) { .container-custom { padding: 56px 16px 16px; } }
               .header-hero { position: relative; padding: 20px 24px 24px; border-radius: 16px; background: linear-gradient(180deg,#FFF5F5 0%,#FFE4E6 100%); border: 1px solid rgba(220,38,38,0.12); animation: fadeInUp 0.8s ease-out 0s both; }
               @media (min-width: 768px) { .header-hero { padding: 32px 40px 36px; border-radius: 20px; } }
@@ -448,12 +437,6 @@ const Properties = () => {
     </>
   );
 };
-
-const IconOnlyBtn = ({ icon: Icon, label, active = false, onClick }: { icon: React.ElementType; label: string; active?: boolean; onClick?: () => void }) => (
-  <button onClick={onClick} title={label} className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-red-50 text-red-600' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'}`}>
-    <Icon className="w-5 h-5" />
-  </button>
-);
 
 const SidebarItem = ({ icon: Icon, label, active = false, onClick, sidebarOpen = true }: { icon: React.ElementType; label: string; active?: boolean; onClick?: () => void; sidebarOpen?: boolean }) => (
   <button onClick={onClick} className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 text-base ${active ? 'bg-red-50 text-red-600 font-semibold' : 'text-gray-700 hover:bg-gray-50 font-medium'}`} title={!sidebarOpen ? label : ''}>

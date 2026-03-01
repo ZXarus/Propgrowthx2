@@ -36,9 +36,9 @@ const AboutUsPage: React.FC = () => {
             const token = sessionStorage.getItem('token');
             const role = sessionStorage.getItem('role');
             if ((data && data.user) || token) {
-                if (role === 'owner') navigate('/dashboard/owner');
+                if (role === 'owner') navigate('/dashboard-nav');
                 else if (role === 'tenant') navigate('/dashboard/tenant');
-                else navigate('/dashboard/owner');
+                else navigate('/dashboard-nav');
             } else {
                 navigate('/auth');
             }
