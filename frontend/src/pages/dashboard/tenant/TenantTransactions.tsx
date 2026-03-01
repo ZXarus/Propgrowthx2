@@ -32,17 +32,16 @@ import {
 
 export interface Transaction {
   id: number;
+  created_at: string;
   tenant_id?: string;
   owner_id?: string;
+  tenant_name?: string;
+  property_name?: string;
   property_id: string;
-  type: "rent" | "deposit" | "maintenance";
+  type: "rent" | "fee";
   amount: string | number;
-  date: string;
-  due_date?: string;
-  images?: string[];
   status: "completed" | "pending" | "overdue" | "upcoming";
-  paymentMethod?: string;
-  reference_no?: string;
+  payment_method?: string;
 }
 
 const TenantTransactions = () => {
@@ -218,9 +217,6 @@ const TenantTransactions = () => {
                           <div className="flex items-center gap-3">
                             <span className="text-foreground font-medium">
                               ₹{tx.amount.toLocaleString()}
-                            </span>
-                            <span className="text-muted-foreground">
-                              Due: {tx.due_date?.split("T")[0] || "-"}
                             </span>
                           </div>
                         </div>

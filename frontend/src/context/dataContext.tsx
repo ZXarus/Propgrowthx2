@@ -16,6 +16,7 @@ type DataContextType = {
   profile?: ProfileData[] | null;
   setProfile?: React.Dispatch<React.SetStateAction<ProfileData[] | null>>;
   loading: boolean;
+  id: string;
 };
 
 const DataContext = createContext<DataContextType | null>(null);
@@ -26,6 +27,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [profile, setProfile] = useState<ProfileData[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [id, setUserId] = useState<string | null>(null);
 
   const token = sessionStorage.getItem("token");
   const role = sessionStorage.getItem("role");
@@ -98,6 +100,40 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     fetchAllData();
   }, [token]);
 
+  async function fetchIdFromToken(token: string) {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/getId", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch ID");
+      }
+
+      const data = await res.json();
+      return data.id;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+  useEffect(() => {
+    async function load() {
+      if (!token) return;
+
+      if (role !== "owner") {
+        const fetchedId = await fetchIdFromToken(token);
+        setUserId(fetchedId);
+      } else {
+        setUserId(null);
+      }
+    }
+
+    load();
+  }, [token, role]);
   return (
     <DataContext.Provider
       value={{
@@ -110,6 +146,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         loading,
         profile,
         setProfile,
+        id,
       }}
     >
       {children}

@@ -11,7 +11,6 @@ export default function AllPropertiesPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const { properties } = useData();
-  console.log(properties);
 
   const filteredProperties = properties.filter(
     (p) => filterStatus === "All" || p.status === filterStatus,
@@ -157,6 +156,7 @@ function PropertyCard({
     Vacant: "bg-yellow-100 text-yellow-800 border-yellow-200",
   };
 
+  const navigate = useNavigate();
   if (viewMode === "list") {
     return (
       <div className="bg-white rounded-lg sm:rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300">
@@ -231,6 +231,7 @@ function PropertyCard({
               <button
                 className="flex-1 px-3 sm:px-4 py-2 sm:py-2 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:shadow-lg touch-none"
                 style={{ background: BRAND }}
+                onClick={() => navigate(`/property/${property.id}`)}
               >
                 View Details
               </button>
@@ -301,6 +302,7 @@ function PropertyCard({
           <button
             className="flex-1 px-3 sm:px-4 py-2 sm:py-2 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:shadow-lg touch-none"
             style={{ background: BRAND }}
+            onClick={() => navigate(`/property/${property.id}`)}
           >
             View Details
           </button>

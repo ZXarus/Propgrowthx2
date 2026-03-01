@@ -27,20 +27,19 @@ export interface Transaction {
 
 export default function PaymentsPage() {
   const { transactions } = useData();
+
   const today = new Date();
 
-  const overdue = useMemo(() => {
-    return transactions
+  function getTotalOverdue(transactions: any[], today = new Date()) {
+    const overdue = transactions
       ?.filter((t: any) => new Date(t.due_date) < today)
-      .map((t: any) => ({
-        ...t,
-        amount: Number(t.amount),
-        daysOverdue: Math.ceil(
-          (today.getTime() - new Date(t.due_date).getTime()) /
-            (1000 * 60 * 60 * 24),
-        ),
-      }))
-      .sort((a: any, b: any) => b.daysOverdue - a.daysOverdue);
+      .map((t: any) => Number(t.amount));
+
+    return overdue.reduce((sum: number, amount: number) => sum + amount, 0);
+  }
+
+  const totalOverdue = useMemo(() => {
+    return getTotalOverdue(transactions);
   }, [transactions]);
 
   const [query, setQuery] = useState("");
@@ -97,7 +96,7 @@ export default function PaymentsPage() {
         <title>Payment Management | PropGrowthX</title>
       </Helmet>
 
-      <Layout showNavbar={false}>
+      <Layout>
         <div className="min-h-screen bg-white">
           {/* HEADER */}
           <div className="border-b border-gray-100">
@@ -140,7 +139,7 @@ export default function PaymentsPage() {
                   <AlertCircle className="w-5 h-5 text-red-600" />
                 </div>
                 <div className="text-3xl font-bold text-red-600">
-                  (Coming Soon)
+                  {totalOverdue}
                 </div>
               </div>
 

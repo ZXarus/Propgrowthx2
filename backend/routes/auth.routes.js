@@ -18,6 +18,14 @@ const router = express.Router();
 
 router.post("/login", login);
 router.post("/register", register);
+router.get("/getId", verifyToken, async (req, res) => {
+  if (req.user.id == null) {
+    return null;
+  }
+  return res.status(200).json({
+    id: req.user.id,
+  });
+});
 
 router.get("/profileDetails", verifyToken, profileDetails);
 router.post("/privateProfileDetails", privateProfileDetails);

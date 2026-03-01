@@ -26,21 +26,22 @@ import DashboardSkeleton from "@/pages/SkeletonLoading";
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
-  const id = "4aabc008-ac04-465a-bd82-b7ff71da23ef";
+
+  const { id } = useData();
+
   const { properties, transactions, loading } = useData();
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [currentActionIndex, setCurrentActionIndex] = useState(0);
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true); // will be overridden
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Set initial sidebar state based on screen size
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setSidebarOpen(false); // mobile: drawer closed
+        setSidebarOpen(false);
       } else {
-        setSidebarOpen(true); // desktop: sidebar open
+        setSidebarOpen(true);
       }
     };
     handleResize(); // set on mount
@@ -68,7 +69,7 @@ const TenantDashboard = () => {
       details: myTxs.map((t) => ({
         property: properties.find((p) => p.id === t.property_id)?.property_name,
         amount: t.amount,
-        date: t.date,
+        date: t.created_at,
         status: t.status,
       })),
     },
@@ -86,7 +87,7 @@ const TenantDashboard = () => {
           property: properties.find((p) => p.id === t.property_id)
             ?.property_name,
           amount: t.amount,
-          date: t.date,
+          date: t.created_at,
         })),
     },
     {
@@ -119,7 +120,7 @@ const TenantDashboard = () => {
       tenant: "You",
       amount: tx.amount,
       priority: tx.status === "overdue" ? "urgent" : "high",
-      createdAt: tx.date,
+      createdAt: tx.created_at,
       phone: "+91 9876543210",
     }));
 
@@ -247,7 +248,7 @@ const TenantDashboard = () => {
               label="Profile"
               sidebarOpen
               onClick={() => {
-                navigate("/profile");
+                navigate(`/profile/${id}`);
                 setSidebarOpen(false);
               }}
             />
@@ -350,7 +351,7 @@ const TenantDashboard = () => {
               icon={User}
               label="Profile"
               sidebarOpen={sidebarOpen}
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(`/profile/${id}`)}
             />
             <SidebarItem
               icon={HelpCircle}
@@ -439,7 +440,7 @@ const TenantDashboard = () => {
                               <div className="text-sm">Payment due</div>
                               <div className="text-xs text-gray-400">
                                 ₹{tx.amount.toLocaleString()} •{" "}
-                                {tx.date.split("T")[0]}
+                                {tx.created_at.split("T")[0]}
                               </div>
                             </li>
                           ))}
@@ -625,7 +626,7 @@ const TenantDashboard = () => {
                               }
                             </div>
                             <div className="text-xs text-gray-500">
-                              {tx.date.split("T")[0]}
+                              {tx.created_at.split("T")[0]}
                             </div>
                           </div>
                           <div className="text-right">

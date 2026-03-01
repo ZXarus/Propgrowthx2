@@ -28,6 +28,8 @@ import { Transaction } from "../tenant/TenantTransactions";
 const OwnerTransactions = () => {
   const { transactions, properties } = useData();
 
+  console.log(transactions);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -305,7 +307,7 @@ const OwnerTransactions = () => {
                                   )}
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">
-                                  {tx.date}
+                                  {tx.created_at}
                                 </TableCell>
                                 <TableCell className="text-foreground">
                                   {/* {

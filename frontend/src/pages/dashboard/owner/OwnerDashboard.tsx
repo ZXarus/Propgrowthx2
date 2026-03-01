@@ -63,7 +63,7 @@ const sampleProperties: Property[] = [
 ];
 
 export default function OwnerDashboard() {
-  const { complaints } = useData();
+  const { complaints, profile } = useData();
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -287,7 +287,7 @@ export default function OwnerDashboard() {
                 id: "complaints",
                 label: "Complaints",
                 icon: "fa-folder",
-                onClick: () => navigate("/owner/complaints"),
+                onClick: () => navigate("/dashboard/owner/complaints"),
               },
               { id: "team", label: "Team", icon: "fa-users" },
               { id: "settings", label: "Settings", icon: "fa-cog" },
@@ -654,7 +654,7 @@ export default function OwnerDashboard() {
                 </div>
                 <div className="hidden lg:flex flex-col items-start">
                   <span className="text-sm font-semibold text-gray-900">
-                    Sarah Johnson
+                    {profile?.name}
                   </span>
                   <span className="text-xs text-gray-500">Owner</span>
                 </div>
@@ -665,11 +665,9 @@ export default function OwnerDashboard() {
                 <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-40 py-2">
                   <div className="px-4 py-3 border-b border-gray-100">
                     <div className="text-sm font-semibold text-gray-900">
-                      Sarah Johnson
+                      {profile.name}
                     </div>
-                    <div className="text-xs text-gray-500">
-                      sarah.johnson@gmail.com
-                    </div>
+                    <div className="text-xs text-gray-500">{profile.email}</div>
                   </div>
 
                   <NavLink
