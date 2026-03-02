@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
+import RoleDashboardSidebarLayout from '@/components/layout/RoleDashboardSidebarLayout';
 import { Button } from '@/components/ui/button';
 import {
   ArrowLeft,
@@ -370,7 +370,7 @@ const PropertySettingsPage = () => {
         }
       `}</style>
 
-      <Layout showNavbar={false}>
+      <RoleDashboardSidebarLayout activeItem="settings">
         <div className="min-h-screen bg-white">
           {/* Header */}
           <div className="border-b border-gray-100">
@@ -1012,7 +1012,7 @@ const PropertySettingsPage = () => {
             </div>
           </div>
         </div>
-      </Layout>
+      </RoleDashboardSidebarLayout>
     </>
   );
 };

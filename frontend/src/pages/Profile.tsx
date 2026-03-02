@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,6 +11,7 @@ import {
   Mail,
   Phone,
   MapPin,
+  Home,
   Building2,
   Camera,
   Bell,
@@ -21,7 +22,6 @@ import {
   Briefcase,
   Menu,
   BarChart3,
-  Home,
   DollarSign,
   FileText,
   HelpCircle,
@@ -32,7 +32,6 @@ import {
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { useData } from '@/context/dataContext';
-import { useNavigate } from 'react-router-dom';
 
 type family_members_details = {
   name: string;
@@ -69,6 +68,7 @@ export type ProfileData = {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { profile, setProfile } = useData();
   const { id } = useParams<{ id: string }>();
   const sessionId = sessionStorage.getItem('id');
@@ -241,6 +241,31 @@ const Profile = () => {
     navigate(path);
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const goToSettingsSection = () => {
+    if (location.pathname === '/profile' && location.hash === '#settings') {
+      scrollToSection('settings');
+      return;
+    }
+    navigate('/profile#settings');
+  };
+
+  useEffect(() => {
+    if (location.pathname === '/profile' && location.hash === '#settings') {
+      const timeoutId = window.setTimeout(() => {
+        scrollToSection('settings');
+      }, 80);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [location.pathname, location.hash]);
+
   return (
     <>
       <Helmet>
@@ -360,14 +385,21 @@ const Profile = () => {
                   { id: "support",    label: "Support",    icon: "fa-headset",  path: "/contact" },
                   { id: "complaints", label: "Complaints", icon: "fa-folder",   path: "/dashboard/owner/complaints" },
                   { id: "profile",    label: "Profile",    icon: "fa-user",     path: "/profile" },
-                  { id: "settings",   label: "Settings",   icon: "fa-cog",      path: null },
+                  { id: "settings", label: "Settings", icon: "fa-cog", path: "/profile#settings" },
                 ].map((item) => (
                   <OwnerMobileNavItem
                     key={item.id}
                     label={item.label}
                     icon={item.icon}
                     active={item.id === "profile"}
-                    onClick={() => item.path ? ownerMobileGoTo(item.path) : setSidebarOpen(false)}
+                    onClick={() => {
+                      if (item.id === 'settings') {
+                        setSidebarOpen(false);
+                        goToSettingsSection();
+                        return;
+                      }
+                      ownerMobileGoTo(item.path);
+                    }}
                   />
                 ))}
                 <OwnerMobileNavItem
@@ -408,7 +440,7 @@ const Profile = () => {
                   { id: "support",    label: "Support",    icon: "fa-headset",  onClick: () => navigate("/contact") },
                   { id: "complaints", label: "Complaints", icon: "fa-folder",   onClick: () => navigate("/dashboard/owner/complaints") },
                   { id: "profile",    label: "Profile",    icon: "fa-user",     onClick: () => navigate("/profile") },
-                  { id: "settings",   label: "Settings",   icon: "fa-cog",      onClick: undefined },
+                  { id: "settings", label: "Settings", icon: "fa-cog", onClick: goToSettingsSection },
                 ].map((item) => (
                   <OwnerNavItem
                     key={item.id}
@@ -703,7 +735,7 @@ const Profile = () => {
                 )}
 
                 {currRole && (
-                  <div className="profile-card">
+                  <div id="account-settings" className="profile-card">
                     <div className="profile-card-header">
                       <div className="flex items-center gap-2 mb-1"><Bell className="w-5 h-5 text-red-600" /><h2 className="text-lg font-semibold text-gray-900">Notification Preferences</h2></div>
                       <p className="text-sm text-gray-600">Choose how you want to receive notifications</p>
@@ -729,10 +761,10 @@ const Profile = () => {
                 )}
 
                 {currRole && (
-                  <div className="profile-card">
+                  <div id="settings" className="profile-card">
                     <div className="profile-card-header">
-                      <div className="flex items-center gap-2 mb-1"><Shield className="w-5 h-5 text-red-600" /><h2 className="text-lg font-semibold text-gray-900">Account Settings</h2></div>
-                      <p className="text-sm text-gray-600">Manage your account security and billing</p>
+                      <div className="flex items-center gap-2 mb-1"><Shield className="w-5 h-5 text-red-600" /><h2 className="text-lg font-semibold text-gray-900">Settings</h2></div>
+                      <p className="text-sm text-gray-600">Manage your security, billing, and property preferences</p>
                     </div>
                     <div className="profile-card-content space-y-4">
                       <div className="grid md:grid-cols-2 gap-4">

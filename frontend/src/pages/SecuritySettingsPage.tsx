@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
+import RoleDashboardSidebarLayout from '@/components/layout/RoleDashboardSidebarLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -160,7 +160,7 @@ const SecuritySettingsPage = () => {
         }
       `}</style>
 
-      <Layout showNavbar={false}>
+      <RoleDashboardSidebarLayout activeItem="settings">
         <div className="min-h-screen bg-white">
           <div className="max-w-4xl mx-auto px-4 py-12">
             {/* Header with Back Button */}
@@ -404,7 +404,7 @@ const SecuritySettingsPage = () => {
             </div>
           </div>
         </div>
-      </Layout>
+      </RoleDashboardSidebarLayout>
     </>
   );
 };
