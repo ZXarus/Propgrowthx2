@@ -20,7 +20,8 @@ export default function Navbar() {
 
   if (
     location.pathname.includes("payments") ||
-    location.pathname.includes("property")
+    location.pathname.includes("property") ||
+    location.pathname.includes("profile")
   ) {
     return null;
   }
