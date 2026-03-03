@@ -41,7 +41,7 @@ const NAV_ITEMS = [
   { id: "support",     label: "Support",     icon: "fa-headset",    path: "/contact" },
   { id: "complaints",  label: "Complaints",  icon: "fa-folder",     path: "/dashboard/owner/complaints" },
   { id: "profile",     label: "Profile",     icon: "fa-user",       path: "/profile" },
-  { id: "settings",    label: "Settings",    icon: "fa-cog",        path: "/account-settings" },
+  { id: "settings",    label: "Settings",    icon: "fa-cog",        path: "/profile#settings" },
 ];
 
 export default function DashboardNav() {
@@ -469,7 +469,7 @@ export default function DashboardNav() {
                     <div className="text-xs text-gray-500">sarah.johnson@gmail.com</div>
                   </div>
                   <button onClick={() => navigate('/profile')} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"><i className="fas fa-user w-4 h-4 text-gray-400"></i>Profile Settings</button>
-                  <button onClick={() => navigate('/account-settings')} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"><i className="fas fa-cog w-4 h-4 text-gray-400"></i>Settings</button>
+                  <button onClick={() => navigate('/profile#settings')} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"><i className="fas fa-cog w-4 h-4 text-gray-400"></i>Settings</button>
                   <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"><i className="fas fa-question-circle w-4 h-4 text-gray-400"></i>Help & Support</button>
                   <div className="border-t border-gray-100 mt-2 pt-2" />
                   <button

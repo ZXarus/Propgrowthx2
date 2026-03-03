@@ -150,7 +150,7 @@ const TenantDashboard = () => {
           <div className="px-2 py-4 border-t border-gray-200 space-y-1">
             <SidebarItem icon={User}       label="Profile"  sidebarOpen onClick={() => { navigate('/profile'); setSidebarOpen(false); }} />
             <SidebarItem icon={HelpCircle} label="Support"  sidebarOpen onClick={() => { navigate('/dashboard/tenant/support'); setSidebarOpen(false); }} />
-            <SidebarItem icon={Settings}   label="Settings" sidebarOpen onClick={() => setSidebarOpen(false)} />
+            <SidebarItem icon={Settings}   label="Settings" sidebarOpen onClick={() => { navigate('/profile#settings'); setSidebarOpen(false); }} />
             <SidebarItem icon={LogOut}     label="Logout"   sidebarOpen onClick={() => { sessionStorage.clear(); window.location.href = '/'; }} />
           </div>
         </aside>
@@ -191,7 +191,7 @@ const TenantDashboard = () => {
           <div className="px-2 py-4 border-t border-gray-200 space-y-2">
             <SidebarItem icon={User}       label="Profile"  sidebarOpen={sidebarOpen} onClick={() => navigate('/profile')} />
             <SidebarItem icon={HelpCircle} label="Support"  sidebarOpen={sidebarOpen} onClick={() => navigate('/dashboard/tenant/support')} />
-            <SidebarItem icon={Settings}   label="Settings" sidebarOpen={sidebarOpen} />
+            <SidebarItem icon={Settings}   label="Settings" sidebarOpen={sidebarOpen} onClick={() => navigate('/profile#settings')} />
             <SidebarItem icon={LogOut}     label="Logout"   sidebarOpen={sidebarOpen} onClick={() => { sessionStorage.clear(); window.location.href = '/'; }} />
           </div>
         </aside>

@@ -132,7 +132,7 @@ export default function PropertiesPage() {
             { id: "support",    label: "Support",    icon: "fa-headset",    path: "/contact" },
             { id: "complaints", label: "Complaints", icon: "fa-folder",     path: "/dashboard/owner/complaints" },
             { id: "profile",    label: "Profile",    icon: "fa-user",       path: "/profile" },
-            { id: "settings",   label: "Settings",   icon: "fa-cog",        path: null },
+            { id: "settings",   label: "Settings",   icon: "fa-cog",        path: "/profile#settings" },
           ].map((item) => (
             <MobileNavItem
               key={item.id}
@@ -186,7 +186,7 @@ export default function PropertiesPage() {
             { id: "support",    label: "Support",    icon: "fa-headset",    onClick: () => navigate("/contact") },
             { id: "complaints", label: "Complaints", icon: "fa-folder",     onClick: () => navigate("/dashboard/owner/complaints") },
             { id: "profile",    label: "Profile",    icon: "fa-user",       onClick: () => navigate("/profile") },
-            { id: "settings",   label: "Settings",   icon: "fa-cog",        onClick: undefined },
+            { id: "settings",   label: "Settings",   icon: "fa-cog",        onClick: () => navigate("/profile#settings") },
           ].map((item) => (
             <NavItem
               key={item.id}

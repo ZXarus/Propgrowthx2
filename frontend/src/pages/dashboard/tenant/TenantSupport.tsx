@@ -374,7 +374,7 @@ const Contact = () => {
             <SidebarItem
               icon={User}
               label="Profile"
-              onClick={() => { navigate('/profile'); setSidebarOpen(false); }}
+              onClick={() => { navigate('/profile#settings'); setSidebarOpen(false); }}
               sidebarOpen
             />
             <SidebarItem
@@ -433,7 +433,7 @@ const Contact = () => {
           <div className="px-2 py-4 border-t border-gray-200 space-y-2">
             <SidebarItem icon={User}       label="Profile"  onClick={() => navigate('/profile')} sidebarOpen={sidebarOpen} />
             <SidebarItem icon={HelpCircle} label="Support"  active onClick={() => navigate('/dashboard/tenant/support')} sidebarOpen={sidebarOpen} />
-            <SidebarItem icon={Settings}   label="Settings" onClick={() => navigate('/profile')} sidebarOpen={sidebarOpen} />
+            <SidebarItem icon={Settings}   label="Settings" onClick={() => navigate('/profile#settings')} sidebarOpen={sidebarOpen} />
             <SidebarItem icon={LogOut}     label="Logout"   onClick={() => { sessionStorage.clear(); window.location.href = '/'; }} sidebarOpen={sidebarOpen} />
           </div>
         </aside>
@@ -465,7 +465,7 @@ const Contact = () => {
             </section>
 
             {/* ── Everything below is unchanged ── */}
-            <section className="py-6 md:py-0 px-6">
+            <section className="py-6 md:py-8 px-6">
               <div className="max-w-6xl mx-auto">
                 <div className="grid lg:grid-cols-1 gap-6 md:gap-8">
                   <div className="section-heading mb-2 md:mb-3">

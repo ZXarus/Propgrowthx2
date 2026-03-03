@@ -166,7 +166,7 @@ const SecuritySettingsPage = () => {
             {/* Header with Back Button */}
             <div className="flex items-start gap-4 mb-8">
               <Button variant="ghost" size="icon" asChild className="hover:bg-gray-100 mt-1 flex-shrink-0">
-                <Link to="/profile">
+                <Link to="/profile#settings">
                   <ArrowLeft className="w-5 h-5" />
                 </Link>
               </Button>

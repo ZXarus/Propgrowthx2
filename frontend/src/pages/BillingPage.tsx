@@ -405,7 +405,7 @@ const BillingPage = () => {
                   className="hover:bg-gray-100 mt-1 flex-shrink-0"
                   aria-label="Go back to profile"
                 >
-                  <Link to="/profile">
+                  <Link to="/profile#settings">
                     <ArrowLeft className="w-5 h-5" />
                   </Link>
                 </Button>

@@ -249,7 +249,7 @@ const Profile = () => {
   };
 
   const goToSettingsSection = () => {
-    if (location.pathname === '/profile' && location.hash === '#settings') {
+    if (location.pathname.startsWith('/profile') && location.hash === '#settings') {
       scrollToSection('settings');
       return;
     }
@@ -257,14 +257,14 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (location.pathname === '/profile' && location.hash === '#settings') {
+    if (location.pathname.startsWith('/profile') && location.hash === '#settings') {
       const timeoutId = window.setTimeout(() => {
         scrollToSection('settings');
       }, 80);
 
       return () => window.clearTimeout(timeoutId);
     }
-  }, [location.pathname, location.hash]);
+  }, [location.pathname, location.hash, currProfile]);
 
   return (
     <>
@@ -515,7 +515,7 @@ const Profile = () => {
               <div className="px-2 py-4 border-t border-gray-200 space-y-1">
                 <SidebarItem icon={User} label="Profile" active onClick={() => setSidebarOpen(false)} sidebarOpen />
                 <SidebarItem icon={HelpCircle} label="Support" onClick={() => { navigate('/dashboard/tenant/support'); setSidebarOpen(false); }} sidebarOpen />
-                <SidebarItem icon={Settings} label="Settings" onClick={() => { navigate('/settings'); setSidebarOpen(false); }} sidebarOpen />
+                <SidebarItem icon={Settings} label="Settings" onClick={() => { navigate('/profile#settings'); setSidebarOpen(false); }} sidebarOpen />
                 <SidebarItem icon={LogOut} label="Logout" onClick={() => { sessionStorage.clear(); window.location.href = '/'; }} sidebarOpen />
               </div>
             </aside>
@@ -552,7 +552,7 @@ const Profile = () => {
               <div className="px-2 py-4 border-t border-gray-200 space-y-2">
                 <SidebarItem icon={User} label="Profile" active sidebarOpen={sidebarOpen} />
                 <SidebarItem icon={HelpCircle} label="Support" onClick={() => navigate('/dashboard/tenant/support')} sidebarOpen={sidebarOpen} />
-                <SidebarItem icon={Settings} label="Settings" onClick={() => navigate('/settings')} sidebarOpen={sidebarOpen} />
+                <SidebarItem icon={Settings} label="Settings" onClick={() => navigate('/profile#settings')} sidebarOpen={sidebarOpen} />
                 <SidebarItem icon={LogOut} label="Logout" onClick={() => { sessionStorage.clear(); window.location.href = '/'; }} sidebarOpen={sidebarOpen} />
               </div>
             </aside>
