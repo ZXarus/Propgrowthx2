@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
 import {
   ArrowLeft,
   Menu,
@@ -17,60 +17,69 @@ import {
   FileCheck,
   AlertCircle,
   X,
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useData } from '@/context/dataContext';
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useData } from "@/context/dataContext";
 
 const registeredProperty = {
-  id: '1',
-  title: 'Modern Downtown Loft',
-  location: 'Panvel, Maharashtra',
-  address: '123 Main Street, Panvel, Maharashtra 410206',
+  id: "1",
+  title: "Modern Downtown Loft",
+  location: "Panvel, Maharashtra",
+  address: "123 Main Street, Panvel, Maharashtra 410206",
   monthly_rent: 8500,
   bedrooms: 2,
   bathrooms: 2,
   area: 1200,
-  images: ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80'],
-  status: 'Active',
-  moveInDate: '2023-06-15',
-  leaseEndDate: '2025-06-14',
-  propertyType: 'Apartment',
-  floor: '5',
-  totalFloors: '10',
-  furnished: 'Semi-Furnished',
-  parking: 'Yes (2 slots)',
-  amenities: ['Swimming Pool', 'Gym', 'Security', 'Lift', 'Visitor Parking', 'CCTV'],
+  images: [
+    "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80",
+  ],
+  status: "Active",
+  moveInDate: "2023-06-15",
+  leaseEndDate: "2025-06-14",
+  propertyType: "Apartment",
+  floor: "5",
+  totalFloors: "10",
+  furnished: "Semi-Furnished",
+  parking: "Yes (2 slots)",
+  amenities: [
+    "Swimming Pool",
+    "Gym",
+    "Security",
+    "Lift",
+    "Visitor Parking",
+    "CCTV",
+  ],
   owner: {
-    name: 'Rajesh Kumar',
-    phone: '+91 9876543210',
-    email: 'rajesh.kumar@example.com',
-    address: 'Same as property',
+    name: "Rajesh Kumar",
+    phone: "+91 9876543210",
+    email: "rajesh.kumar@example.com",
+    address: "Same as property",
   },
   documents: [
-    { name: 'Lease Agreement', uploadDate: '2023-06-01', verified: true },
-    { name: 'Property Photos', uploadDate: '2023-06-01', verified: true },
-    { name: 'ID Proof', uploadDate: '2023-06-01', verified: true },
+    { name: "Lease Agreement", uploadDate: "2023-06-01", verified: true },
+    { name: "Property Photos", uploadDate: "2023-06-01", verified: true },
+    { name: "ID Proof", uploadDate: "2023-06-01", verified: true },
   ],
   maintenanceCharges: 800,
   securityDeposit: 25500,
-  registrationNumber: 'PROP-2023-001234',
+  registrationNumber: "PROP-2023-001234",
 };
 
 const Properties = () => {
   const navigate = useNavigate();
-  const { id, loading } = useData();
+  const { id, loading, properties } = useData();
 
-  // ── KEY FIX ──
-  // Only set initial value once on mount (no resize listener).
-  // Desktop toggles freely; mobile starts closed.
-  // The resize listener was the culprit — it fought desktop toggle clicks.
-  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => window.innerWidth >= 768,
+  );
 
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['overview']));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(["overview"]),
+  );
 
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => {
+    setExpandedSections((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(section)) newSet.delete(section);
       else newSet.add(section);
@@ -83,19 +92,24 @@ const Properties = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-gray-200 border-t-red-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Loading property details...</p>
+          <p className="text-gray-600 font-medium">
+            Loading property details...
+          </p>
         </div>
       </div>
     );
   }
 
-  const formatINR = (amount: number) => `₹${amount.toLocaleString('en-IN')}`;
+  const formatINR = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
 
   return (
     <>
       <Helmet>
         <title>My Property | PropGrowthX</title>
-        <meta name="description" content="View details of your registered rental property." />
+        <meta
+          name="description"
+          content="View details of your registered rental property."
+        />
       </Helmet>
 
       <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -104,7 +118,7 @@ const Properties = () => {
           className="md:hidden fixed top-3 left-3 z-50 w-10 h-10 flex items-center justify-center
             bg-white border border-gray-200 rounded-xl shadow-md
             transition-all duration-200 hover:bg-gray-50"
-          style={{ display: sidebarOpen ? 'none' : undefined }}
+          style={{ display: sidebarOpen ? "none" : undefined }}
           onClick={() => setSidebarOpen(true)}
           aria-label="Open menu"
         >
@@ -123,12 +137,18 @@ const Properties = () => {
         <aside
           className={`md:hidden fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 z-40
             flex flex-col transform transition-transform duration-300 ease-in-out
-            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
           <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="Logo" className="w-8 h-8 flex-shrink-0" />
-              <span className="text-base font-bold text-gray-900 whitespace-nowrap">PropGrowthX</span>
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="w-8 h-8 flex-shrink-0"
+              />
+              <span className="text-base font-bold text-gray-900 whitespace-nowrap">
+                PropGrowthX
+              </span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -139,30 +159,95 @@ const Properties = () => {
             </button>
           </div>
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-            <SidebarItem icon={BarChart3}  label="Dashboard"     sidebarOpen onClick={() => { navigate('/dashboard/tenant'); setSidebarOpen(false); }} />
-            <SidebarItem icon={Home}       label="My Properties" sidebarOpen active onClick={() => setSidebarOpen(false)} />
-            <SidebarItem icon={DollarSign} label="Transactions"  sidebarOpen onClick={() => { navigate('/dashboard/tenant/transactions'); setSidebarOpen(false); }} />
-            <SidebarItem icon={FileText}   label="Complaints"    sidebarOpen onClick={() => { navigate('/dashboard/tenant/complaints'); setSidebarOpen(false); }} />
+            <SidebarItem
+              icon={BarChart3}
+              label="Dashboard"
+              sidebarOpen
+              onClick={() => {
+                navigate("/dashboard/tenant");
+                setSidebarOpen(false);
+              }}
+            />
+            <SidebarItem
+              icon={Home}
+              label="My Properties"
+              sidebarOpen
+              active
+              onClick={() => setSidebarOpen(false)}
+            />
+            <SidebarItem
+              icon={DollarSign}
+              label="Transactions"
+              sidebarOpen
+              onClick={() => {
+                navigate("/dashboard/tenant/transactions");
+                setSidebarOpen(false);
+              }}
+            />
+            <SidebarItem
+              icon={FileText}
+              label="Complaints"
+              sidebarOpen
+              onClick={() => {
+                navigate("/dashboard/tenant/complaints");
+                setSidebarOpen(false);
+              }}
+            />
           </nav>
           <div className="px-2 py-4 border-t border-gray-200 space-y-1">
-            <SidebarItem icon={User}       label="Profile"  sidebarOpen onClick={() => { navigate('/profile'); setSidebarOpen(false); }} />
-            <SidebarItem icon={HelpCircle} label="Support"  sidebarOpen onClick={() => { navigate('/dashboard/tenant/support'); setSidebarOpen(false); }} />
-            <SidebarItem icon={Settings}   label="Settings" sidebarOpen onClick={() => setSidebarOpen(false)} />
-            <SidebarItem icon={LogOut}     label="Logout"   sidebarOpen onClick={() => { sessionStorage.clear(); window.location.href = '/'; }} />
+            <SidebarItem
+              icon={User}
+              label="Profile"
+              sidebarOpen
+              onClick={() => {
+                navigate("/profile");
+                setSidebarOpen(false);
+              }}
+            />
+            <SidebarItem
+              icon={HelpCircle}
+              label="Support"
+              sidebarOpen
+              onClick={() => {
+                navigate("/dashboard/tenant/support");
+                setSidebarOpen(false);
+              }}
+            />
+            <SidebarItem
+              icon={Settings}
+              label="Settings"
+              sidebarOpen
+              onClick={() => setSidebarOpen(false)}
+            />
+            <SidebarItem
+              icon={LogOut}
+              label="Logout"
+              sidebarOpen
+              onClick={() => {
+                sessionStorage.clear();
+                window.location.href = "/";
+              }}
+            />
           </div>
         </aside>
 
         {/* ─── DESKTOP / TABLET SIDEBAR (hidden on mobile) ─── */}
         <aside
-          className={`hidden md:flex ${sidebarOpen ? 'w-64' : 'w-20'}
+          className={`hidden md:flex ${sidebarOpen ? "w-64" : "w-20"}
             bg-white border-r border-gray-200 transition-all duration-300
             flex-col md:relative flex-shrink-0 z-40`}
         >
           <div className="flex items-center justify-between h-20 px-4 border-b border-gray-200">
             {sidebarOpen ? (
               <div className="flex items-center gap-3 flex-1">
-                <img src="/logo.png" alt="Logo" className="w-10 h-10 flex-shrink-0" />
-                <span className="text-lg font-bold text-gray-900 whitespace-nowrap">PropGrowthX</span>
+                <img
+                  src="/logo.png"
+                  alt="Logo"
+                  className="w-10 h-10 flex-shrink-0"
+                />
+                <span className="text-lg font-bold text-gray-900 whitespace-nowrap">
+                  PropGrowthX
+                </span>
               </div>
             ) : (
               <div className="flex items-center justify-center w-full">
@@ -186,16 +271,58 @@ const Properties = () => {
             )}
           </div>
           <nav className="flex-1 px-2 py-6 space-y-2 overflow-y-auto">
-            <SidebarItem icon={BarChart3}  label="Dashboard"     sidebarOpen={sidebarOpen} onClick={() => navigate('/dashboard/tenant')} />
-            <SidebarItem icon={Home}       label="My Properties" sidebarOpen={sidebarOpen} active />
-            <SidebarItem icon={DollarSign} label="Transactions"  sidebarOpen={sidebarOpen} onClick={() => navigate('/dashboard/tenant/transactions')} />
-            <SidebarItem icon={FileText}   label="Complaints"    sidebarOpen={sidebarOpen} onClick={() => navigate('/dashboard/tenant/complaints')} />
+            <SidebarItem
+              icon={BarChart3}
+              label="Dashboard"
+              sidebarOpen={sidebarOpen}
+              onClick={() => navigate("/dashboard/tenant")}
+            />
+            <SidebarItem
+              icon={Home}
+              label="My Properties"
+              sidebarOpen={sidebarOpen}
+              active
+            />
+            <SidebarItem
+              icon={DollarSign}
+              label="Transactions"
+              sidebarOpen={sidebarOpen}
+              onClick={() => navigate("/dashboard/tenant/transactions")}
+            />
+            <SidebarItem
+              icon={FileText}
+              label="Complaints"
+              sidebarOpen={sidebarOpen}
+              onClick={() => navigate("/dashboard/tenant/complaints")}
+            />
           </nav>
           <div className="px-2 py-4 border-t border-gray-200 space-y-2">
-            <SidebarItem icon={User}       label="Profile"  sidebarOpen={sidebarOpen} onClick={() => navigate('/profile')} />
-            <SidebarItem icon={HelpCircle} label="Support"  sidebarOpen={sidebarOpen} onClick={() => navigate('/dashboard/tenant/support')} />
-            <SidebarItem icon={Settings}   label="Settings" sidebarOpen={sidebarOpen} />
-            <SidebarItem icon={LogOut}     label="Logout"   sidebarOpen={sidebarOpen} onClick={() => { sessionStorage.clear(); window.location.href = '/'; }} />
+            <SidebarItem
+              icon={User}
+              label="Profile"
+              sidebarOpen={sidebarOpen}
+              onClick={() => navigate("/profile")}
+            />
+            <SidebarItem
+              icon={HelpCircle}
+              label="Support"
+              sidebarOpen={sidebarOpen}
+              onClick={() => navigate("/dashboard/tenant/support")}
+            />
+            <SidebarItem
+              icon={Settings}
+              label="Settings"
+              sidebarOpen={sidebarOpen}
+            />
+            <SidebarItem
+              icon={LogOut}
+              label="Logout"
+              sidebarOpen={sidebarOpen}
+              onClick={() => {
+                sessionStorage.clear();
+                window.location.href = "/";
+              }}
+            />
           </div>
         </aside>
 
@@ -329,8 +456,16 @@ const Properties = () => {
                 <div className="pb-0 md:pb-0">
                   <div className="header-hero">
                     <div className="max-w-3xl">
-                      <h1 className="page-title mb-2 md:mb-3"><span className="title-accent">Registered Property</span></h1>
-                      <p className="header-subtitle">View complete details of your registered property including lease information, owner contact, amenities, and important documents.</p>
+                      <h1 className="page-title mb-2 md:mb-3">
+                        <span className="title-accent">
+                          Registered Property
+                        </span>
+                      </h1>
+                      <p className="header-subtitle">
+                        View complete details of your registered property
+                        including lease information, owner contact, amenities,
+                        and important documents.
+                      </p>
                     </div>
                     <div className="divider-line" />
                   </div>
@@ -340,91 +475,334 @@ const Properties = () => {
 
             <section className="py-0 md:py-0 bg-gray-50">
               <div className="container-custom">
-                <img src={registeredProperty.images[0]} alt={registeredProperty.title} className="property-image" />
+                <img
+                  src={registeredProperty.images[0]}
+                  alt={registeredProperty.title}
+                  className="property-image"
+                />
 
                 <div className="section-card">
                   <div className="section-content">
-                    <h2 className="property-title">{registeredProperty.title}</h2>
-                    <div className="property-address"><MapPin /><span>{registeredProperty.address}</span></div>
+                    <h2 className="property-title">
+                      {registeredProperty.title}
+                    </h2>
+                    <div className="property-address">
+                      <MapPin />
+                      <span>{registeredProperty.address}</span>
+                    </div>
                     <div className="info-grid mb-6 md:mb-8">
-                      <div className="info-item"><div className="info-icon"><DollarSign /></div><div className="info-content"><h4>Monthly Rent</h4><p>{formatINR(registeredProperty.monthly_rent)}</p></div></div>
-                      <div className="info-item"><div className="info-icon"><Calendar /></div><div className="info-content"><h4>Move In Date</h4><p>{new Date(registeredProperty.moveInDate).toLocaleDateString()}</p></div></div>
-                      <div className="info-item"><div className="info-icon"><Calendar /></div><div className="info-content"><h4>Lease Ends</h4><p>{new Date(registeredProperty.leaseEndDate).toLocaleDateString()}</p></div></div>
-                      <div className="info-item"><div className="info-icon"><Home /></div><div className="info-content"><h4>Status</h4><p>{registeredProperty.status}</p></div></div>
+                      <div className="info-item">
+                        <div className="info-icon">
+                          <DollarSign />
+                        </div>
+                        <div className="info-content">
+                          <h4>Monthly Rent</h4>
+                          <p>{formatINR(registeredProperty.monthly_rent)}</p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <div className="info-icon">
+                          <Calendar />
+                        </div>
+                        <div className="info-content">
+                          <h4>Move In Date</h4>
+                          <p>
+                            {new Date(
+                              registeredProperty.moveInDate,
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <div className="info-icon">
+                          <Calendar />
+                        </div>
+                        <div className="info-content">
+                          <h4>Lease Ends</h4>
+                          <p>
+                            {new Date(
+                              registeredProperty.leaseEndDate,
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <div className="info-icon">
+                          <Home />
+                        </div>
+                        <div className="info-content">
+                          <h4>Status</h4>
+                          <p>{registeredProperty.status}</p>
+                        </div>
+                      </div>
                     </div>
                     <div className="property-specs-grid">
-                      <div className="spec-box"><p className="spec-label">Bedrooms</p><p className="spec-value">{registeredProperty.bedrooms}</p></div>
-                      <div className="spec-box"><p className="spec-label">Bathrooms</p><p className="spec-value">{registeredProperty.bathrooms}</p></div>
-                      <div className="spec-box"><p className="spec-label">Area</p><p className="spec-value">{registeredProperty.area} sqft</p></div>
-                      <div className="spec-box"><p className="spec-label">Type</p><p className="spec-value">{registeredProperty.propertyType}</p></div>
-                      <div className="spec-box"><p className="spec-label">Floor</p><p className="spec-value">{registeredProperty.floor}/{registeredProperty.totalFloors}</p></div>
-                      <div className="spec-box"><p className="spec-label">Furnished</p><p className="spec-value">{registeredProperty.furnished}</p></div>
+                      <div className="spec-box">
+                        <p className="spec-label">Bedrooms</p>
+                        <p className="spec-value">
+                          {registeredProperty.bedrooms}
+                        </p>
+                      </div>
+                      <div className="spec-box">
+                        <p className="spec-label">Bathrooms</p>
+                        <p className="spec-value">
+                          {registeredProperty.bathrooms}
+                        </p>
+                      </div>
+                      <div className="spec-box">
+                        <p className="spec-label">Area</p>
+                        <p className="spec-value">
+                          {registeredProperty.area} sqft
+                        </p>
+                      </div>
+                      <div className="spec-box">
+                        <p className="spec-label">Type</p>
+                        <p className="spec-value">
+                          {registeredProperty.propertyType}
+                        </p>
+                      </div>
+                      <div className="spec-box">
+                        <p className="spec-label">Floor</p>
+                        <p className="spec-value">
+                          {registeredProperty.floor}/
+                          {registeredProperty.totalFloors}
+                        </p>
+                      </div>
+                      <div className="spec-box">
+                        <p className="spec-label">Furnished</p>
+                        <p className="spec-value">
+                          {registeredProperty.furnished}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="section-card">
-                  <div className="section-header" onClick={() => toggleSection('amenities')}>
+                  <div
+                    className="section-header"
+                    onClick={() => toggleSection("amenities")}
+                  >
                     <h3>Amenities & Features</h3>
-                    <svg className={`w-4 h-4 md:w-5 md:h-5 transition-transform flex-shrink-0 ${expandedSections.has('amenities') ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                    <svg
+                      className={`w-4 h-4 md:w-5 md:h-5 transition-transform flex-shrink-0 ${expandedSections.has("amenities") ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                      />
+                    </svg>
                   </div>
-                  {expandedSections.has('amenities') && (
+                  {expandedSections.has("amenities") && (
                     <div className="section-content border-t border-gray-100">
-                      <div className="badges">{registeredProperty.amenities.map((a, i) => <div key={i} className="badge">{a}</div>)}</div>
-                      <div className="alert-box bg-blue-50 border-blue-100"><p className="text-xs md:text-sm text-blue-800"><strong>Parking:</strong> {registeredProperty.parking}</p></div>
+                      <div className="badges">
+                        {registeredProperty.amenities.map((a, i) => (
+                          <div key={i} className="badge">
+                            {a}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="alert-box bg-blue-50 border-blue-100">
+                        <p className="text-xs md:text-sm text-blue-800">
+                          <strong>Parking:</strong> {registeredProperty.parking}
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
 
                 <div className="section-card">
-                  <div className="section-header" onClick={() => toggleSection('financial')}>
+                  <div
+                    className="section-header"
+                    onClick={() => toggleSection("financial")}
+                  >
                     <h3>Financial Details</h3>
-                    <svg className={`w-4 h-4 md:w-5 md:h-5 transition-transform flex-shrink-0 ${expandedSections.has('financial') ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                    <svg
+                      className={`w-4 h-4 md:w-5 md:h-5 transition-transform flex-shrink-0 ${expandedSections.has("financial") ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                      />
+                    </svg>
                   </div>
-                  {expandedSections.has('financial') && (
+                  {expandedSections.has("financial") && (
                     <div className="section-content border-t border-gray-100">
                       <div className="financial-grid">
-                        <div className="financial-card bg-gradient-to-br from-red-50 to-orange-50 border-red-100"><p className="financial-label text-gray-600">Monthly Rent</p><p className="financial-value text-red-600">{formatINR(registeredProperty.monthly_rent)}</p></div>
-                        <div className="financial-card bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100"><p className="financial-label text-gray-600">Maintenance</p><p className="financial-value text-blue-600">{formatINR(registeredProperty.maintenanceCharges)}/m</p></div>
-                        <div className="financial-card bg-gradient-to-br from-green-50 to-emerald-50 border-green-100"><p className="financial-label text-gray-600">Security Deposit</p><p className="financial-value text-green-600">{formatINR(registeredProperty.securityDeposit)}</p></div>
+                        <div className="financial-card bg-gradient-to-br from-red-50 to-orange-50 border-red-100">
+                          <p className="financial-label text-gray-600">
+                            Monthly Rent
+                          </p>
+                          <p className="financial-value text-red-600">
+                            {formatINR(registeredProperty.monthly_rent)}
+                          </p>
+                        </div>
+                        <div className="financial-card bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100">
+                          <p className="financial-label text-gray-600">
+                            Maintenance
+                          </p>
+                          <p className="financial-value text-blue-600">
+                            {formatINR(registeredProperty.maintenanceCharges)}/m
+                          </p>
+                        </div>
+                        <div className="financial-card bg-gradient-to-br from-green-50 to-emerald-50 border-green-100">
+                          <p className="financial-label text-gray-600">
+                            Security Deposit
+                          </p>
+                          <p className="financial-value text-green-600">
+                            {formatINR(registeredProperty.securityDeposit)}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
 
                 <div className="section-card">
-                  <div className="section-header" onClick={() => toggleSection('owner')}>
+                  <div
+                    className="section-header"
+                    onClick={() => toggleSection("owner")}
+                  >
                     <h3>Property Owner Details</h3>
-                    <svg className={`w-4 h-4 md:w-5 md:h-5 transition-transform flex-shrink-0 ${expandedSections.has('owner') ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                    <svg
+                      className={`w-4 h-4 md:w-5 md:h-5 transition-transform flex-shrink-0 ${expandedSections.has("owner") ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                      />
+                    </svg>
                   </div>
-                  {expandedSections.has('owner') && (
+                  {expandedSections.has("owner") && (
                     <div className="section-content border-t border-gray-100">
                       <div className="info-grid">
-                        <div className="info-item"><div className="info-icon"><User /></div><div className="info-content"><h4>Owner Name</h4><p>{registeredProperty.owner.name}</p></div></div>
-                        <div className="info-item"><div className="info-icon"><Phone /></div><div className="info-content"><h4>Phone Number</h4><p><a href={`tel:${registeredProperty.owner.phone}`} className="text-red-600 hover:text-red-700 break-all">{registeredProperty.owner.phone}</a></p></div></div>
-                        <div className="info-item"><div className="info-icon"><Mail /></div><div className="info-content"><h4>Email Address</h4><p><a href={`mailto:${registeredProperty.owner.email}`} className="text-red-600 hover:text-red-700 break-all">{registeredProperty.owner.email}</a></p></div></div>
+                        <div className="info-item">
+                          <div className="info-icon">
+                            <User />
+                          </div>
+                          <div className="info-content">
+                            <h4>Owner Name</h4>
+                            <p>{registeredProperty.owner.name}</p>
+                          </div>
+                        </div>
+                        <div className="info-item">
+                          <div className="info-icon">
+                            <Phone />
+                          </div>
+                          <div className="info-content">
+                            <h4>Phone Number</h4>
+                            <p>
+                              <a
+                                href={`tel:${registeredProperty.owner.phone}`}
+                                className="text-red-600 hover:text-red-700 break-all"
+                              >
+                                {registeredProperty.owner.phone}
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="info-item">
+                          <div className="info-icon">
+                            <Mail />
+                          </div>
+                          <div className="info-content">
+                            <h4>Email Address</h4>
+                            <p>
+                              <a
+                                href={`mailto:${registeredProperty.owner.email}`}
+                                className="text-red-600 hover:text-red-700 break-all"
+                              >
+                                {registeredProperty.owner.email}
+                              </a>
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
 
                 <div className="section-card">
-                  <div className="section-header" onClick={() => toggleSection('documents')}>
+                  <div
+                    className="section-header"
+                    onClick={() => toggleSection("documents")}
+                  >
                     <h3>Documents & Verification</h3>
-                    <svg className={`w-4 h-4 md:w-5 md:h-5 transition-transform flex-shrink-0 ${expandedSections.has('documents') ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                    <svg
+                      className={`w-4 h-4 md:w-5 md:h-5 transition-transform flex-shrink-0 ${expandedSections.has("documents") ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                      />
+                    </svg>
                   </div>
-                  {expandedSections.has('documents') && (
+                  {expandedSections.has("documents") && (
                     <div className="section-content border-t border-gray-100">
                       <div className="document-list">
                         {registeredProperty.documents.map((doc, idx) => (
                           <div key={idx} className="document-item">
-                            <div className="document-name"><FileCheck className="text-gray-400" /><div className="document-info"><p>{doc.name}</p><p>Uploaded {new Date(doc.uploadDate).toLocaleDateString()}</p></div></div>
-                            {doc.verified && <div className="document-status"><svg fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg><span>Verified</span></div>}
+                            <div className="document-name">
+                              <FileCheck className="text-gray-400" />
+                              <div className="document-info">
+                                <p>{doc.name}</p>
+                                <p>
+                                  Uploaded{" "}
+                                  {new Date(
+                                    doc.uploadDate,
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            {doc.verified && (
+                              <div className="document-status">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                                <span>Verified</span>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
                       <div className="alert-box bg-green-50 border-green-100">
-                        <div className="alert-content"><AlertCircle className="text-green-600" /><div className="alert-text"><p className="text-green-900">Registration ID: {registeredProperty.registrationNumber}</p><p className="text-green-700">All documents are verified and your property registration is complete.</p></div></div>
+                        <div className="alert-content">
+                          <AlertCircle className="text-green-600" />
+                          <div className="alert-text">
+                            <p className="text-green-900">
+                              Registration ID:{" "}
+                              {registeredProperty.registrationNumber}
+                            </p>
+                            <p className="text-green-700">
+                              All documents are verified and your property
+                              registration is complete.
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -438,8 +816,24 @@ const Properties = () => {
   );
 };
 
-const SidebarItem = ({ icon: Icon, label, active = false, onClick, sidebarOpen = true }: { icon: React.ElementType; label: string; active?: boolean; onClick?: () => void; sidebarOpen?: boolean }) => (
-  <button onClick={onClick} className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 text-base ${active ? 'bg-red-50 text-red-600 font-semibold' : 'text-gray-700 hover:bg-gray-50 font-medium'}`} title={!sidebarOpen ? label : ''}>
+const SidebarItem = ({
+  icon: Icon,
+  label,
+  active = false,
+  onClick,
+  sidebarOpen = true,
+}: {
+  icon: React.ElementType;
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+  sidebarOpen?: boolean;
+}) => (
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 text-base ${active ? "bg-red-50 text-red-600 font-semibold" : "text-gray-700 hover:bg-gray-50 font-medium"}`}
+    title={!sidebarOpen ? label : ""}
+  >
     <Icon className="w-6 h-6 flex-shrink-0" />
     {sidebarOpen && <span>{label}</span>}
   </button>

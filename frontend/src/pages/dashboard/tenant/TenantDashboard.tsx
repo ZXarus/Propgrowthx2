@@ -26,22 +26,20 @@ import DashboardSkeleton from "@/pages/SkeletonLoading";
 
 const TenantDashboard = () => {
   const navigate = useNavigate();
-
-  const { id } = useData();
-
-  const { properties, transactions, loading } = useData();
+  const { properties, transactions, id, loading } = useData();
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [currentActionIndex, setCurrentActionIndex] = useState(0);
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // will be overridden
 
+  // Set initial sidebar state based on screen size
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setSidebarOpen(false);
+        setSidebarOpen(false); // mobile: drawer closed
       } else {
-        setSidebarOpen(true);
+        setSidebarOpen(true); // desktop: sidebar open
       }
     };
     handleResize(); // set on mount
@@ -69,7 +67,7 @@ const TenantDashboard = () => {
       details: myTxs.map((t) => ({
         property: properties.find((p) => p.id === t.property_id)?.property_name,
         amount: t.amount,
-        date: t.created_at,
+        date: t.date,
         status: t.status,
       })),
     },
@@ -87,7 +85,7 @@ const TenantDashboard = () => {
           property: properties.find((p) => p.id === t.property_id)
             ?.property_name,
           amount: t.amount,
-          date: t.created_at,
+          date: t.date,
         })),
     },
     {
@@ -120,7 +118,7 @@ const TenantDashboard = () => {
       tenant: "You",
       amount: tx.amount,
       priority: tx.status === "overdue" ? "urgent" : "high",
-      createdAt: tx.created_at,
+      createdAt: tx.date,
       phone: "+91 9876543210",
     }));
 
@@ -248,7 +246,7 @@ const TenantDashboard = () => {
               label="Profile"
               sidebarOpen
               onClick={() => {
-                navigate(`/profile/${id}`);
+                navigate("/profile");
                 setSidebarOpen(false);
               }}
             />
@@ -265,7 +263,10 @@ const TenantDashboard = () => {
               icon={Settings}
               label="Settings"
               sidebarOpen
-              onClick={() => setSidebarOpen(false)}
+              onClick={() => {
+                navigate("/profile#settings");
+                setSidebarOpen(false);
+              }}
             />
             <SidebarItem
               icon={LogOut}
@@ -351,7 +352,7 @@ const TenantDashboard = () => {
               icon={User}
               label="Profile"
               sidebarOpen={sidebarOpen}
-              onClick={() => navigate(`/profile/${id}`)}
+              onClick={() => navigate("/profile")}
             />
             <SidebarItem
               icon={HelpCircle}
@@ -363,6 +364,7 @@ const TenantDashboard = () => {
               icon={Settings}
               label="Settings"
               sidebarOpen={sidebarOpen}
+              onClick={() => navigate("/profile#settings")}
             />
             <SidebarItem
               icon={LogOut}
@@ -440,7 +442,7 @@ const TenantDashboard = () => {
                               <div className="text-sm">Payment due</div>
                               <div className="text-xs text-gray-400">
                                 ₹{tx.amount.toLocaleString()} •{" "}
-                                {tx.created_at.split("T")[0]}
+                                {tx.date.split("T")[0]}
                               </div>
                             </li>
                           ))}
@@ -626,7 +628,7 @@ const TenantDashboard = () => {
                               }
                             </div>
                             <div className="text-xs text-gray-500">
-                              {tx.created_at.split("T")[0]}
+                              {tx.date.split("T")[0]}
                             </div>
                           </div>
                           <div className="text-right">

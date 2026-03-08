@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import Layout from "@/components/layout/Layout";
+import RoleDashboardSidebarLayout from "@/components/layout/RoleDashboardSidebarLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -410,7 +410,7 @@ const BillingPage = () => {
         }
       `}</style>
 
-      <Layout>
+      <RoleDashboardSidebarLayout activeItem="settings">
         <div className="min-h-screen bg-white">
           {/* Header */}
           <div className="border-b border-gray-100">
@@ -423,7 +423,7 @@ const BillingPage = () => {
                   className="hover:bg-gray-100 mt-1 flex-shrink-0"
                   aria-label="Go back to profile"
                 >
-                  <Link to="/profile">
+                  <Link to="/profile#settings">
                     <ArrowLeft className="w-5 h-5" />
                   </Link>
                 </Button>
@@ -955,7 +955,7 @@ const BillingPage = () => {
             </div>
           )}
         </div>
-      </Layout>
+      </RoleDashboardSidebarLayout>
     </>
   );
 };

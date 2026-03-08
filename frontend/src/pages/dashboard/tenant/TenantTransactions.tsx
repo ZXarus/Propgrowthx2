@@ -42,6 +42,8 @@ export interface Transaction {
   tenant_id?: string;
   owner_id?: string;
   property_id: string;
+  property_name: string;
+  tenant_name: string;
   type: "rent" | "deposit" | "maintenance";
   amount: string | number;
   date: string;
@@ -261,7 +263,10 @@ const TenantTransactions = () => {
               icon={Settings}
               label="Settings"
               sidebarOpen
-              onClick={() => setSidebarOpen(false)}
+              onClick={() => {
+                navigate("/profile#settings");
+                setSidebarOpen(false);
+              }}
             />
             <SidebarItem
               icon={LogOut}
@@ -357,6 +362,7 @@ const TenantTransactions = () => {
               icon={Settings}
               label="Settings"
               sidebarOpen={sidebarOpen}
+              onClick={() => navigate("/profile#settings")}
             />
             <SidebarItem
               icon={LogOut}

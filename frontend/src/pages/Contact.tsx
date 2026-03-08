@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet-async";
-import { useState } from "react";
-import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -16,16 +15,28 @@ import { Mail, Phone, MapPin, Clock, Send, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const { toast } = useToast();
+
+  // Start closed on mobile
+  useEffect(() => {
+    if (window.innerWidth < 768) setSidebarOpen(false);
+  }, []);
+
+  // Mobile nav helper — close drawer then navigate
+  const mobileGoTo = (path: string) => {
+    if (window.innerWidth < 768) setSidebarOpen(false);
+    navigate(path);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     await new Promise((resolve) => setTimeout(resolve, 1500));
-
     setIsSubmitting(false);
     setIsSubmitted(true);
     toast({
@@ -37,26 +48,26 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: Mail,
-      title: "Email Us",
+      title: "Email",
       value: "contact@propgrowthx.com",
       href: "mailto:contact@propgrowthx.com",
     },
     {
       icon: Phone,
-      title: "Call Us",
+      title: "Phone",
       value: "+91 9876543218",
       href: "tel:+919876543218",
     },
     {
       icon: MapPin,
-      title: "Visit Us",
-      value: "Banglore, Karnataka, India",
+      title: "Address",
+      value: "Bengaluru, Karnataka, India",
       href: "https://www.google.com/maps/place/Bengaluru,+Karnataka,+India/",
     },
     {
       icon: Clock,
-      title: "Business Hours",
-      value: "Mon - Fri: 9AM - 6PM PST",
+      title: "Hours",
+      value: "Mon – Fri • 9:00 AM – 6:00 PM (IST)",
       href: "#",
     },
   ];
@@ -71,212 +82,769 @@ const Contact = () => {
         />
       </Helmet>
 
-      <Layout>
-        {/* Header */}
-        <section className="bg-gradient-to-br from-primary to-secondary py-16 lg:py-24 mt-5">
-          <div className="container-custom">
-            <div className="max-w-3xl mx-auto text-center text-primary-foreground">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-sm font-medium mb-6">
-                Get In Touch
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@500;600;700;800&display=swap');
+        * { font-family: 'Geist', sans-serif; box-sizing: border-box; }
+        :root { --brand-red: #DC2626; }
+
+        @keyframes fadeInUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0);  } }
+        @keyframes slideInLeft  { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes slideInRight { from { opacity:0; transform:translateX(20px);  } to { opacity:1; transform:translateX(0); } }
+        @keyframes subtleFloat  { 0%,100% { transform:translateY(0);  } 50% { transform:translateY(-8px); } }
+
+        /* ── Hero ── */
+        .sp-page-title {
+          font-family: 'Inter', 'Geist', system-ui, sans-serif;
+          font-size: clamp(36px, 4.5vw, 56px);
+          font-weight: 400;
+          letter-spacing: -1.5px;
+          line-height: 1.1;
+          color: #0b1220;
+          margin: 0;
+          animation: slideInLeft 0.7s ease-out 0.1s both;
+        }
+        @media (max-width: 640px) { .sp-page-title { font-size: clamp(24px, 5vw, 42px); } }
+
+        .sp-title-accent {
+          color: var(--brand-red);
+          font-weight: 700;
+          animation: slideInRight 0.7s ease-out 0.2s both;
+          display: inline-block;
+        }
+
+        .sp-header-hero {
+          position: relative;
+          padding: 32px 40px 36px;
+          border-radius: 20px;
+          background: linear-gradient(180deg, #FFF5F5 0%, #FFE4E6 100%);
+          border: 1px solid rgba(220, 38, 38, 0.12);
+          animation: fadeInUp 0.8s ease-out 0s both;
+        }
+        @media (max-width: 768px) { .sp-header-hero { padding: 20px 24px 24px; border-radius: 16px; } }
+        @media (max-width: 640px) { .sp-header-hero { padding: 16px 18px 20px; border-radius: 12px; } }
+        .sp-header-hero::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          box-shadow: 0 20px 50px rgba(2, 6, 23, 0.05);
+        }
+
+        .sp-header-subtitle {
+          font-size: 16px;
+          color: #6b7280;
+          font-weight: 400;
+          letter-spacing: 0.2px;
+          line-height: 1.6;
+          margin-top: 12px;
+          animation: fadeInUp 0.8s ease-out 0.25s both;
+        }
+        @media (max-width: 768px) { .sp-header-subtitle { font-size: 14px; margin-top: 10px; } }
+        @media (max-width: 640px) { .sp-header-subtitle { font-size: 12px; margin-top: 8px; line-height: 1.5; } }
+
+        .sp-divider-line {
+          height: 1px;
+          background: linear-gradient(90deg, rgba(220,38,38,0), rgba(220,38,38,0.3) 20%, rgba(220,38,38,0.5) 50%, rgba(220,38,38,0.3) 80%, rgba(220,38,38,0));
+          width: 100%;
+          margin-top: 22px;
+          animation: fadeInUp 0.8s ease-out 0.35s both;
+        }
+        @media (max-width: 640px) { .sp-divider-line { margin-top: 14px; } }
+
+        /* ── Contact list ── */
+        .contact-area {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+        @media (min-width: 1024px) { .contact-area { grid-template-columns: 420px 1fr; gap: 42px; } }
+
+        .contact-list {
+          background: linear-gradient(180deg, rgba(255,255,255,1), rgba(250,250,250,1));
+          border: 1px solid rgba(16,24,40,0.04);
+          border-radius: 18px;
+          padding: 16px;
+          box-shadow: 0 8px 24px rgba(15,23,42,0.035);
+          animation: slideInLeft 0.8s ease-out 0.3s both;
+        }
+        .contact-row {
+          display: flex; gap: 14px; align-items: center; padding: 14px;
+          border-radius: 12px;
+          transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+          cursor: pointer;
+        }
+        .contact-row + .contact-row { margin-top: 10px; }
+        .contact-row:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(15,23,42,0.06); background: rgba(255,255,255,0.9); }
+
+        .icon-tile {
+          min-width: 56px; height: 56px; border-radius: 12px;
+          display: inline-flex; align-items: center; justify-content: center;
+          background: linear-gradient(180deg, #fcfcfd, #f7f7f8);
+          border: 1px solid rgba(15,23,42,0.03);
+          box-shadow: 0 6px 18px rgba(16,24,40,0.03);
+          transition: all 0.3s ease;
+        }
+        .contact-row:hover .icon-tile { background: linear-gradient(180deg, rgba(220,38,38,0.05), rgba(220,38,38,0.02)); transform: scale(1.08); }
+
+        .contact-meta { flex: 1; min-width: 0; }
+        .contact-title { font-size: 13px; color: #111827; font-weight: 700; margin-bottom: 4px; }
+        .contact-value { font-size: 14px; color: #4b5563; line-height: 1.35; word-break: break-word; }
+
+        /* ── Form ── */
+        .form-card {
+          position: relative; padding: 24px; border-radius: 18px;
+          background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.8));
+          border: 1px solid rgba(16,24,40,0.04);
+          box-shadow: 0 18px 50px rgba(16,24,40,0.06);
+          overflow: hidden;
+          animation: slideInRight 0.8s ease-out 0.3s both;
+        }
+        .form-card::after {
+          content: ''; position: absolute; right: -120px; top: -60px;
+          width: 420px; height: 420px; border-radius: 50%;
+          background: radial-gradient(circle at 30% 30%, rgba(220,38,38,0.03), transparent 25%),
+                      radial-gradient(circle at 70% 70%, rgba(2,132,199,0.02), transparent 25%);
+          pointer-events: none; transform: rotate(8deg);
+        }
+        .form-row { display: grid; gap: 14px; grid-template-columns: 1fr; }
+        @media (min-width: 640px) { .form-row.sm-2 { grid-template-columns: 1fr 1fr; gap: 14px; } }
+
+        .field-label { display:block; font-size:11px; letter-spacing:.6px; color:#374151; margin-bottom:6px; font-weight:700; text-transform:uppercase; }
+        .modern-input, .modern-textarea, .modern-select {
+          width:100%; border-radius:12px; padding:12px 14px;
+          border:1.5px solid #e6e3df; background:#fff;
+          transition: box-shadow .16s ease, border-color .16s ease, transform .16s ease; font-size:14px;
+        }
+        .modern-input:focus, .modern-textarea:focus, .modern-select:focus {
+          box-shadow:0 8px 30px rgba(2,6,23,0.06); border-color:rgba(17,24,39,0.12); outline:none; transform:translateY(-2px);
+        }
+        .form-cta { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; }
+        .submit-btn-modern {
+          background: linear-gradient(90deg, var(--brand-red), #b91c1c);
+          color:#fff; padding:12px 20px; border-radius:12px; font-weight:700;
+          display:inline-flex; align-items:center; gap:10px; border:none;
+          transition: transform .14s ease, box-shadow .14s ease, opacity .14s ease;
+        }
+        .submit-btn-modern:hover:not(:disabled) { transform:translateY(-3px); box-shadow:0 12px 34px rgba(220,38,38,0.18); }
+        .submit-btn-modern:disabled { opacity:.75; cursor:not-allowed; }
+        .note-small { font-size:12px; color:#6b7280; }
+        .success-panel { text-align:center; padding:40px 20px; }
+        .muted { color:#6b7280; font-size:13px; }
+      `}</style>
+
+      <div className="flex h-screen bg-gray-50 overflow-hidden">
+        {/* ═══════════════════════════════════════
+            MOBILE ONLY — floating hamburger.
+        ═══════════════════════════════════════ */}
+        {!sidebarOpen && (
+          <button
+            className="md:hidden fixed top-3 left-3 z-50 w-10 h-10 flex items-center justify-center
+              bg-white border border-gray-200 rounded-xl shadow-md hover:bg-gray-50 transition-all duration-200"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+          >
+            <i className="fas fa-bars text-gray-700 text-sm"></i>
+          </button>
+        )}
+
+        {/* ═══════════════════════════════════════
+            MOBILE ONLY — dark backdrop.
+        ═══════════════════════════════════════ */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* ═══════════════════════════════════════
+            MOBILE ONLY — full drawer, auto-closes on nav.
+        ═══════════════════════════════════════ */}
+        <aside
+          className={`md:hidden fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-100 z-50
+            flex flex-col transform transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        >
+          <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+            <div className="w-10 h-10 rounded-md overflow-hidden shadow-sm flex-shrink-0">
+              <img
+                src="/logo.png"
+                alt="PropGrowthX Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <span className="font-semibold text-gray-900 text-base">
+              PropGrowthX
+            </span>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="ml-auto p-1.5 rounded-md hover:bg-gray-50 text-gray-500"
+              aria-label="Close menu"
+            >
+              <i className="fas fa-times text-sm"></i>
+            </button>
+          </div>
+          <nav className="px-2 py-4 flex-1 overflow-y-auto">
+            {[
+              {
+                id: "dashboard",
+                label: "Dashboard",
+                icon: "fa-chart-bar",
+                path: "/dashboard-nav",
+              },
+              {
+                id: "properties",
+                label: "Properties",
+                icon: "fa-building",
+                path: "/properties-manage",
+              },
+              {
+                id: "payments",
+                label: "Payments",
+                icon: "fa-receipt",
+                path: "/payments",
+              },
+              {
+                id: "support",
+                label: "Support",
+                icon: "fa-headset",
+                path: "/contact",
+              },
+              {
+                id: "complaints",
+                label: "Complaints",
+                icon: "fa-folder",
+                path: "/dashboard/owner/complaints",
+              },
+              {
+                id: "profile",
+                label: "Profile",
+                icon: "fa-user",
+                path: "/profile",
+              },
+              {
+                id: "settings",
+                label: "Settings",
+                icon: "fa-cog",
+                path: "/profile#settings",
+              },
+            ].map((item) => (
+              <MobileNavItem
+                key={item.id}
+                label={item.label}
+                icon={item.icon}
+                active={item.id === "support"}
+                onClick={() =>
+                  item.path ? mobileGoTo(item.path) : setSidebarOpen(false)
+                }
+              />
+            ))}
+          </nav>
+          <div className="px-3 py-4 border-t border-gray-100">
+            <div className="text-xs text-gray-500">
+              © {new Date().getFullYear()} PropGrowthX
+            </div>
+          </div>
+        </aside>
+
+        {/* ═══════════════════════════════════════
+            DESKTOP / TABLET SIDEBAR — inline.
+            Toggles w-64 ↔ w-20. Zero mobile changes.
+        ═══════════════════════════════════════ */}
+        <aside
+          className={`hidden md:flex flex-col flex-shrink-0 bg-white border-r border-gray-100 h-screen sticky top-0 z-40
+            transition-all duration-200 ease-in-out ${sidebarOpen ? "w-64" : "w-20"}`}
+          aria-label="Sidebar"
+        >
+          <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+            <div className="w-12 h-12 rounded-md overflow-hidden shadow-sm flex-shrink-0">
+              <img
+                src="/logo.png"
+                alt="PropGrowthX Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            {sidebarOpen && (
+              <span className="font-semibold text-gray-900 text-lg">
+                PropGrowthX
               </span>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                Let's Start a Conversation
-              </h1>
-              <p className="text-lg text-primary-foreground/80">
-                Whether you're looking to invest, list a property, or explore
-                enterprise solutions, our team is here to help.
-              </p>
-            </div>
+            )}
+            <button
+              onClick={() => setSidebarOpen((s) => !s)}
+              className="ml-auto bg-transparent p-2 rounded-md hover:bg-gray-50"
+              aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            >
+              <i
+                className={`fas ${sidebarOpen ? "fa-chevron-left" : "fa-chevron-right"} text-gray-600 text-sm`}
+              ></i>
+            </button>
           </div>
-        </section>
-
-        {/* Contact Section */}
-        <section className="py-20 lg:py-32 bg-background">
-          <div className="container-custom">
-            <div className="grid lg:grid-cols-3 gap-12">
-              {/* Contact Info */}
-              <div className="lg:col-span-1">
-                <h2 className="text-2xl font-bold text-foreground mb-6">
-                  Contact Information
-                </h2>
-                <p className="text-muted-foreground mb-8">
-                  Reach out through any of these channels. Our team typically
-                  responds within 24 hours.
-                </p>
-
-                <div className="space-y-6">
-                  {contactInfo.map((item, index) => (
-                    <a
-                      key={index}
-                      href={item.href}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-card border border-border hover:border-secondary/50 transition-colors group"
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/10 transition-colors">
-                        <item.icon className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">
-                          {item.title}
-                        </div>
-                        <div className="font-medium text-foreground">
-                          {item.value}
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
+          <nav className="px-2 py-4 flex-1 overflow-y-auto">
+            {[
+              {
+                id: "dashboard",
+                label: "Dashboard",
+                icon: "fa-chart-bar",
+                onClick: () => navigate("/dashboard-nav"),
+              },
+              {
+                id: "properties",
+                label: "Properties",
+                icon: "fa-building",
+                onClick: () => navigate("/properties-manage"),
+              },
+              {
+                id: "payments",
+                label: "Payments",
+                icon: "fa-receipt",
+                onClick: () => navigate("/payments"),
+              },
+              {
+                id: "support",
+                label: "Support",
+                icon: "fa-headset",
+                onClick: () => navigate("/contact"),
+              },
+              {
+                id: "complaints",
+                label: "Complaints",
+                icon: "fa-folder",
+                onClick: () => navigate("/dashboard/owner/complaints"),
+              },
+              {
+                id: "profile",
+                label: "Profile",
+                icon: "fa-user",
+                onClick: () => navigate("/profile"),
+              },
+              {
+                id: "settings",
+                label: "Settings",
+                icon: "fa-cog",
+                onClick: () => navigate("/profile#settings"),
+              },
+            ].map((item) => (
+              <NavItem
+                key={item.id}
+                label={item.label}
+                icon={item.icon}
+                collapsed={!sidebarOpen}
+                active={item.id === "support"}
+                onClick={item.onClick}
+              />
+            ))}
+          </nav>
+          <div className="px-3 py-4 border-t border-gray-100">
+            {sidebarOpen ? (
+              <div className="text-xs text-gray-500">
+                © {new Date().getFullYear()} PropGrowthX
               </div>
+            ) : (
+              <div className="text-center text-xs text-gray-400">©PG</div>
+            )}
+          </div>
+        </aside>
 
-              {/* Contact Form */}
-              <div className="lg:col-span-2">
-                <div className="bg-card border border-border rounded-2xl p-8">
-                  <h2 className="text-2xl font-bold text-foreground mb-2">
-                    Send Us a Message
-                  </h2>
-                  <p className="text-muted-foreground mb-8">
-                    Fill out the form below and we'll get back to you shortly.
-                  </p>
-
-                  {isSubmitted ? (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle2 className="w-8 h-8 text-success" />
-                      </div>
-                      <h3 className="text-xl font-semibold text-foreground mb-2">
-                        Message Sent Successfully!
-                      </h3>
-                      <p className="text-muted-foreground mb-6">
-                        Thank you for reaching out. Our team will contact you
-                        within 24 hours.
+        {/* ═══════════════════════════════════════
+            MAIN CONTENT
+        ═══════════════════════════════════════ */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          <main className="flex-1 overflow-y-auto bg-white">
+            <div className="min-h-screen">
+              {/* ── Hero ── */}
+              <section className="py-8 lg:py-12 px-6">
+                <div className="max-w-6xl mx-auto">
+                  <div className="sp-header-hero">
+                    <div className="max-w-3xl flex-1">
+                      <h1 className="sp-page-title mb-3">
+                        Let's create something
+                        <br />
+                        <span className="sp-title-accent">extraordinary</span>
+                      </h1>
+                      <p className="sp-header-subtitle">
+                        Have a question about PropGrowthX? We'd love to hear
+                        from you. Get in touch with our team and let's discuss
+                        how we can help accelerate your property investment
+                        journey.
                       </p>
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsSubmitted(false)}
-                      >
-                        Send Another Message
-                      </Button>
                     </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="firstName">First Name</Label>
-                          <Input id="firstName" placeholder="Anand" required />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="lastName">Last Name</Label>
-                          <Input id="lastName" placeholder="Sharma" required />
-                        </div>
-                      </div>
-
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="email">Email</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder="anand.sharma@example.com"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">Phone</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            placeholder="+91 9876543218"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="interest">I'm Interested In</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an option" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="buying">
-                              Buying a Property
-                            </SelectItem>
-                            <SelectItem value="selling">
-                              Selling a Property
-                            </SelectItem>
-                            <SelectItem value="renting">
-                              Renting a Property
-                            </SelectItem>
-                            <SelectItem value="investing">
-                              Investment Advisory
-                            </SelectItem>
-                            <SelectItem value="analytics">
-                              Analytics & Reports
-                            </SelectItem>
-                            <SelectItem value="enterprise">
-                              Enterprise Solutions
-                            </SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
-                        <Textarea
-                          id="message"
-                          placeholder="Tell us about your requirements..."
-                          rows={5}
-                          required
-                        />
-                      </div>
-
-                      <Button
-                        type="submit"
-                        size="lg"
-                        className="w-full bg-secondary hover:bg-secondary/90"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          "Sending..."
-                        ) : (
-                          <>
-                            Send Message
-                            <Send className="w-5 h-5 ml-2" />
-                          </>
-                        )}
-                      </Button>
-                    </form>
-                  )}
+                    <div className="sp-divider-line" />
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
+              </section>
 
-        {/* CTA Section */}
-        <section className="py-16 bg-muted/30">
-          <div className="container-custom">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-4">
-                Ready to Start Investing Smarter?
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Explore our platform and discover data-driven real estate
-                opportunities.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Button asChild className="bg-secondary hover:bg-secondary/90">
-                  <a href="/properties">Explore Properties</a>
-                </Button>
-                <Button variant="outline" asChild>
-                  <a href="/analytics">View Analytics</a>
-                </Button>
-              </div>
+              {/* ── Contact content ── */}
+              <section className="py-8 lg:py-8 px-6">
+                <div className="max-w-6xl mx-auto">
+                  <div className="grid lg:grid-cols-1 gap-8">
+                    <div className="mb-3">
+                      <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                        Get in touch
+                      </h2>
+                      <p className="text-gray-600 text-sm">
+                        We're available across multiple channels
+                      </p>
+                    </div>
+
+                    <div className="contact-area">
+                      {/* Left — contact list */}
+                      <aside
+                        className="contact-list"
+                        aria-label="Contact details"
+                      >
+                        {contactInfo.map((item, index) => {
+                          const Icon = item.icon;
+                          return (
+                            <a
+                              key={index}
+                              href={item.href}
+                              className="contact-row"
+                              onMouseEnter={() => setHoveredCard(index)}
+                              onMouseLeave={() => setHoveredCard(null)}
+                              rel="noreferrer"
+                              style={{
+                                animation: `fadeInUp 0.8s ease-out ${0.35 + index * 0.08}s both`,
+                              }}
+                            >
+                              <div className="icon-tile" aria-hidden>
+                                <Icon
+                                  className="w-5 h-5"
+                                  style={{ color: "var(--brand-red)" }}
+                                />
+                              </div>
+                              <div className="contact-meta">
+                                <div className="contact-title">
+                                  {item.title}
+                                </div>
+                                <div className="contact-value">
+                                  {item.value}
+                                </div>
+                              </div>
+                            </a>
+                          );
+                        })}
+                      </aside>
+
+                      {/* Right — form */}
+                      <main className="form-card" aria-label="Contact form">
+                        {isSubmitted ? (
+                          <div
+                            className="success-panel"
+                            style={{ animation: "fadeInUp 0.6s ease-out" }}
+                          >
+                            <div
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: 88,
+                                height: 88,
+                                borderRadius: 44,
+                                background:
+                                  "linear-gradient(180deg,#ecfdf5,#eefaf3)",
+                                margin: "0 auto 18px",
+                              }}
+                            >
+                              <CheckCircle2
+                                className="w-10 h-10"
+                                style={{
+                                  color: "#059669",
+                                  animation:
+                                    "subtleFloat 2.5s ease-in-out infinite",
+                                }}
+                              />
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 mb-2">
+                              Message received
+                            </h3>
+                            <p className="text-gray-600 mb-5 max-w-md mx-auto text-sm leading-relaxed">
+                              Thanks for reaching out. Our team will review your
+                              message and get back to you within 24 hours.
+                            </p>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: 10,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <button
+                                onClick={() => setIsSubmitted(false)}
+                                className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl text-sm font-medium transition-all duration-300"
+                              >
+                                Send another message
+                              </button>
+                              <button
+                                onClick={() => navigate("/dashboard-nav")}
+                                className="submit-btn-modern"
+                              >
+                                Back to dashboard
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <form
+                            onSubmit={handleSubmit}
+                            aria-label="Contact form body"
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: 12,
+                              }}
+                            >
+                              <div>
+                                <div
+                                  style={{
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    color: "#111827",
+                                  }}
+                                >
+                                  Send us a message
+                                </div>
+                                <div className="muted">
+                                  Our team typically replies within 24 hours
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="form-row sm-2">
+                              <div>
+                                <Label
+                                  htmlFor="firstName"
+                                  className="field-label"
+                                >
+                                  First name
+                                </Label>
+                                <Input
+                                  id="firstName"
+                                  placeholder="John"
+                                  required
+                                  className="modern-input"
+                                />
+                              </div>
+                              <div>
+                                <Label
+                                  htmlFor="lastName"
+                                  className="field-label"
+                                >
+                                  Last name
+                                </Label>
+                                <Input
+                                  id="lastName"
+                                  placeholder="Doe"
+                                  required
+                                  className="modern-input"
+                                />
+                              </div>
+                            </div>
+
+                            <div
+                              className="form-row sm-2"
+                              style={{ marginTop: 12 }}
+                            >
+                              <div>
+                                <Label htmlFor="email" className="field-label">
+                                  Email address
+                                </Label>
+                                <Input
+                                  id="email"
+                                  type="email"
+                                  placeholder="you@example.com"
+                                  required
+                                  className="modern-input"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="phone" className="field-label">
+                                  Phone number
+                                </Label>
+                                <Input
+                                  id="phone"
+                                  type="tel"
+                                  placeholder="+91 98765 43218"
+                                  className="modern-input"
+                                />
+                              </div>
+                            </div>
+
+                            <div style={{ marginTop: 14 }}>
+                              <Label htmlFor="interest" className="field-label">
+                                I'm interested in
+                              </Label>
+                              <Select>
+                                <SelectTrigger
+                                  className="modern-select"
+                                  aria-label="Interest select"
+                                >
+                                  <SelectValue placeholder="Select an option" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-gray-200">
+                                  <SelectItem value="buying">
+                                    Buying a property
+                                  </SelectItem>
+                                  <SelectItem value="selling">
+                                    Selling a property
+                                  </SelectItem>
+                                  <SelectItem value="renting">
+                                    Renting a property
+                                  </SelectItem>
+                                  <SelectItem value="investing">
+                                    Investment advisory
+                                  </SelectItem>
+                                  <SelectItem value="analytics">
+                                    Analytics & reports
+                                  </SelectItem>
+                                  <SelectItem value="enterprise">
+                                    Enterprise solutions
+                                  </SelectItem>
+                                  <SelectItem value="other">
+                                    Other inquiry
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div style={{ marginTop: 14 }}>
+                              <Label htmlFor="message" className="field-label">
+                                Your message
+                              </Label>
+                              <Textarea
+                                id="message"
+                                placeholder="Tell us more about your property inquiry, timeline, or specific needs..."
+                                rows={6}
+                                required
+                                className="modern-textarea"
+                                style={{ resize: "none" }}
+                              />
+                            </div>
+
+                            <div className="form-cta">
+                              <button
+                                type="submit"
+                                className="submit-btn-modern"
+                                disabled={isSubmitting}
+                                aria-busy={isSubmitting}
+                                aria-label="Send inquiry"
+                              >
+                                <Send
+                                  className="w-4 h-4"
+                                  style={{ color: "#fff" }}
+                                />
+                                {isSubmitting ? "Sending..." : "Send inquiry"}
+                              </button>
+                              <div
+                                style={{
+                                  marginLeft: "auto",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                }}
+                              >
+                                <div className="note-small">
+                                  We respond within{" "}
+                                  <span
+                                    style={{
+                                      fontWeight: 700,
+                                      color: "#111827",
+                                    }}
+                                  >
+                                    24 hours
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+                      </main>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
-          </div>
-        </section>
-      </Layout>
+          </main>
+        </div>
+      </div>
     </>
   );
 };
+
+// ── Mobile-only nav item ──
+function MobileNavItem({
+  label,
+  icon,
+  active = false,
+  onClick,
+}: {
+  label: string;
+  icon: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-3 py-3 rounded-md transition-colors duration-150
+        ${active ? "bg-red-50 text-red-600" : "text-gray-700 hover:bg-gray-50"}`}
+      aria-label={label}
+    >
+      <span
+        className={`w-8 h-8 flex items-center justify-center rounded-md flex-shrink-0 ${active ? "bg-red-100" : "bg-gray-50"}`}
+      >
+        <i
+          className={`fas ${icon} text-sm ${active ? "text-red-600" : "text-gray-600"}`}
+        ></i>
+      </span>
+      <span className={`text-sm font-medium ${active ? "font-semibold" : ""}`}>
+        {label}
+      </span>
+    </button>
+  );
+}
+
+// ── Desktop/tablet nav item ──
+function NavItem({
+  label,
+  icon,
+  collapsed = false,
+  active = false,
+  onClick,
+}: {
+  label: string;
+  icon: string;
+  collapsed?: boolean;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      className={`group w-full flex items-center gap-3 px-3 py-3 rounded-md transition-colors duration-150
+        ${active ? "bg-red-50" : "hover:bg-gray-50"}`}
+      aria-label={label}
+      title={collapsed ? label : undefined}
+      onClick={onClick}
+    >
+      <span
+        className={`w-8 h-8 flex items-center justify-center rounded-md flex-shrink-0 ${active ? "bg-red-100" : "bg-gray-50"}`}
+      >
+        <i
+          className={`fas ${icon} text-sm ${active ? "text-red-600" : "text-gray-600"}`}
+        ></i>
+      </span>
+      {!collapsed && (
+        <span
+          className={`text-sm font-medium ${active ? "text-red-600 font-semibold" : "text-gray-900"}`}
+        >
+          {label}
+        </span>
+      )}
+    </button>
+  );
+}
 
 export default Contact;

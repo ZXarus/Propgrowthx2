@@ -207,7 +207,7 @@ export default function PaymentsPage() {
                     key={t.id}
                     className="grid grid-cols-1 md:grid-cols-6 gap-4 px-6 py-4 border-b hover:bg-gray-50"
                   >
-                    <div>{t.created_at.split("T")}</div>
+                    <div>{t.date.split("T")}</div>
 
                     <div className="font-medium">
                       {t.property_name || "N/A"}
