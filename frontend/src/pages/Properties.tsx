@@ -21,54 +21,46 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useData } from "@/context/dataContext";
-
-const registeredProperty = {
-  id: "1",
-  title: "Modern Downtown Loft",
-  location: "Panvel, Maharashtra",
-  address: "123 Main Street, Panvel, Maharashtra 410206",
-  monthly_rent: 8500,
-  bedrooms: 2,
-  bathrooms: 2,
-  area: 1200,
-  images: [
-    "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80",
-  ],
-  status: "Active",
-  moveInDate: "2023-06-15",
-  leaseEndDate: "2025-06-14",
-  propertyType: "Apartment",
-  floor: "5",
-  totalFloors: "10",
-  furnished: "Semi-Furnished",
-  parking: "Yes (2 slots)",
-  amenities: [
-    "Swimming Pool",
-    "Gym",
-    "Security",
-    "Lift",
-    "Visitor Parking",
-    "CCTV",
-  ],
-  owner: {
-    name: "Rajesh Kumar",
-    phone: "+91 9876543210",
-    email: "rajesh.kumar@example.com",
-    address: "Same as property",
-  },
-  documents: [
-    { name: "Lease Agreement", uploadDate: "2023-06-01", verified: true },
-    { name: "Property Photos", uploadDate: "2023-06-01", verified: true },
-    { name: "ID Proof", uploadDate: "2023-06-01", verified: true },
-  ],
-  maintenanceCharges: 800,
-  securityDeposit: 25500,
-  registrationNumber: "PROP-2023-001234",
-};
+import { ProfileData } from "./Profile";
+import axios from "axios";
 
 const Properties = () => {
   const navigate = useNavigate();
   const { id, loading, properties } = useData();
+
+  const registeredProperty = properties[0];
+
+  const [buyer, setBuyer] = useState<ProfileData | null>(null);
+  const [owner, setOwner] = useState<ProfileData | null>(null);
+
+  const getDetails = async () => {
+    try {
+      const owner_id = registeredProperty.owner_id;
+      const buyer_id = registeredProperty.buyer_id;
+
+      const payload: any = {
+        owner_id: owner_id,
+        buyer_id: buyer_id,
+      };
+
+      await axios
+        .post(`http://localhost:5000/api/auth/privateProfileDetails`, payload)
+        .then((res) => {
+          setBuyer(res.data.buyer);
+          setOwner(res.data.owner);
+        });
+    } catch (error) {
+      alert("something went wrong");
+    }
+  };
+  useEffect(() => {
+    if (registeredProperty == null) {
+      return;
+    }
+    getDetails();
+  }, [registeredProperty]);
+
+  console.log(registeredProperty);
 
   const [sidebarOpen, setSidebarOpen] = useState(
     () => window.innerWidth >= 768,
@@ -477,14 +469,14 @@ const Properties = () => {
               <div className="container-custom">
                 <img
                   src={registeredProperty.images[0]}
-                  alt={registeredProperty.title}
+                  alt={registeredProperty.property_name}
                   className="property-image"
                 />
 
                 <div className="section-card">
                   <div className="section-content">
                     <h2 className="property-title">
-                      {registeredProperty.title}
+                      {registeredProperty.property_name}
                     </h2>
                     <div className="property-address">
                       <MapPin />
@@ -508,7 +500,7 @@ const Properties = () => {
                           <h4>Move In Date</h4>
                           <p>
                             {new Date(
-                              registeredProperty.moveInDate,
+                              registeredProperty.due_date,
                             ).toLocaleDateString()}
                           </p>
                         </div>
@@ -521,7 +513,7 @@ const Properties = () => {
                           <h4>Lease Ends</h4>
                           <p>
                             {new Date(
-                              registeredProperty.leaseEndDate,
+                              registeredProperty.end_date,
                             ).toLocaleDateString()}
                           </p>
                         </div>
@@ -552,26 +544,19 @@ const Properties = () => {
                       <div className="spec-box">
                         <p className="spec-label">Area</p>
                         <p className="spec-value">
-                          {registeredProperty.area} sqft
+                          {registeredProperty.total_area} sqft
                         </p>
                       </div>
                       <div className="spec-box">
                         <p className="spec-label">Type</p>
                         <p className="spec-value">
-                          {registeredProperty.propertyType}
+                          {registeredProperty.listing_type}
                         </p>
                       </div>
                       <div className="spec-box">
                         <p className="spec-label">Floor</p>
                         <p className="spec-value">
-                          {registeredProperty.floor}/
-                          {registeredProperty.totalFloors}
-                        </p>
-                      </div>
-                      <div className="spec-box">
-                        <p className="spec-label">Furnished</p>
-                        <p className="spec-value">
-                          {registeredProperty.furnished}
+                          {registeredProperty.floors}
                         </p>
                       </div>
                     </div>
@@ -609,7 +594,8 @@ const Properties = () => {
                       </div>
                       <div className="alert-box bg-blue-50 border-blue-100">
                         <p className="text-xs md:text-sm text-blue-800">
-                          <strong>Parking:</strong> {registeredProperty.parking}
+                          <strong>Electricity:</strong>{" "}
+                          {registeredProperty.electricity_available || "✔️"}
                         </p>
                       </div>
                     </div>
@@ -647,22 +633,6 @@ const Properties = () => {
                             {formatINR(registeredProperty.monthly_rent)}
                           </p>
                         </div>
-                        <div className="financial-card bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100">
-                          <p className="financial-label text-gray-600">
-                            Maintenance
-                          </p>
-                          <p className="financial-value text-blue-600">
-                            {formatINR(registeredProperty.maintenanceCharges)}/m
-                          </p>
-                        </div>
-                        <div className="financial-card bg-gradient-to-br from-green-50 to-emerald-50 border-green-100">
-                          <p className="financial-label text-gray-600">
-                            Security Deposit
-                          </p>
-                          <p className="financial-value text-green-600">
-                            {formatINR(registeredProperty.securityDeposit)}
-                          </p>
-                        </div>
                       </div>
                     </div>
                   )}
@@ -697,7 +667,7 @@ const Properties = () => {
                           </div>
                           <div className="info-content">
                             <h4>Owner Name</h4>
-                            <p>{registeredProperty.owner.name}</p>
+                            <p>{owner.name}</p>
                           </div>
                         </div>
                         <div className="info-item">
@@ -708,10 +678,10 @@ const Properties = () => {
                             <h4>Phone Number</h4>
                             <p>
                               <a
-                                href={`tel:${registeredProperty.owner.phone}`}
+                                href={`tel:${owner.emer_contact}`}
                                 className="text-red-600 hover:text-red-700 break-all"
                               >
-                                {registeredProperty.owner.phone}
+                                {owner.emer_contact}
                               </a>
                             </p>
                           </div>
@@ -724,10 +694,10 @@ const Properties = () => {
                             <h4>Email Address</h4>
                             <p>
                               <a
-                                href={`mailto:${registeredProperty.owner.email}`}
+                                href={`mailto:${owner.email}`}
                                 className="text-red-600 hover:text-red-700 break-all"
                               >
-                                {registeredProperty.owner.email}
+                                {owner.email}
                               </a>
                             </p>
                           </div>
@@ -757,55 +727,6 @@ const Properties = () => {
                       />
                     </svg>
                   </div>
-                  {expandedSections.has("documents") && (
-                    <div className="section-content border-t border-gray-100">
-                      <div className="document-list">
-                        {registeredProperty.documents.map((doc, idx) => (
-                          <div key={idx} className="document-item">
-                            <div className="document-name">
-                              <FileCheck className="text-gray-400" />
-                              <div className="document-info">
-                                <p>{doc.name}</p>
-                                <p>
-                                  Uploaded{" "}
-                                  {new Date(
-                                    doc.uploadDate,
-                                  ).toLocaleDateString()}
-                                </p>
-                              </div>
-                            </div>
-                            {doc.verified && (
-                              <div className="document-status">
-                                <svg fill="currentColor" viewBox="0 0 20 20">
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                                <span>Verified</span>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      <div className="alert-box bg-green-50 border-green-100">
-                        <div className="alert-content">
-                          <AlertCircle className="text-green-600" />
-                          <div className="alert-text">
-                            <p className="text-green-900">
-                              Registration ID:{" "}
-                              {registeredProperty.registrationNumber}
-                            </p>
-                            <p className="text-green-700">
-                              All documents are verified and your property
-                              registration is complete.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </section>

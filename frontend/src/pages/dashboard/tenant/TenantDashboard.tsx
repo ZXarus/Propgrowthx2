@@ -246,7 +246,7 @@ const TenantDashboard = () => {
               label="Profile"
               sidebarOpen
               onClick={() => {
-                navigate("/profile");
+                navigate(`/profile/${id}`);
                 setSidebarOpen(false);
               }}
             />

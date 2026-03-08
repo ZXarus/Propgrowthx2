@@ -35,7 +35,6 @@ import AllPropertiesPage from "./pages/property/AllPropertiesPage";
 const HomeRedirect = () => {
   const role = sessionStorage.getItem("role")?.toLowerCase();
 
-
   if (role === "tenant") {
     return <Navigate to="/dashboard/tenant" replace />;
   }
@@ -77,7 +76,7 @@ function App() {
               element={<TenantSupport />}
             />
             <Route path="/properties" element={<Properties />} />
-            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
 
           {/* PRIVATE ROUTES - OWNER ONLY */}
